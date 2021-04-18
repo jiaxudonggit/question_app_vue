@@ -20,6 +20,7 @@ const mutations = {
     changeAppending(state, status) {
         if (status) {
             state.isAppending = true;
+            // 默认30秒后关闭
             state.timer = setTimeout(()=>{
                 state.isAppending = false;
             }, 1000 * 30);
