@@ -1,0 +1,241 @@
+/*
+* @Time    : 2021/4/13 16:03
+* @Author  : JXD
+* @FileName: AdUtils.js
+* @Software: WebStorm
+*/
+import store from "@/vuex/store";
+import {Request, Utils} from "@/utils/Utils";
+
+
+export default class AdUtils {
+
+    // 打开激励视频广告
+    static openVideoAd(appId, callback) {
+        if (window.nativeObj === undefined) {
+            if (typeof callback === "function") callback();
+            return false;
+        }
+        try {
+            console.log("打开激励视频广告：=========>")
+            let channelId = store.state.baseConfig.channelId; // 渠道ID
+            let signStr = store.state.userInfo.signStr; // 签名串，阅友会用到
+            let openTs = Utils.currentTimeMillis(true); // 时间戳
+
+            // 创建广告订单
+            this.requestCreateAdOrder(appId, (res) => {
+                let outOrderId = appId + "_" + Utils.currentTimeMillis(true); // 广告订单号
+                if (res && res.code === 0) outOrderId = res.body.orderId;
+                console.log("创建激励视频广告订单：=========> " + outOrderId)
+                // 创建观看激励视频广告记录
+                this.requestCreateAdRecord(outOrderId, 1);
+                console.log("创建激励视频广告记录：=========>")
+                // 设置广告播放回调
+                window.playAdCallback = () => {
+                    console.log("激励视频广告回调===========>");
+                    if (channelId === "YueYou") {
+                        this.loopRequestAdResult(outOrderId, appId, () => {
+                            if (typeof callback === "function") callback();
+                        });
+                    } else {
+                        this.requestUpdateAdOrder(outOrderId, appId, () => {
+                            this.loopRequestAdResult(outOrderId, appId, () => {
+                                if (typeof callback === "function") callback();
+                            });
+                        })
+                    }
+                }
+                console.log("设置激励视频广告回调：=========>")
+                // 根据渠道打开广告
+                if (channelId === "YueYou") {
+                    let gameId = store.state.baseConfig.centerAppId;
+                    window.nativeObj.openGameRewardVideo(gameId, openTs, signStr, outOrderId, "999999", "playAdCallback()");
+                } else {
+                    window.nativeObj.openGameRewardVideo(appId, openTs, signStr, outOrderId, "999999", "playAdCallback()");
+                }
+
+            });
+
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    // 打开banner广告 "portrait", "bottom"
+    static openBannerAd(appId, orientation = "portrait", location = "bottom", callback = null) {
+        if ((typeof (orientation) == "string" && (orientation === "landscape" || orientation === "portrait")) && (typeof (location) == "string") && (typeof (appId) == "string")) {
+            if (window.nativeObj === undefined) {
+                if (typeof callback === "function") callback();
+                return false;
+            }
+            let outOrderId = Utils.currentTimeMillis(true); // 广告订单号
+            let channelId = store.state.baseConfig.channelId; // 渠道ID
+            let channelVersion = store.state.baseConfig.channelVersion; // 渠道初始版本号
+
+            try {
+                if (channelId === "YueYou") {
+                    if (this.getAppVersion() >= channelVersion) window.nativeObj.showGameBannerAd("", orientation, location);
+                } else {
+                    if (this.getAppVersion() >= channelVersion) window.nativeObj.showGameBannerAd(orientation, location);
+                }
+
+                // 创建打开banner广告记录
+                this.requestCreateAdRecord(outOrderId, 3);
+            } catch (e) {
+                console.error(e);
+            }
+
+            if (typeof callback === "function") callback();
+
+        } else {
+            alert("Banner广告参数错误！");
+        }
+    }
+
+    // 关闭banner广告
+    static closeBannerAd(callback) {
+        if (window.nativeObj === undefined) {
+            if (typeof callback === "function") callback();
+            return false;
+        }
+        let channelVersion = store.state.baseConfig.channelVersion; // 渠道初始版本号
+        if (this.getAppVersion() >= channelVersion) window.nativeObj.hideGameBannerAd();
+        if (typeof callback == "function") callback();
+    }
+
+    // 打开插屏广告
+    static openScreenAd(appId, orientation = "portrait", callback = null) {
+        if ((typeof (orientation) == "string" && (orientation === "landscape" || orientation === "portrait")) && (typeof (appId) == "string")) {
+            if (window.nativeObj === undefined) {
+                if (typeof callback === "function") callback();
+                return false;
+            }
+            let outOrderId = Utils.currentTimeMillis(true); // 广告订单号
+            let channelId = store.state.baseConfig.channelId; // 渠道ID
+            let channelVersion = store.state.baseConfig.channelVersion; // 渠道初始版本号
+
+            window.screenAdCallback = function () {
+                console.log("插屏广告回调执行：========>")
+                if (typeof callback == "function") callback();
+            }
+
+            try {
+                if (channelId === "YueYou") {
+                    if (this.getAppVersion() >= channelVersion) {
+                        if (this.getAppVersion() >= 347) window.nativeObj.showGameInsertScreenAd("", orientation, "screenAdCallback");
+                        if (this.getAppVersion() < 347) window.nativeObj.showGameInsertScreenAd("", orientation);
+                    }
+                } else {
+                    if (this.getAppVersion() >= channelVersion) window.nativeObj.showGameInsertScreenAd(orientation, "showGameInsertScreenAdCallback");
+                }
+
+                // 创建打开插屏广告记录
+                this.requestCreateAdRecord(outOrderId, 2);
+
+            } catch (e) {
+                console.error(e);
+            }
+
+        } else {
+            alert("插屏广告参数错误！");
+        }
+    }
+
+    // 关闭插屏广告
+    static closeScreenAd(callback) {
+        if (window.nativeObj === undefined) {
+            if (typeof callback === "function") callback();
+            return false;
+        }
+        let channelVersion = store.state.baseConfig.channelVersion; // 渠道初始版本号
+        if (this.getAppVersion() >= channelVersion) window.nativeObj.hideGameInsertScreenAd();
+        if (typeof callback == "function") callback();
+    }
+
+    // 处理轮询
+    static loopRequestAdResult(orderId, appId, callback) {
+        let count = 0;
+        let func = (orderId, appId) => {
+            if (count >= 5) return;
+            this.requestAdResult(orderId, appId, (res, err) => {
+                if ((err || res.code !== 0) || res.body.status !== 1) {
+                    count++;
+                    setTimeout(() => {
+                        func(orderId, appId);
+                    }, 200)
+                } else {
+                    if (res.body.status === 1) if (typeof callback === "function") callback();
+                }
+            });
+        }
+
+        func(orderId, appId);
+    }
+
+    // 轮询广告状态
+    static requestAdResult(orderId, appId, callback) {
+        Request.request({
+            url: Utils.getAppAPiUrl() + "/ad/get_ad_result",
+            data: {
+                order_id: orderId, // 广告订单
+                app_id: appId, // 	应用id
+            },
+            callback: callback,
+        });
+    }
+
+    // 创建广告订单
+    static requestCreateAdOrder(appId, callback) {
+        Request.request({
+            url: Utils.getAppAPiUrl() + "/ad/create_ad_order",
+            data: {
+                channel_id: store.state.baseConfig.channelId, // 渠道ID
+                openid: store.state.userInfo.openId, // 用户唯一标识
+                user_id: store.state.userInfo.userId, // 用户ID
+                app_id: appId, // 	应用id
+            },
+            callback: callback,
+        });
+    }
+
+    // 更新广告订单
+    static requestUpdateAdOrder(orderId, appId, callback) {
+        Request.request({
+            url: Utils.getAppAPiUrl() + "/ad/update_ad_order",
+            data: {
+                order_id: orderId, // 广告订单号
+                app_id: appId, // 应用id
+            },
+            callback: callback,
+        });
+    }
+
+    // 记录用户观看广告
+    static requestCreateAdRecord(orderId, adType, callback) {
+        Request.request({
+            url: Utils.getAppAPiUrl() + "/ad/create_ad_record",
+            data: {
+                channel_id: store.state.baseConfig.channelId,
+                app_id: store.state.baseConfig.appId,
+                openid: store.state.userInfo.openId,
+                user_id: store.state.userInfo.userId,
+                order_id: orderId,
+                ad_type: adType,
+            },
+            callback: callback,
+        });
+    }
+
+    // 获取版本
+    static getAppVersion() {
+        let appVersion = 330;
+        try {
+            appVersion = window.nativeObj.getAppVersionId();
+        } catch (err) {
+            console.error(err);
+        }
+        console.log("app版本号：" + appVersion);
+        return appVersion;
+    }
+
+}

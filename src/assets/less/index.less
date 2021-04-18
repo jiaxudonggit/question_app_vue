@@ -1,0 +1,165 @@
+#index {
+  width: 100%;
+  position: relative;
+  box-sizing: border-box;
+
+  .index-content {
+    width: 100%;
+    color: #ffffff;
+    box-sizing: border-box;
+    position: relative;
+
+    .index-content-top {
+      width: 100%;
+      position: relative;
+
+      img {
+        width: 100%;
+        vertical-align: bottom;
+      }
+    }
+
+    .index-content-center {
+      width: 100%;
+      position: relative;
+      padding: 20px 30px;
+      box-sizing: border-box;
+      overflow: hidden;
+      margin-top: -25px;
+      padding-bottom: 65px;
+      margin-bottom: -25px;
+      border-radius: 20px;
+      border-top-color: #ffffff;
+      box-shadow: 0 4px 0px -2.5px #ffffff inset;
+
+
+      .index-content-title {
+        width: 100%;
+        text-align: center;
+        font-size: 24px;
+        line-height: 45px;
+        z-index: 2;
+      }
+
+      .index-content-text {
+        width: 100%;
+        text-align: left;
+        font-size: 16px;
+        line-height: 28px;
+        z-index: 2;
+        margin: 10px auto 15px;
+      }
+
+      .index-content-detail {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        background-color: #eaf1ff;
+        border-radius: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+
+        .index-content-detail-cell {
+          width: 33%;
+
+          .index-content-detail-item {
+            width: 100%;
+            padding: 15px 5px;
+
+            .index-content-detail-item-top {
+              font-size: 10px;
+              color: #328fd2;
+              text-align: center;
+              line-height: 26px;
+              margin-bottom: 5px;
+              letter-spacing: 1px;
+
+              span {
+                font-size: 18px;
+              }
+            }
+
+            .index-content-detail-item-bottom {
+              font-size: 18px;
+              color: #000;
+              text-align: center;
+              line-height: 30px;
+            }
+
+          }
+        }
+
+      }
+
+    }
+
+    .index-content-bottom {
+      width: 100%;
+      position: relative;
+
+      img {
+        width: 100%;
+        z-index: 1;
+        vertical-align: bottom;
+      }
+    }
+
+    .index-content-recommend {
+      width: 100%;
+      position: relative;
+      margin-top: -50px;
+    }
+
+  }
+
+  .index-btn-wrap {
+    position: fixed;
+    width: 100%;
+    bottom: 60px;
+
+    .index-btn {
+      display: block;
+      width: 60%;
+      margin: 0 auto;
+      vertical-align: bottom;
+      -webkit-animation-name: scaleDraw; /*关键帧名称*/
+      -webkit-animation-timing-function: ease-in-out; /*动画的速度曲线*/
+      -webkit-animation-iteration-count: infinite; /*动画播放的次数*/
+      -webkit-animation-duration: 2s; /*动画所花费的时间*/
+    }
+
+  }
+
+  .index-to-bottom-wrap {
+    position: fixed;
+    right: 20px;
+    top: 20px;
+    z-index: 11;
+
+    img {
+      width: 100px;
+      vertical-align: bottom;
+    }
+  }
+
+  @keyframes scaleDraw { /*定义关键帧、scaleDrew是需要绑定到选择器的关键帧名称*/
+    0% {
+      transform: scale(1); /*开始为原始大小*/
+    }
+    25% {
+      transform: scale(1.1); /*放大1.1倍*/
+    }
+    50% {
+      transform: scale(1);
+    }
+    75% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+}
+

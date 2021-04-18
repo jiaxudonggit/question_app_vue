@@ -1,0 +1,33 @@
+/*层级关系
+公共头部：3
+内容：1
+公共底部：3
+搜索栏：2
+全屏页：4
+*/
+
+@media screen and (min-width: 640px) {
+
+    #app {
+        width: 640px !important;
+        margin: 0 auto;
+    }
+
+    .fixed-fix {
+        width: 640px !important;
+        left: calc((100% - 640px) / 2) !important;
+    }
+
+    .index-to-bottom-wrap {
+        right: calc(((100% - 640) / 2) + 20px);
+    }
+}
+
+#app {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+
+
