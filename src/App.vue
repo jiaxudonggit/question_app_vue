@@ -95,10 +95,8 @@ export default {
 		// 初始化页面
 		initPage() {
 			console.log("========app.初始化页面=========");
+			// 开启加载提示框
 			!this.$store.state.isAppending && this.$store.commit("changeAppending", true);
-			setTimeout(()=>{
-				this.$store.commit("changeAppending", false);
-			}, 1000 * 30);
 			this.userLogin((res, err) => {
 				if (err || res.code !== 0) return this.$toast("登录失败，" + err);
 				// 设置用户信息到store终
@@ -110,7 +108,8 @@ export default {
 						app_id: this.appId,
 					},
 					callback: () => {
-						// this.$store.commit("changeAppending", false);
+						// 关闭加载提示框
+						this.$store.commit("changeAppending", false);
 					}
 				});
 			})
