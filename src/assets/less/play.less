@@ -45,7 +45,7 @@
     padding: 80px 0 30px;
     box-sizing: border-box;
     position: relative;
-    background-image: url("../../assets/images/game/game-background.png");
+    background-image: url("../images/play/game-background.png");
     background-attachment: fixed; /* 让背景图片和文本脱离*/
     background-position: center center;
     -webkit-animation: scrollToUp 300s linear infinite; /* 引入 scrollToUp动画  linear 表示匀速执行动画可避免卡顿*/
@@ -88,7 +88,6 @@
           color: #ffffff;
           word-wrap: break-word;
           word-break: break-all;
-          letter-spacing: 2px;
         }
 
       }
@@ -161,6 +160,16 @@
       }
     }
 
+  }
+
+  .result-popup{
+    width: 70%;
+    background-color: transparent;
+
+    img {
+      width: 100%;
+      vertical-align: bottom;
+    }
   }
 
   @-webkit-keyframes scrollToUp {

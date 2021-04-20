@@ -9,9 +9,9 @@
 			<div class="recommend-title-right">更多好玩的测试--本产品仅供娱乐</div>
 		</div>
 		<div class="recommend-rows-wrap">
-			<van-list v-model="loading" :finished="recommendData.page === recommendData.total_page" :error.sync="error" error-text="请求失败，点击重新加载" @load="onLoad">
+			<van-list v-model="loading" :finished="page === total_page" :error.sync="error" error-text="请求失败，点击重新加载" @load="onLoad">
 				<div class="recommend-row-block">
-					<div class="recommend-row" v-for="(item, index) in recommendData.recommend_list" :key="index" @click="onRecommendClick(item, index)">
+					<div class="recommend-row" v-for="(item, index) in recommend_list" :key="index" @click="onRecommendClick(item, index)">
 						<div class="recommend-row-left">
 							<img class="recommend-row-icon" :src="appIconUrl(item.app_icon)" alt="加载错误">
 						</div>
@@ -35,7 +35,7 @@
 import {Request} from "@/utils/Utils";
 import {mapGetters, mapMutations, mapState} from "vuex";
 import Vue from 'vue';
-import { List } from 'vant';
+import {List} from 'vant';
 
 Vue.use(List);
 
@@ -53,6 +53,9 @@ export default {
 			isRequesting: false,
 			error: false,
 			loading: false,
+			total_page: 0,
+			page: 0,
+			recommend_list: []
 		}
 	},
 	computed: {
@@ -60,6 +63,8 @@ export default {
 		...mapGetters(["appApiUrl", "appResourcesUrl", "appIconUrl"]),
 	},
 	created() {
+		console.log("------created------")
+		this.page = 0;
 		this.getRecommendData();
 	},
 	methods: {
@@ -87,18 +92,20 @@ export default {
 		},
 
 		// 获得测一测推荐配置
-		getRecommendData(callback) {
+		getRecommendData(callback = null) {
 			Request.request({
 				url: this.appApiUrl + "/test_app/get_recommend_data",
 				data: {
 					app_id: this.appId,
-					page: this.recommendData.page + 1,
+					page: this.page + 1,
 					page_name: this.model,
 				},
 				callback: (res, err) => {
 					if (err || res.code !== 0) return this.error = true;
 					// 更新推荐列表
-					this.updateRecommendData(res.body);
+					this.total_page = res.body.total_page;
+					this.page = res.body.page;
+					this.recommend_list = this.recommend_list.concat(res.body.recommend_list);
 					if (typeof callback === "function") callback();
 				},
 			})
@@ -131,7 +138,6 @@ export default {
 	.recommend-title {
 		width: 100%;
 		height: 50px;
-		margin-bottom: 10px;
 		position: relative;
 		display: flex;
 		flex-wrap: wrap;

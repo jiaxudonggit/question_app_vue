@@ -19,6 +19,10 @@ export default {
     },
     // 返回弹幕头像地址
     appBarrageAvatarUrl: (state) => (file_name) => {
-        return `${state.debug ? state.testAppApiUrl : state.appApiUrl}/resources/barrage//${file_name}`;
+        return `${state.debug ? state.testAppApiUrl : state.appApiUrl}/resources/barrage/${file_name}`;
     },
+
+    isGameBack: (state) => {
+        return state.isGameBack;
+    }
 }

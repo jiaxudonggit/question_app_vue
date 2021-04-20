@@ -15,6 +15,7 @@
 import YueYouUtils from "@/utils/YueYouUtils";
 import {Request} from "@/utils/Utils";
 import ChannelUtils from "@/utils/ChannelUtils";
+import AdUtils from "@/utils/AdUtils";
 import {mapState, mapGetters, mapMutations} from "vuex";
 
 export default {
@@ -32,8 +33,8 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["isAppending", "appId", "channelId", "debugUserId", "debug",
-			"isRunBrowser", "centerAppId", "isLogin"]),
+		...mapState(["isAppending", "appId", "channelId", "isGameBack","debugUserId", "debug",
+			"isRunBrowser", "centerAppId", "isLogin", "indexData"]),
 		...mapGetters(["appApiUrl"]),
 	},
 	watch: {
@@ -51,7 +52,16 @@ export default {
 			return (() => {
 				this.setAvailHeight(window.screen.availHeight);
 			})()
+		};
+		// 挂载完成后，判断浏览器是否支持popstate，监听popstate
+		if (window.history && window.history.pushState) {
+			history.pushState(null, null, document.URL);
+			window.addEventListener('popstate', this.watchReturn, false);//false阻止默认事件
 		}
+	},
+	destroyed() {
+		// 页面销毁时，取消监听
+		window.removeEventListener('popstate', this.watchReturn, false);//false阻止默认事件
 	},
 	methods: {
 		...mapMutations({
@@ -60,7 +70,30 @@ export default {
 			changeAppending: "changeAppending",
 			setUserInfo: "setUserInfo",
 			setAvailHeight: "setAvailHeight",
+			setGameBack: "setGameBack",
+			setPopupData: "setPopupData",
 		}),
+
+		// 监听移动端返回键事件
+		watchReturn() {
+			switch (this.$route.path) {
+				case "/play":
+					// 关闭banner广告
+					AdUtils.closeBannerAd(() => {
+						if (this.isLogin && this.indexData.show_recommend_layer) this.setGameBack(true);
+						this.$router.replace({path: "/", query: {YzAppId: this.appId, YzChannelId: this.channelId, t: new Date().getTime()}});
+					});
+					break;
+				case "/result":
+					AdUtils.closeScreenAd(() => {
+						if (this.isLogin && this.indexData.show_recommend_layer) this.setGameBack(true);
+						this.$router.replace({path: "/", query: {YzAppId: this.appId, YzChannelId: this.channelId, t: new Date().getTime()}});
+					});
+					break;
+				case "/":
+					break;
+			}
+		},
 
 		// 用户登录
 		userLogin(userInfo, callback) {

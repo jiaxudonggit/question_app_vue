@@ -2,6 +2,13 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 Vue.use(Router)
+
+// 解决ElementUI导航栏中的vue-router在3.0版本以上重复点菜单报错问题
+const originalPush = Router.prototype.push
+
+Router.prototype.push = function push(location) {
+    return originalPush.call(this, location).catch(err => err)
+}
 //app整体由店面页和店内页组成 暂时并没有用到嵌套路由
 const routes = [
     {
@@ -13,9 +20,9 @@ const routes = [
         }
     },
     {
-        path: '/game',
-        name: "game",
-        component: resolve => require(["../components/views/game"], resolve),
+        path: '/play',
+        name: "play",
+        component: resolve => require(["../components/views/play"], resolve),
         meta: {
             keepAlive: true,
         }
@@ -25,7 +32,7 @@ const routes = [
         name: "result",
         component: resolve => require(["../components/views/result"], resolve),
         meta: {
-            keepAlive: false,
+            keepAlive: true,
         }
     },
 ]

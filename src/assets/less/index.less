@@ -140,6 +140,195 @@
     }
   }
 
+  .app-popup {
+    width: 95%;
+    max-width: 360px;
+    min-width: 330px;
+    height: 570px;
+    top: 45%;
+    overflow-y: inherit;
+    box-sizing: border-box;
+    background-color: transparent;
+
+    img {
+      vertical-align: bottom;
+    }
+
+    .app-popup-title {
+      display: block;
+      width: 100%;
+      position: absolute;
+      box-sizing: border-box;
+      top: 19%;
+      z-index: 99;
+    }
+
+    .app-popup-content {
+      width: 85%;
+      height: 100%;
+      z-index: 98;
+      margin: 0 auto;
+      overflow: hidden;
+      position: relative;
+      box-sizing: border-box;
+      background-color: transparent;
+      background-image: url("../images/popup/layer-bg.png");
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+
+      .app-popup-app-list {
+        width: 100%;
+        height: 60%;
+        top: 30%;
+        padding: 5px 25px 75px 38px ;
+        overflow-x: hidden;
+        overflow-y: auto;
+        position: relative;
+
+        .app-popup-app {
+          width: 100%;
+          height: 65px;
+          margin: 0 auto 10px;
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-between;
+          align-items: center;
+          position: relative;
+
+          .app-popup-left {
+            width: 65px;
+            height: 100%;
+            overflow: hidden;
+            float: left;
+
+            .app-popup-icon {
+              display: block;
+              width: 100%;
+              height: 100%;
+              border-radius: 10px;
+              box-sizing: border-box;
+              border: 1px solid #640173;
+              vertical-align: bottom;
+            }
+          }
+
+          .app-popup-center {
+            width: calc(100% - 65px);
+            height: 100%;
+            padding: 0 12px;
+            overflow: hidden;
+            position: relative;
+            float: left;
+
+            .app-popup-title {
+              width: 100%;
+              height: 22px;
+              position: relative;
+              top: 2px;
+              box-sizing: border-box;
+              font-size: 16px;
+              line-height: 20px;
+              text-align: left;
+              color: #161616;
+              overflow: hidden; //超出的文本隐藏
+              text-overflow: ellipsis; //溢出用省略号显示
+              white-space: nowrap; //溢出不换行
+            }
+
+            .app-popup-desc {
+              width: 100%;
+              height: 16px;
+              margin-top: 4px;
+              font-size: 12px;
+              line-height: 15px;
+              text-align: left;
+              color: #959494;
+              overflow: hidden; //超出的文本隐藏
+              text-overflow: ellipsis; //溢出用省略号显示
+              white-space: nowrap; //溢出不换行
+            }
+
+          }
+
+          .app-popup-right {
+            width: 80px;
+            height: 20px;
+            position: absolute;
+            right: 20px;
+            bottom: 0;
+
+            .app-popup-btn {
+              width: 80px;
+              height: 20px;
+              line-height: 20px;
+              font-size: 10px;
+              text-align: center;
+              box-sizing: border-box;
+              position: absolute;
+              right: 0;
+              bottom: 1px;
+              color: #ffffff;
+              background-color: #52a1fe;
+              border-radius: 25px;
+            }
+
+          }
+        }
+
+        /* 设置滚动条的样式 */
+        ::-webkit-scrollbar {
+          width: 0;
+        }
+        /* 滚动槽 */
+        ::-webkit-scrollbar-track {
+          -webkit-box-shadow:inset006pxrgba(0,0,0,0);
+          border-radius:10px;
+        }
+        /* 滚动条滑块 */
+        ::-webkit-scrollbar-thumb {
+          border-radius:10px;
+          background:rgba(0,0,0,0);
+          -webkit-box-shadow:inset006pxrgba(0,0,0,0);
+        }
+        ::-webkit-scrollbar-thumb:window-inactive {
+          background:rgba(255,0,0,0);
+        }
+
+      }
+    }
+
+    .app-popup-content-bottom {
+      display: block;
+      width: 85%;
+      height: 130px;
+      position: absolute;
+      box-sizing: border-box;
+      bottom: 0;
+      left: 7.5%;
+      z-index: 99;
+    }
+
+    .app-popup-btn {
+      display: block;
+      width: 50%;
+      position: absolute;
+      box-sizing: border-box;
+      bottom: 20px;
+      left: 25%;
+      z-index: 100;
+    }
+
+    .app-popup-close {
+      width: 30px;
+      height: 30px;
+      display: block;
+      position: absolute;
+      bottom: -40px;
+      left: calc((100% - 30px) / 2);
+    }
+
+  }
+
   @keyframes scaleDraw { /*定义关键帧、scaleDrew是需要绑定到选择器的关键帧名称*/
     0% {
       transform: scale(1); /*开始为原始大小*/

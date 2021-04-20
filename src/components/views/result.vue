@@ -1,124 +1,127 @@
 <template>
 	<!--result组件-->
-	<div id="result" class="result" :style="{backgroundColor: $store.state.appConfig.resultConfig.backgroundColor}">
-		<div v-if="showHeader" class="result-header fixed-fix">
-			<div class="result-header-back" @click="onClickBack"><img src="../../assets/images/game/back.png" alt=""></div>
-			<div class="result-header-title">测试结果</div>
+	<div id="result" class="result" :style="{backgroundColor: resultData.bg_color}">
+		<div class="result-header fixed-fix">
+			<div class="result-header-back" @click="onClickBack"><img src="../../assets/images/play/back.png" alt=""></div>
 		</div>
 		<div class="result-content" :style="{minHeight: availHeight + 'px'}">
 			<div class="result-content-img">
-				<img v-for="(item, index) in imgList" :src="makePictureUrl(item)" alt="" :key="index">
+				<img v-for="(item, index) in resultData.bg_images" :src="appResourcesUrl(model, item)" alt="" :key="index">
 			</div>
-			<div class="result-content-btn-wrap" :style="$store.state.appConfig.resultConfig.btnStyle">
-				<img :src="$store.state.appConfig.resultConfig.btnImg ? makePictureUrl($store.state.appConfig.resultConfig.btnImg) : require('@/assets/images/result/result_default_btn.png')" alt="" class="result-content-btn" @click="onClickBack">
+			<div class="result-content-btn-wrap">
+				<img v-if="resultData.button_image" :src="appResourcesUrl(model, resultData.button_image)" alt="" class="result-content-btn" @click="onClickBack">
 			</div>
-			<div v-if="$store.state.baseConfig.isShowRecommend" class="result-content-recommend">
-				<recommend_list :recommend="$store.state.recommendConfig" :app-id="appId" v-on:listenerRecommendClick="onClickRecommend"></recommend_list>
+			<div v-if="resultData.show_recommend_list" class="result-content-recommend">
+				<recommend_list v-if="isLogin" :model="model" v-on:listenerRecommendClick="onClickRecommend"></recommend_list>
 			</div>
 		</div>
 	</div>
 </template>
 <script>
 import recommend_list from '@/components/common/recommend_list';
-import {Utils} from "@/utils/Utils";
+import {Request} from "@/utils/Utils";
 import AdUtils from "@/utils/AdUtils";
-import RecordService from "@/services/record_service";
+import {mapGetters, mapMutations, mapState} from "vuex";
 
 export default {
-	inject: ['reload', 'initData'],
+	inject: ['reload', "autoLogin"],
 	components: {
 		recommend_list,
 	},
 	data() {
 		return {
-			showHeader: false,
 			model: "result",
-			availHeight: window.screen.availHeight,
 		}
 	},
 	computed: {
-		appId() {
-			return this.$route.query.YzAppId;
-		},
-		resultId() {
-			return this.$route.query.resultId;
-		},
-		channelId() {
-			return this.$route.query.YzChannelId;
-		},
-		fraction() {
-			return this.$route.query.fraction;
-		},
-		imgList() {
-			return Object.keys(this.$store.state.appConfig.resultConfig).length > 0 ? this.$store.state.appConfig.resultConfig.resultObject[this.resultId].imgList : [];
-		},
-		listenAppId() {
-			return this.$store.state.baseConfig.appId;
-		},
+		...mapState(["isAppending", "appId", "channelId", "isLogin", "isGameBack", "resultId", "availHeight", "fraction", "resultData"]),
+		...mapGetters(["appApiUrl", "appResourcesUrl", "appIconUrl"]),
 	},
-	watch: {
-		appId(newValue) {
-			console.log("========result.appId.changed=========");
-			this.initData(newValue, false);
-		},
-		channelId(newValue) {
-			console.log("========result.channelId.changed=========");
-			this.$store.commit("setChannelId", newValue)
-		},
-		listenAppId(newValue) {
-			if (newValue) {
-				RecordService.createResultRecord({
-					channelId: this.channelId,
-					appId: this.appId,
-					result_id: this.resultId,
-					fraction: this.fraction,
-				});
-			}
-		}
-	},
-	mounted() {
-		const that = this
-		window.onresize = () => {
-			return (() => {
-				that.availHeight = window.screen.availHeight;
-			})()
-		}
-	},
-	created() {
-		console.log("========result.created=========");
+
+	activated() {
+		// 设置appId和channelId到vuex
+		this.setAppId(this.$route.query.YzAppId);
+		this.setChannelId(this.$route.query.YzChannelId);
 		// 打开插屏广告
 		AdUtils.openScreenAd(this.appId);
-		// 创建用户查看结果记录
-		if (this.$store.state.baseConfig.appId) {
-			RecordService.createResultRecord({
-				channelId: this.channelId,
-				appId: this.appId,
-				result_id: this.resultId,
-				fraction: this.fraction,
-			});
-		}
+		this.initData(()=>{
+			this.createResultRecord()
+		})
 	},
-	destroyed() {
-		console.log("========result.destroyed=========");
+	deactivated() {
 		// 关闭插屏广告
 		AdUtils.closeScreenAd();
 	},
 	methods: {
+
+		...mapMutations({
+			setAppId: "setAppId",
+			setChannelId: "setChannelId",
+			changeAppending: "changeAppending",
+			setResultData: "setResultData",
+			setGameBack: "setGameBack",
+		}),
+
+		// 获得首页数据
+		getResultData(callback) {
+			Request.request({
+				url: this.appApiUrl + "/test_app/get_result_data",
+				data: {
+					app_id: this.appId,
+					fraction: this.fraction,
+					result_id: this.resultId,
+				},
+				callback: (res, err) => {
+					if (err || res.code !== 0) return this.$toast("网络错误，请稍后");
+					// 设置结果页数据到store
+					this.setResultData(res.body);
+					if (typeof callback === "function") callback();
+				},
+			})
+		},
+
+		// 初始化
+		initData(callback) {
+			if (this.isLogin && this.resultData.app_id === this.appId) return false;
+			// 开启加载提示框
+			!this.isAppending && this.changeAppending(true);
+			// 用户登录
+			this.autoLogin(() => {
+				// 获取主页数据
+				this.getResultData(() => {
+					this.timer = setTimeout(() => {
+						// 关闭加载提示框
+						this.changeAppending(false);
+					}, 500);
+					if (typeof callback === "function") callback();
+				});
+			});
+		},
+
+		// 创建用户查看结果记录
+		createResultRecord(callback) {
+			Request.request({
+				url: this.appApiUrl + "/test_app/create_result_record",
+				data: {
+					app_id: this.appId,
+					result_id: this.resultId,
+					fraction: this.fraction
+				},
+				callback: callback,
+			})
+		},
+
 		// 返回按钮事件
 		onClickBack() {
 			AdUtils.closeScreenAd(() => {
-				this.$router.replace({path: "/", query: {YzAppId: this.appId, YzChannelId: this.channelId}});
+				this.setGameBack(true);
+				this.$router.replace({path: "/", query: {YzAppId: this.appId, YzChannelId: this.channelId, t: new Date().getTime()}});
 			});
 		},
 
 		// 点击更多推荐事件
 		onClickRecommend(item) {
-			this.$router.replace({path: "/", query: {YzAppId: item.appId, YzChannelId: this.channelId}});
-		},
-
-		// 拼接图片地址
-		makePictureUrl(name) {
-			return Utils.makePictureUrl(this.appId, this.model, name);
+			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
 		},
 	},
 }

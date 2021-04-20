@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import mutations from "./mutations"
 import getters from "./getters"
 import {Utils} from "@/utils/Utils";
+import { MESSAGE_TYPE } from 'vue-baberrage'
 
 Vue.use(Vuex)
 
@@ -18,6 +19,8 @@ const state = {
     appTemplateId: null,  // 应用主题ID
     channelId: Utils.getQueryParams("YzAppId"), // 渠道ID
     channelVersion: 330, // 渠道初始版本号
+    resultId: 10001, // 答题结果ID
+    fraction: 0, // 答题结果分数
     // 用户数据
     isLogin: false, // 是否已登陆
     nickname: "",     // 昵称
@@ -31,10 +34,12 @@ const state = {
     centerAppId: "999999",
     // UI相关
     isAppending: false,
+    isGameBack: false,
     timer: null,
     availHeight: window.screen.availHeight,
     // 业务数据
     indexData: {
+        "app_id": null,
         "app_icon": null,
         "app_type": null,
         "type_id": null,
@@ -57,11 +62,55 @@ const state = {
         "show_recommend_list": true,
         "show_more_btn": false,
     },
-    playData: {},
-    resultData: {},
+    playData: {
+        "app_id": null,
+        "app_icon": null,
+        "app_type": null,
+        "type_id": null,
+        "template_id": null,
+        "title": "",
+        "title_color": "",
+        "title_image": "",
+        "process_bg_color": "#74ebff",
+        "process_color": "#668cff",
+        "bg_color": "#4758fb",
+        "show_barrage": true,
+        "question_list": [],
+    },
+    resultData: {
+        "app_id": null,
+        "app_icon": null,
+        "app_type": null,
+        "type_id": null,
+        "template_id": null,
+        "bg_color": "",
+        "button_image": "",
+        "show_recommend_list": true,
+        "result_id": null,
+        "title": "",
+        "describes": "",
+        "analysis": "",
+        "min_fraction": 5,
+        "max_fraction": 10,
+        "bg_images": [],
+    },
     recommendData: {
         "total_page": 0,
         "page": 0,
+        "recommend_list": [],
+    },
+    barrageData: {
+        "barrage_number": 200,  // 弹幕数量
+        "barrage_loop": true,  // 是否循环显示弹幕
+        "barrage_time": 3,  // 弹幕速度
+        "barrage_style": "barrage-item-custom",  // 弹幕额外样式
+        "barrage_type": MESSAGE_TYPE.NORMAL,  // 弹幕方向
+        "lanes_count": 3,  // 弹幕航道数量
+        "throttle_gap": 3000,  // 弹幕之间的节流时间
+        "avatar_list": [],
+        "msg_list": [],
+    },
+    popupData: {
         "recommend_list": [],
     },
 }

@@ -3,7 +3,7 @@
 	<div id="index" class="index" :style="{backgroundColor: indexData.bg_color}">
 		<div class="index-content" :style="{minHeight: availHeight + 'px'}">
 			<div class="index-bg-images">
-				<img v-for="(item, index) in indexData.bg_images" :src="appResourcesUrl(model,item)" alt="" :key="index">
+				<img v-for="(item, index) in indexData.bg_images" :src="appResourcesUrl(model, item)" alt="" :key="index">
 			</div>
 			<div v-if="indexData.show_describes" class="index-content-describes-wrap" :style="{backgroundColor: indexData.bg_color}">
 				<div class="index-content-title" :style="{color: indexData.title_color}">{{ indexData.title }}</div>
@@ -35,23 +35,49 @@
 					</div>
 				</div>
 				<div class="index-content-describes-images">
-					<img v-for="(item, index) in indexData.describes_images" :src="appResourcesUrl(model,item)" alt="" :key="index">
+					<img v-for="(item, index) in indexData.describes_images" :src="appResourcesUrl(model, item)" alt="" :key="index">
 				</div>
 			</div>
 			<recommend_list v-if="isLogin" :model="model" v-on:listenerRecommendClick="onClickRecommend"></recommend_list>
 		</div>
-		<div class="index-btn-wrap fixed-fix" @click="$router.push({path: '/game', query: {YzAppId: appId, YzChannelId: channelId}})">
-			<img class="index-btn" :src="appResourcesUrl(model, indexData.button_image)" alt="">
+		<div class="index-btn-wrap fixed-fix" @click="$router.push({path: '/play', query: {YzAppId: appId, YzChannelId: channelId}})">
+			<img v-if="indexData.button_image" class="index-btn" :src="appResourcesUrl(model, indexData.button_image)" alt="">
 		</div>
 		<div v-if="indexData.show_recommend_list && indexData.show_more_btn" class="index-more-btn animate__animated animate__bounceIn" @click="onClickMoreRecommend">
 			<img src="../../assets/images/index/more.png" alt="">
 		</div>
+		<van-popup v-if="indexData.show_recommend_layer" v-model="showPopup" class="app-popup" :lock-scroll="true" :close-on-click-overlay="false">
+			<img class="app-popup-title" src="../../assets/images/popup/layer-title.png" alt="">
+			<div class="app-popup-content">
+				<div class="app-popup-app-list">
+					<div class="app-popup-app" v-for="(item, index) in popupData.recommend_list" :key="index" @click="onPopupClick(item, index)">
+						<div class="app-popup-left">
+							<img class="app-popup-icon" :src="appIconUrl(item.app_icon)" alt="加载错误">
+						</div>
+						<div class="app-popup-center">
+							<div class="app-popup-title">{{ item.app_name }}</div>
+							<div class="app-popup-desc">{{ item.app_desc }}</div>
+						</div>
+						<div class="app-popup-right">
+							<div class="app-popup-btn">{{ item.btn_text }}</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<img class="app-popup-content-bottom" src="../../assets/images/popup/layer-bottom.png" alt="">
+			<img class="app-popup-btn" src="../../assets/images/popup/layer-btn.png" alt="" @click="onClickMorePopup">
+			<img class="app-popup-close" src="../../assets/images/popup/layer-close.png" alt="" @click="onClickClosePopup">
+		</van-popup>
 	</div>
 </template>
 <script>
+import Vue from 'vue';
 import recommend_list from "@/components/common/recommend_list";
 import {Request} from "@/utils/Utils";
 import {mapGetters, mapMutations, mapState} from "vuex";
+import {Popup} from 'vant';
+
+Vue.use(Popup);
 
 export default {
 	inject: ['reload', "autoLogin"],
@@ -61,17 +87,38 @@ export default {
 	data() {
 		return {
 			model: "index",
+			timer: null,
+			showPopup: false,
 		}
 	},
 	computed: {
-		...mapState(["isAppending", "appId", "channelId", "availHeight", "indexData", "isLogin"]),
-		...mapGetters(["appApiUrl", "appResourcesUrl",]),
+		...mapState(["isAppending", "appId", "channelId", "indexData", "isLogin", "isGameBack", "popupData", "availHeight", "recommendData"]),
+		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl"]),
+	},
+	watch: {
+		isGameBack(val) {
+			val ? this.getPopupData(() => {
+				this.showPopup = true;
+			}) : this.showPopup = false;
+		},
 	},
 	activated() {
+		console.log("=======activated=======")
 		// 设置appId和channelId到vuex
 		this.setAppId(this.$route.query.YzAppId);
 		this.setChannelId(this.$route.query.YzChannelId);
 		this.initData();
+		// 显示关闭按钮
+		if (window.nativeObj) window.nativeObj.showExitIcon();
+	},
+	created() {
+		console.log("=======created=======")
+	},
+	deactivated() {
+		// 隐藏关闭按钮
+		if (window.nativeObj) window.nativeObj.closeExitIcon();
+		// 删除定时器
+		if (this.timer) clearTimeout(this.timer);
 	},
 	methods: {
 		...mapMutations({
@@ -79,18 +126,23 @@ export default {
 			setChannelId: "setChannelId",
 			changeAppending: "changeAppending",
 			setIndexData: "setIndexData",
+			setGameBack: "setGameBack",
+			setPopupData: "setPopupData",
 		}),
 
 		// 初始化
 		initData(callback) {
+			if (this.isLogin && this.indexData.app_id === this.appId) return false;
 			// 开启加载提示框
 			!this.isAppending && this.changeAppending(true);
 			// 用户登录
 			this.autoLogin(() => {
 				// 获取主页数据
 				this.getIndexData(() => {
-					// 关闭加载提示框
-					this.changeAppending(false);
+					this.timer = setTimeout(() => {
+						// 关闭加载提示框
+						this.changeAppending(false);
+					}, 500)
 					if (typeof callback === "function") callback();
 				});
 			});
@@ -112,13 +164,38 @@ export default {
 			})
 		},
 
+		// 记录用户点击推荐应用
+		createRecommendRecord(from_app_id, to_app_id, callback) {
+			Request.request({
+				url: this.appApiUrl + "/test_app/create_recommend_record",
+				data: {
+					from_app_id: from_app_id,
+					to_app_id: to_app_id,
+				},
+				callback: callback,
+			})
+		},
+
+		// 推荐弹窗数据 setPopupData
+		getPopupData(callback) {
+			Request.request({
+				url: this.appApiUrl + "/test_app/get_popup_data",
+				data: {
+					app_id: this.appId,
+				},
+				callback: (res, err) => {
+					if (err || res.code !== 0) return false;
+					this.setPopupData(res.body);
+					if (typeof callback === "function") callback();
+				},
+			})
+		},
+
 		// 点击更多推荐事件
 		onClickRecommend(item) {
-			if (item.appId !== this.appId) {
-				this.reload(() => {
-					this.$router.replace({path: "/", query: {YzAppId: item.appId, YzChannelId: this.channelId}});
-				});
-			}
+			this.reload(() => {
+				this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
+			});
 		},
 
 		// 点击更多精彩滚动到推荐
@@ -129,6 +206,30 @@ export default {
 				inline: "nearest"
 			});
 		},
+
+		// 点击弹窗推荐事件
+		onPopupClick(item) {
+			this.createRecommendRecord(this.appId, item.app_id, () => {
+				this.setGameBack(false);
+				this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
+			})
+		},
+
+		// 点击弹窗更多按钮
+		onClickMorePopup() {
+			this.setGameBack(false);
+			this.$el.querySelector(".recommend-content").scrollIntoView({
+				behavior: "smooth",
+				block: "nearest",
+				inline: "nearest"
+			});
+		},
+
+		// 点击弹窗关闭按钮
+		onClickClosePopup() {
+			this.setGameBack(false);
+		},
+
 	},
 }
 </script>
