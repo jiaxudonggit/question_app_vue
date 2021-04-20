@@ -9,10 +9,12 @@ export default {
     },
     // 返回后端静态文件地址
     appResourcesUrl: (state) => (model, file_name) => {
+        if (file_name === "default.png") return `${state.debug ? state.testAppApiUrl : state.appApiUrl}/resources/default/${model}/${file_name}`;
         return `${state.debug ? state.testAppApiUrl : state.appApiUrl}/resources/apps/${state.appId}/${model}/${file_name}`;
     },
     // 返回应用icon地址
     appIconUrl: (state) => (file_name) => {
+        if (file_name === "default.png") return `${state.debug ? state.testAppApiUrl : state.appApiUrl}/resources/default/icon/${file_name}`;
         return `${state.debug ? state.testAppApiUrl : state.appApiUrl}/resources/icon/${file_name}`;
     },
     // 返回弹幕头像地址

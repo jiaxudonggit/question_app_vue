@@ -2,24 +2,13 @@ import {Request, Utils} from '@/utils/Utils';
 
 export default class ConfigService {
 
-    // 获取app配置
+    // 获取主页配置(全部)
     static getIndexData(option) {
         Request.request({
             url: option.url,
             data: {
                 channel_id: option.channel_id,
                 app_id: option.app_id,
-            },
-            callback: option.callback,
-        });
-    }
-
-    // 获取app配置
-    static getAppStatus(option) {
-        Request.request({
-            url: option.url,
-            data: {
-                channel_id: option.channel_id,
             },
             callback: option.callback,
         });

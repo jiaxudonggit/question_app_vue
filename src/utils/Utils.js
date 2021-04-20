@@ -13,7 +13,7 @@ const Utils = class Utils {
 
     // 根据参数名获取当前路由的参数值
     static getQueryParams(name) {
-        let result = "";
+        let result = null;
         let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
         let r = window.location.search.substr(1).match(reg);
         if (r) result = unescape(r[2]);

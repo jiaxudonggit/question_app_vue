@@ -13,17 +13,16 @@
 
 <script>
 import YueYouUtils from "@/utils/YueYouUtils";
-import RecordService from "@/services/record_service";
-import AuthService from "@/services/auth_service";
-import {Utils} from "@/utils/Utils";
+import {Request} from "@/utils/Utils";
 import ChannelUtils from "@/utils/ChannelUtils";
-import {mapState} from "vuex";
+import {mapState, mapGetters, mapMutations} from "vuex";
 
 export default {
 	name: 'app',
 	provide() {
 		return {
 			reload: this.reload,
+			autoLogin: this.autoLogin,
 		}
 	},
 	data() {
@@ -33,17 +32,9 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["isAppending"]),
-		appId() {
-			let appId = Utils.getQueryParams("YzAppId");
-			this.$store.commit("setAppId", appId);
-			return appId;
-		},
-		channelId() {
-			let channelId = Utils.getQueryParams("YzChannelId");
-			this.$store.commit("setChannelId", channelId);
-			return channelId;
-		},
+		...mapState(["isAppending", "appId", "channelId", "debugUserId", "debug",
+			"isRunBrowser", "centerAppId", "isLogin"]),
+		...mapGetters(["appApiUrl"]),
 	},
 	watch: {
 		isAppending(val) {
@@ -53,66 +44,109 @@ export default {
 					forbidClick: true
 				})
 				: this.$toast.clear();
+		},
+	},
+	mounted() {
+		window.onresize = () => {
+			return (() => {
+				this.setAvailHeight(window.screen.availHeight);
+			})()
 		}
 	},
-	created() {
-		console.log("========app.created=========");
-		console.log("地址：" + window.location.href);
-		// 初始化页面
-		this.initPage();
-	},
 	methods: {
+		...mapMutations({
+			setAppId: "setAppId",
+			setChannelId: "setChannelId",
+			changeAppending: "changeAppending",
+			setUserInfo: "setUserInfo",
+			setAvailHeight: "setAvailHeight",
+		}),
 
 		// 用户登录
-		userLogin(callback) {
-			// 获得渠道用户信息
-			this.getChannelUserInfo((userInfo) => {
-				AuthService.userLogin({
-					url: this.$store.getters.appApiUrl + "/login/user_login",
-					data: {
-						channel_id: this.channelId,
-						channel_userid: userInfo.userid,
-						nickname: userInfo.nickname,
-						head_img_url: userInfo.head_img_url,
-						sex: userInfo.sex,
-					},
-					callback: callback,
-				})
+		userLogin(userInfo, callback) {
+			Request.request({
+				url: this.appApiUrl + "/login/user_login",
+				data: {
+					channel_id: this.channelId,
+					channel_userid: userInfo.userid,
+					nickname: userInfo.nickname,
+					head_img_url: userInfo.head_img_url,
+					sex: userInfo.sex,
+				},
+				callback: (res, err) => {
+					if (err || res.code !== 0) return this.$toast("用户登录失败，" + err);
+					// 设置用户信息到store中
+					this.setUserInfo(res.body);
+					if (typeof callback === "function") callback();
+				},
 			})
 		},
 
 		// 获取渠道用户信息
 		getChannelUserInfo(callback) {
-			if (this.$store.state.debug && this.$store.state.isRunBrowser) {
+			if (this.debug && this.isRunBrowser) {
 				// 浏览器调试时使用默认用户信息
-				if (typeof callback === "function") callback({userid: this.$store.state.debugUserId});
+				if (typeof callback === "function") callback({userid: this.debugUserId});
 			} else {
 				// 否则使用渠道用户信息
-				this.channelId === "YueYou" ? YueYouUtils.autoLoginCenter(this.$store.state.centerAppId, callback) : ChannelUtils.getUserInfo(callback);
+				this.channelId === "YueYou" ? YueYouUtils.autoLoginCenter(this.centerAppId, callback) : ChannelUtils.getUserInfo(callback);
+			}
+		},
+
+		// 获取应用ID
+		getAppStatus(callback) {
+			if (this.appId) {
+				if (typeof callback === "function") callback();
+			} else {
+				Request.request({
+					url: this.appApiUrl + "/test_app/get_app_status",
+					data: {
+						channel_id: this.channelId,
+					},
+					callback: (res, err) => {
+						if (err || res.code !== 0) return this.$toast("初始化失败，" + err);
+						this.setAppId(res.body.app_id);
+						if (typeof callback === "function") callback();
+					},
+				})
 			}
 		},
 
 		// 初始化页面
-		initPage() {
-			console.log("========app.初始化页面=========");
-			// 开启加载提示框
-			!this.$store.state.isAppending && this.$store.commit("changeAppending", true);
-			this.userLogin((res, err) => {
-				if (err || res.code !== 0) return this.$toast("登录失败，" + err);
-				// 设置用户信息到store终
-				this.$store.commit("setUserInfo", res.body);
-				// 记录用户进入应用
-				RecordService.createAccessRecord({
-					url: this.$store.getters.appApiUrl + "/test_app/create_access_record",
-					data: {
-						app_id: this.appId,
-					},
-					callback: () => {
-						// 关闭加载提示框
-						this.$store.commit("changeAppending", false);
-					}
-				});
-			})
+		autoLogin(callback) {
+			this.getAppStatus(() => {
+				if (this.isLogin) {
+					console.log("========用户已经登录=========");
+					// 记录用户进入应用
+					this.createAccessRecord(() => {
+						if (typeof callback === "function") callback();
+					});
+				} else {
+					console.log("========用户开始登录=========");
+					// 获得渠道用户信息
+					this.getChannelUserInfo((userInfo) => {
+						// 请求登录
+						this.userLogin(userInfo, () => {
+							// 记录用户进入应用
+							this.createAccessRecord(() => {
+								if (typeof callback === "function") callback();
+							});
+						});
+					});
+				}
+			});
+		},
+
+		// 记录用户进入应用
+		createAccessRecord(callback) {
+			// 记录用户进入应用
+			Request.request({
+				url: this.appApiUrl + "/test_app/create_access_record",
+				data: {
+					app_id: this.appId,
+				},
+				callback: callback
+			});
 		},
 
 		// 刷新路由

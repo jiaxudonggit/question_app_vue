@@ -25,15 +25,9 @@ FastClick.attach(document.body)
 
 //使用钩子函数对路由进行判断
 router.beforeEach((to, from, next) => {
-    if (to.name === 'index' && Object.keys(to.query).length < 2) {
-        let query = {
-            YzAppId: to.query.YzAppId,
-            YzChannelId: to.query.YzChannelId,
-        };
-
-        if (!to.query.YzAppId) query.YzAppId = "222";
+    if (to.name === 'index' && Object.keys(to.query).length < 1) {
+        let query = to.query;
         if (!to.query.YzChannelId) query.YzChannelId = "YueYou";
-
         next({path: '/', query: query});
     } else {
         next();

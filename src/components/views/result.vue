@@ -19,7 +19,7 @@
 	</div>
 </template>
 <script>
-import recommend_list from '@/components/common/recommend_list2';
+import recommend_list from '@/components/common/recommend_list';
 import {Utils} from "@/utils/Utils";
 import AdUtils from "@/utils/AdUtils";
 import RecordService from "@/services/record_service";
