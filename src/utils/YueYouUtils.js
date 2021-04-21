@@ -4,8 +4,9 @@ import store from '../vuex/store';
 export default class YueYouUtils {
 
     // 游戏中心登录
-    static autoLoginCenter(gameId, callback) {
+    static autoLoginCenter(callback) {
         if (window.nativeObj === undefined) return;
+        const gameId = store.state.centerAppId;
         // 1. 获取认证码
         this.getCenterAuthCode(String(gameId), (authCode) => {
             // 2. 获取interface_url

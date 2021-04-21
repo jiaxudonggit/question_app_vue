@@ -12,6 +12,12 @@ const mutations = {
         state.appId = appId;
     },
 
+    // 设置应用ID
+    setAppStatus(state, payload) {
+        state.appId = payload.appId;
+        state.channelVersion = payload.channelVersion;
+    },
+
     // 设置屏幕最小高度
     setAvailHeight(state, availHeight) {
         state.availHeight = availHeight;
@@ -30,6 +36,11 @@ const mutations = {
     // 设置弹窗显示状态
     setGameBack(state, status) {
         state.isGameBack = status;
+    },
+
+    // 设置弹窗显示状态
+    setShowResultPopup(state, status) {
+        state.isShowResultPopup = status;
     },
 
     // 阅友设置签名串
@@ -59,6 +70,7 @@ const mutations = {
         state.sex = userInfo.sex;
         state.accessToken = userInfo.access_token;
         state.isLogin = true;
+        window.sessionStorage.setItem("accessToken", userInfo.access_token)
     },
 
     // 设置主页数据
@@ -80,7 +92,7 @@ const mutations = {
             if (question.question_video) question.question_video = payload.appResourcesUrl(payload.model, question.question_video);
             for (let j = 0; j < question.question_answers.length; j++) {
                 let answer = question.question_answers[j];
-                if(answer.answer_image) answer.answer_image = payload.appResourcesUrl(payload.model, answer.answer_image);
+                if (answer.answer_image) answer.answer_image = payload.appResourcesUrl(payload.model, answer.answer_image);
                 question.question_answers[j] = answer;
             }
             payload.data.question_list[i] = question;

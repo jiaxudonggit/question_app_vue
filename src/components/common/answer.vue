@@ -6,11 +6,22 @@
 		<div v-if="question.question_image" class="game-question-img">
 			<img :src="question.question_image" class="animate__animated animate__flipInX" alt="">
 		</div>
-		<div v-if="question.question_audio" class="game-question-audio">
-			<mini-audio :audio-source="question.question_audio" html5="true"></mini-audio>
+		<div v-if="question.question_audio" class="game-question-audio animate__animated animate__flipInX">
+			<audio-player
+				ref="audioPlayer"
+				:audio-list="[question.question_audio]"
+				:show-prev-button="false"
+				:show-next-button="false"
+				:show-volume-button="false"
+				:show-playback-rate="false"
+				:progress-interval="100"
+				:theme-color="'#ffffff'"
+				:isLoop="false"
+			/>
 		</div>
-		<div v-if="question.question_video" class="game-question-video">
-			<img :src="question.question_video" class="animate__animated animate__flipInX" alt="">
+		<div v-if="question.question_video" class="game-question-video animate__animated animate__flipInX">
+			<video-player class="video-player vjs-custom-skin game-question-video-inner" ref="bannerVideoPlayer" :playsinline="true" :options="videoOption(question.question_video)">
+			</video-player>
 		</div>
 		<div class="game-question-answers">
 			<!--图片-->
@@ -31,11 +42,11 @@
 <script>
 
 import {mapGetters, mapState} from "vuex";
-import Vue from 'vue'
-import VueAudio from 'vue-audio-better';
 import {Request} from "@/utils/Utils";
-
-Vue.use(VueAudio)
+import AudioPlayer from '@liripeng/vue-audio-player'
+import {videoPlayer} from 'vue-video-player'
+import '@liripeng/vue-audio-player/lib/vue-audio-player.css'
+import 'video.js/dist/video-js.css'
 
 export default {
 	name: "answer",
@@ -46,6 +57,10 @@ export default {
 		model: {
 			type: String
 		}
+	},
+	components: {
+		AudioPlayer,
+		videoPlayer
 	},
 	computed: {
 		...mapState(["appId", "channelId"]),
@@ -59,7 +74,33 @@ export default {
 			return this.question.question_answers.filter(function (answer) {
 				return answer.answer_title
 			})
-		}
+		},
+		videoOption() {
+			return function (url) {
+				return {
+					playbackRates: [0.5, 1.0, 1.5, 2.0], // 可选的播放速度
+					autoplay: false, // 如果为true,浏览器准备好时开始回放。
+					muted: false, // 默认情况下将会消除任何音频。
+					loop: false, // 是否视频一结束就重新开始。
+					preload: 'auto', // 建议浏览器在<video>加载元素后是否应该开始下载视频数据。auto浏览器选择最佳行为,立即开始加载视频（如果浏览器支持）
+					language: 'zh-CN',
+					// aspectRatio: '16:9', // 将播放器置于流畅模式，并在计算播放器的动态大小时使用该值。值应该代表一个比例 - 用冒号分隔的两个数字（例如"16:9"或"4:3"）
+					fluid: true, // 当true时，Video.js player将拥有流体大小。换句话说，它将按比例缩放以适应其容器。
+					sources: [{
+						type: "video/mp4", // 类型
+						src: url, // url地址
+					}],
+					poster: require("@/assets/images/play/video_default.jpg"), // 封面地址
+					notSupportedMessage: '此视频暂无法播放，请稍后再试', // 允许覆盖Video.js无法播放媒体源时显示的默认信息。
+					controlBar: {
+						timeDivider: true, // 当前时间和持续时间的分隔符
+						durationDisplay: true, // 显示持续时间
+						remainingTimeDisplay: true, // 是否显示剩余时间功能
+						fullscreenToggle: true // 是否显示全屏按钮
+					}
+				}
+			}
+		},
 	},
 	data() {
 		return {
@@ -113,6 +154,7 @@ export default {
 		this.imageAnimate = this.animateArray.randomElement();
 	},
 	methods: {
+
 		onAnswerClick(item, index) {
 			// 创建用户答题记录
 			this.createAnswerRecord(item, () => {
@@ -166,15 +208,29 @@ export default {
 	}
 
 	.game-question-audio {
-		width: 60%;
-		margin: 15px auto;
-
+		width: 80%;
+		margin: 0 auto 15px;
+		padding: 15px 25px 5px;
+		position: relative;
+		border-radius: 10px;
+		overflow: hidden;
+		background-image: linear-gradient(to bottom, #6b78ec, #54b5db, #6eeea1);
+		box-shadow: 3px 4px 4px -1px rgba(0, 0, 0, .4);
 	}
 
 	.game-question-video {
-		width: 60%;
-		margin: 15px auto;
+		width: 80%;
+		margin: 0 auto 15px;
+		position: relative;
+		position: relative;
+		border-radius: 10px;
+		overflow: hidden;
+		background-image: linear-gradient(to bottom, #6b78ec, #54b5db, #6eeea1);
+		box-shadow: 3px 4px 4px -1px rgba(0, 0, 0, .4);
 
+		.game-question-video-inner {
+			width: 100%;
+		}
 	}
 
 	.game-question-answers {
@@ -251,4 +307,23 @@ export default {
 
 }
 
+</style>
+<style>
+.audio__progress-wrap {
+	margin-top: 10px !important;
+}
+
+.video-player .vjs-big-play-button {
+	font-size: 3em !important;
+	line-height: 40px !important;
+	height: 40px !important;
+	width: 40px !important;
+	position: absolute !important;
+	top: calc((100% - 40px) / 2) !important;
+	left: calc((100% - 40px) / 2) !important;
+	border: none !important;
+	background-color: #525a66 !important;
+	background-color: rgba(43, 51, 63, 0.6) !important;
+	border-radius: 25px !important;
+}
 </style>

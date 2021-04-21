@@ -1,6 +1,6 @@
 <template>
 	<!--game组件-->
-	<div id="game" class="game" :style="{backgroundColor: playData.bg_color}">
+	<div id="game" class="game" :style="{minHeight: availHeight + 'px', backgroundColor: playData.bg_color}">
 		<div class="game-header fixed-fix">
 			<div class="game-header-back" @click="onClickBack"><img src="../../assets/images/play/back.png" alt=""></div>
 			<div class="game-header-title">答题中</div>
@@ -28,7 +28,7 @@
 				<vue-baberrage :throttle-gap="barrageData.throttle_gap" :lanes-count="barrageData.lanes_count" :is-show="playData.show_barrage" :barrage-list="barrageList" :loop="barrageData.barrage_loop"></vue-baberrage>
 			</div>
 		</div>
-		<van-popup v-model="showResultPopup" class="result-popup" @click="onClickPopup" @click-overlay="onClickPopup" :lock-scroll="true" :close-on-click-overlay="false">
+		<van-popup v-if="showResultPopup" v-model="showResultPopup" class="result-popup" @click="onClickPopup" @click-overlay="onClickPopup" :lock-scroll="true" :close-on-click-overlay="false">
 			<img src="../../assets/images/result/kuang1.gif" alt="">
 		</van-popup>
 	</div>
@@ -62,8 +62,8 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["isAppending", "appId", "channelId", "playData", "barrageData", "isLogin", "availHeight"]),
-		...mapGetters(["appApiUrl", "appResourcesUrl", "appBarrageAvatarUrl", "appIconUrl"]),
+		...mapState(["isAppending", "appId", "channelId", "playData", "barrageData", "availHeight", "isShowResultPopup", "indexData"]),
+		...mapGetters(["appApiUrl", "appResourcesUrl", "appBarrageAvatarUrl", "appIconUrl", "isLogin"]),
 
 		fraction() {
 			let result = 0;
@@ -71,12 +71,18 @@ export default {
 			return result;
 		},
 	},
+	watch: {
+		isShowResultPopup(val) {
+			this.showResultPopup = val;
+		}
+	},
 	activated() {
 		// 设置appId和channelId到vuex
 		this.setAppId(this.$route.query.YzAppId);
 		this.setChannelId(this.$route.query.YzChannelId);
 		this.initData(() => {
 			// 初始化数据
+			this.setShowResultPopup(false);
 			this.setResultId(10001);
 			this.setFraction(0);
 			this.questionIndex = 0;
@@ -91,10 +97,16 @@ export default {
 			});
 		});
 	},
-	deactivated() {
+	beforeRouteLeave(to, from, next) {
 		// 关闭banner广告
 		AdUtils.closeBannerAd();
-		this.showResultPopup = false;
+		this.setShowResultPopup(false);
+		if (to.name === "index") {
+			if (this.isLogin && this.indexData.show_recommend_layer) this.setGameBack(true);
+			next();
+		} else {
+			next()
+		}
 	},
 	methods: {
 
@@ -107,11 +119,12 @@ export default {
 			setPlayData: "setPlayData",
 			setBarrageData: "setBarrageData",
 			setGameBack: "setGameBack",
+			setShowResultPopup: "setShowResultPopup",
 		}),
 
 		// 初始化
 		initData(callback) {
-			if (this.isLogin && this.playData.app_id === this.appId) {
+			if (this.isLogin && this.playData.app_id && this.playData.app_id === this.appId) {
 				if (typeof callback === "function") callback();
 				return false;
 			}
@@ -124,7 +137,7 @@ export default {
 					this.timer = setTimeout(() => {
 						// 关闭加载提示框
 						this.changeAppending(false);
-					}, 500);
+					}, 200);
 					if (typeof callback === "function") callback();
 				});
 			});
@@ -140,7 +153,7 @@ export default {
 				callback: (res, err) => {
 					if (err || res.code !== 0) {
 						console.error(err);
-						return this.$toast("网络错误，请稍后");
+						return this.$toast("网络错误，请稍后，" + err);
 					}
 					// 设置首页数据到store
 					this.setPlayData({
@@ -195,7 +208,6 @@ export default {
 		onClickBack() {
 			// 关闭banner广告
 			AdUtils.closeBannerAd(() => {
-				this.setGameBack(true);
 				this.$router.replace({path: "/", query: {YzAppId: this.appId, YzChannelId: this.channelId, t: new Date().getTime()}});
 			});
 		},
@@ -208,7 +220,7 @@ export default {
 			if (item.result_id.length > 0) {
 				// 指定了结果的答案， 直接跳转对应结果
 				this.setResultId(item.result_id.randomElement());
-				this.showResultPopup = true; // 显示结果跳转dialog
+				this.setShowResultPopup(true); // 显示结果跳转dialog
 			} else if (item.answer_next) {
 				// 指定了要跳转题目的答案， 跳转对应题目
 				this.getQuestion(item.answer_next - 1);
@@ -218,7 +230,7 @@ export default {
 					// 此处为最后一题，说明并未指定对应结果，需要使用分数判定结果
 					console.log("当前总共得分：" + this.fraction);
 					this.setFraction(this.fraction);
-					this.showResultPopup = true; // 显示结果跳转dialog
+					this.setShowResultPopup(true); // 显示结果跳转dialog
 				} else {
 					// 此处为普通题目，顺序获取下一题即可
 					this.getQuestion(this.questionIndex + 1);
@@ -228,8 +240,8 @@ export default {
 
 		// 结果弹窗确认事件
 		onClickPopup() {
-			this.showResultPopup = false;
-			AdUtils.openVideoAd(this.appId, () => {
+			this.setShowResultPopup(false);
+			AdUtils.openVideoAd(this.appId, this.channelId, () => {
 				this.$router.replace({
 					path: "/result",
 					query: {

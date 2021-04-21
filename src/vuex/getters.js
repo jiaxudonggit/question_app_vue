@@ -3,6 +3,11 @@
 * */
 export default {
 
+    // 是否已登录
+    isLogin: (state) => {
+        return window.sessionStorage.getItem("accessToken") !== null || state.accessToken !== null;
+    },
+
     // 返回后端接口地址
     appApiUrl: (state) => {
         return `${state.debug ? state.testAppApiUrl : state.appApiUrl}/api`;

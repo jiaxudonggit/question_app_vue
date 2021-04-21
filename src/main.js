@@ -9,7 +9,7 @@ import filters from './filters'; //将全部过滤器放在 filters/index.js 中
 import animated from 'animate.css'; // 动画库
 import waterfall from "vue-waterfall2"; // 瀑布流
 import VConsole from "vconsole";
-import { Toast, Popup  } from 'vant';
+import {Toast, Popup} from 'vant';
 
 //技巧 同时 use 多个插件 被依赖的插件应放在偏后方
 Vue.use(animated, waterfall, Toast, Popup, vuex);
@@ -23,16 +23,21 @@ Vue.config.productionTip = false
 // 使用 fastclick 解决移动端 300ms 点击延迟
 FastClick.attach(document.body)
 
-//使用钩子函数对路由进行判断
+// 使用钩子函数对路由进行判断
 router.beforeEach((to, from, next) => {
-    if (to.name === 'index' && Object.keys(to.query).length < 1) {
-        let query = to.query;
-        if (!to.query.YzChannelId) query.YzChannelId = "YueYou";
-        next({path: '/', query: query});
+    if (to.query.YzChannelId) {
+        next()
     } else {
-        next();
+        let toQuery = JSON.parse(JSON.stringify(to.query));
+        toQuery.YzChannelId = from.query.YzChannelId || "YueYou";
+        toQuery.t = new Date().getTime();
+        next({
+            path: to.path,
+            query: toQuery
+        })
     }
 });
+
 
 // 设置数组随机属性
 Array.prototype.randomElement = function () {
@@ -43,7 +48,8 @@ Array.prototype.randomElement = function () {
 axios.interceptors.request.use(
     config => {
         // 有token就加上token
-        if(store.state.accessToken) config.headers.Authorization = store.state.accessToken;
+        let accessToken = window.sessionStorage.getItem("accessToken") || store.state.accessToken;
+        if (accessToken) config.headers.Authorization = accessToken;
         return config;
     },
     error => {

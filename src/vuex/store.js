@@ -2,22 +2,22 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import mutations from "./mutations"
 import getters from "./getters"
-import {Utils} from "@/utils/Utils";
 import { MESSAGE_TYPE } from 'vue-baberrage'
+import {Utils} from "@/utils/Utils";
 
 Vue.use(Vuex)
 
 const state = {
     // 工程配置相关
     debug: true,
-    isRunBrowser: true,
+    isRunBrowser: window.nativeObj === undefined,
     appApiUrl: "http://interest.app.ezhigame.com", // 后端接口地址（正式服）
     testAppApiUrl: "http://interest.test.ezhigame.com", // 后端接口地址(测试服)
     // 基础配置
-    appId: Utils.getQueryParams("YzAppId"),
+    appId: null,
     appTypeId: null,  // 应用类型ID
     appTemplateId: null,  // 应用主题ID
-    channelId: Utils.getQueryParams("YzAppId"), // 渠道ID
+    channelId: Utils.getQueryParams("YzChannelId"), // 渠道ID
     channelVersion: 330, // 渠道初始版本号
     resultId: 10001, // 答题结果ID
     fraction: 0, // 答题结果分数
@@ -30,11 +30,12 @@ const state = {
     // 浏览器调试时用户ID
     debugUserId: 999666,
     // 阅友单独使用的数据
-    signStr: null,      // 验签串
+    signStr: "bN+DCt54G2EEmPCuniaN19tAMkndGCBAzHqp/evDS7QpC3WJQRzsRRmTLsQ8feqzklw/DxoGwMecz3CcjjNs5fhCLjz2B9qUslm9MGoztxpnMDtLar6qT2l4OSF3grr6r1DhBrn5GhuPxg1EVfmCRNgz6r45dBA+k1xf6vROCWc=",      // 验签串
     centerAppId: "999999",
     // UI相关
     isAppending: false,
     isGameBack: false,
+    isShowResultPopup: false,
     timer: null,
     availHeight: window.screen.availHeight,
     // 业务数据
@@ -49,17 +50,17 @@ const state = {
         "evaluate": "98.99",
         "is_new": 1,
         "title": "",
-        "title_color": "",
+        "title_color": "#ffffff",
         "show_describes": false,
         "describes": "null",
-        "describes_color": "",
+        "describes_color": "#328fd2",
         "describes_images": [],
-        "box_color": "",
-        "bg_color": "",
+        "box_color": "#eaf1ff",
+        "bg_color": "#4758fb",
         "bg_images": [],
         "button_image": "",
         "show_recommend_layer": false,
-        "show_recommend_list": true,
+        "show_recommend_list": false,
         "show_more_btn": false,
     },
     playData: {
@@ -69,7 +70,7 @@ const state = {
         "type_id": null,
         "template_id": null,
         "title": "",
-        "title_color": "",
+        "title_color": "#ffffff",
         "title_image": "",
         "process_bg_color": "#74ebff",
         "process_color": "#668cff",
@@ -83,9 +84,9 @@ const state = {
         "app_type": null,
         "type_id": null,
         "template_id": null,
-        "bg_color": "",
+        "bg_color": "#4758fb",
         "button_image": "",
-        "show_recommend_list": true,
+        "show_recommend_list": false,
         "result_id": null,
         "title": "",
         "describes": "",

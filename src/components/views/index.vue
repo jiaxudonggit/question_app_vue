@@ -1,7 +1,7 @@
 <template>
 	<!--index组件-->
-	<div id="index" class="index" :style="{backgroundColor: indexData.bg_color}">
-		<div class="index-content" :style="{minHeight: availHeight + 'px'}">
+	<div id="index" class="index" :style="{minHeight: availHeight + 'px', backgroundColor: indexData.bg_color}">
+		<div class="index-content">
 			<div class="index-bg-images">
 				<img v-for="(item, index) in indexData.bg_images" :src="item" alt="" :key="index">
 			</div>
@@ -38,15 +38,15 @@
 					<img v-for="(item, index) in indexData.describes_images" :src="item" alt="" :key="index">
 				</div>
 			</div>
-			<recommend_list v-if="isLogin" :model="model" v-on:listenerRecommendClick="onClickRecommend"></recommend_list>
 		</div>
-		<div class="index-btn-wrap fixed-fix" @click="$router.push({path: '/play', query: {YzAppId: appId, YzChannelId: channelId}})">
+		<recommend_list v-if="isLogin && indexData.show_recommend_list" :model="model" v-on:listenerRecommendClick="onClickRecommend"></recommend_list>
+		<div class="index-btn-wrap fixed-fix" @click="$router.push({path: '/play', query: {YzAppId: appId, YzChannelId: channelId, t: new Date().getTime()}})">
 			<img v-if="indexData.button_image" class="index-btn" :src="indexData.button_image" alt="">
 		</div>
 		<div v-if="indexData.show_recommend_list && indexData.show_more_btn" class="index-more-btn animate__animated animate__bounceIn" @click="onClickMoreRecommend">
 			<img src="../../assets/images/index/more.png" alt="">
 		</div>
-		<van-popup v-if="indexData.show_recommend_layer" v-model="showPopup" class="app-popup" :lock-scroll="true" :close-on-click-overlay="false">
+		<van-popup v-if="indexData.show_recommend_layer && showPopup" v-model="showPopup" class="app-popup" :lock-scroll="true" :close-on-click-overlay="false">
 			<img class="app-popup-title" src="../../assets/images/popup/layer-title.png" alt="">
 			<div class="app-popup-content">
 				<div class="app-popup-app-list">
@@ -93,15 +93,15 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["isAppending", "appId", "channelId", "indexData", "isLogin", "isGameBack", "popupData", "availHeight", "recommendData"]),
-		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl"]),
+		...mapState(["isAppending", "appId", "channelId", "indexData", "isGameBack", "popupData", "availHeight", "recommendData"]),
+		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl", "isLogin"]),
 	},
 	watch: {
 		isGameBack(val) {
 			val ? this.getPopupData(() => {
 				let timer = setTimeout(() => {
 					this.showPopup = true;
-				}, 600);
+				}, 300);
 				this.timer.push(timer);
 			}) : this.showPopup = false;
 		},
@@ -140,7 +140,7 @@ export default {
 
 		// 初始化
 		initData(callback) {
-			if (this.isLogin && this.indexData.app_id === this.appId) {
+			if (this.isLogin && this.indexData.app_id && this.indexData.app_id === this.appId) {
 				if (typeof callback === "function") callback();
 				return false;
 			}
@@ -153,11 +153,7 @@ export default {
 					let timer = setTimeout(() => {
 						// 关闭加载提示框
 						this.changeAppending(false);
-						// 判断是否显示推荐弹窗
-						// this.isGameBack ? this.getPopupData(() => {
-						// 	this.showPopup = true;
-						// }) : this.showPopup = false;
-					}, 500)
+					}, 200)
 					this.timer.push(timer);
 					if (typeof callback === "function") callback();
 				});
@@ -174,7 +170,7 @@ export default {
 				callback: (res, err) => {
 					if (err || res.code !== 0) {
 						console.error(err);
-						return this.$toast("网络错误，请稍后");
+						return this.$toast("网络错误，请稍后，" + err);
 					}
 					// 设置首页数据到store
 					this.setIndexData({
@@ -243,7 +239,7 @@ export default {
 		onPopupClick(item) {
 			this.createRecommendRecord(this.appId, item.app_id, () => {
 				this.setGameBack(false);
-				this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date()}});
+				this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
 			})
 		},
 

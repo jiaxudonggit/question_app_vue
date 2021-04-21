@@ -59,18 +59,16 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["appId", "recommendData", "isLogin"]),
-		...mapGetters(["appApiUrl", "appResourcesUrl", "appIconUrl"]),
+		...mapState(["appId", "recommendData"]),
+		...mapGetters(["appApiUrl", "appResourcesUrl", "appIconUrl", "isLogin"]),
 	},
 	activated() {
-		console.log("------activated------")
 		this.total_page = 0;
 		this.page = 0;
 		this.recommend_list = [];
 		this.getRecommendData();
 	},
 	created() {
-		console.log("------created------")
 		this.getRecommendData();
 	},
 	methods: {

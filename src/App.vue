@@ -13,7 +13,7 @@
 
 <script>
 import YueYouUtils from "@/utils/YueYouUtils";
-import {Request} from "@/utils/Utils";
+import {Request, Utils} from "@/utils/Utils";
 import ChannelUtils from "@/utils/ChannelUtils";
 import AdUtils from "@/utils/AdUtils";
 import {mapState, mapGetters, mapMutations} from "vuex";
@@ -34,16 +34,8 @@ export default {
 	},
 	computed: {
 		...mapState(["isAppending", "isGameBack","debugUserId", "debug",
-			"isRunBrowser", "centerAppId", "isLogin", "indexData"]),
-		...mapGetters(["appApiUrl"]),
-		appId() {
-			this.setAppId(this.$route.query.YzAppId);
-			return this.$route.query.YzAppId
-		},
-		channelId() {
-			this.setChannelId(this.$route.query.YzChannelId);
-			return this.$route.query.YzChannelId
-		}
+			"isRunBrowser", "indexData", "appId", "channelId"]),
+		...mapGetters(["appApiUrl", "isLogin"]),
 	},
 	watch: {
 		isAppending(val) {
@@ -54,12 +46,6 @@ export default {
 				})
 				: this.$toast.clear();
 		},
-		appId() {
-			this.setAppId(this.$route.query.YzAppId);
-		},
-		channelId() {
-			this.setChannelId(this.$route.query.YzChannelId);
-		}
 	},
 	mounted() {
 		window.onresize = () => {
@@ -67,15 +53,11 @@ export default {
 				this.setAvailHeight(window.screen.availHeight);
 			})()
 		};
-		// 挂载完成后，判断浏览器是否支持popstate，监听popstate
-		if (window.history && window.history.pushState) {
-			history.pushState(null, null, document.URL);
-			window.addEventListener('popstate', this.watchReturn, false);//false阻止默认事件
-		}
 	},
-	destroyed() {
-		// 页面销毁时，取消监听
-		window.removeEventListener('popstate', this.watchReturn, false);//false阻止默认事件
+	created() {
+		// 设置appId和channelId到vuex
+		this.setAppId(Utils.getQueryParams("YzAppId"));
+		this.setChannelId(Utils.getQueryParams("YzChannelId"));
 	},
 	methods: {
 		...mapMutations({
@@ -85,6 +67,8 @@ export default {
 			setUserInfo: "setUserInfo",
 			setAvailHeight: "setAvailHeight",
 			setGameBack: "setGameBack",
+			setShowResultPopup: "setShowResultPopup",
+			setAppStatus: "setAppStatus",
 		}),
 
 		// 监听移动端返回键事件
@@ -93,6 +77,7 @@ export default {
 				case "/play":
 					// 关闭banner广告
 					AdUtils.closeBannerAd(() => {
+						this.setShowResultPopup(false);
 						if (this.isLogin && this.indexData.show_recommend_layer) this.setGameBack(true);
 						this.$router.replace({path: "/", query: {YzAppId: this.appId, YzChannelId: this.channelId, t: new Date().getTime()}});
 					});
@@ -135,7 +120,7 @@ export default {
 				if (typeof callback === "function") callback({userid: this.debugUserId});
 			} else {
 				// 否则使用渠道用户信息
-				this.channelId === "YueYou" ? YueYouUtils.autoLoginCenter(this.centerAppId, callback) : ChannelUtils.getUserInfo(callback);
+				this.channelId === "YueYou" ? YueYouUtils.autoLoginCenter(callback) : ChannelUtils.getUserInfo(callback);
 			}
 		},
 
@@ -151,7 +136,10 @@ export default {
 					},
 					callback: (res, err) => {
 						if (err || res.code !== 0) return this.$toast("初始化失败，" + err);
-						this.setAppId(res.body.app_id);
+						this.setAppStatus({
+							appId: res.body.app_id,
+							channelVersion: res.body.channel_version,
+						});
 						if (typeof callback === "function") callback();
 					},
 				})

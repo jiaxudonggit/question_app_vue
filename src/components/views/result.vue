@@ -1,20 +1,18 @@
 <template>
 	<!--result组件-->
-	<div id="result" class="result" :style="{backgroundColor: resultData.bg_color}">
+	<div id="result" class="result" :style="{minHeight: availHeight + 'px', backgroundColor: resultData.bg_color}">
 		<div class="result-header fixed-fix">
 			<div class="result-header-back" @click="onClickBack"><img src="../../assets/images/play/back.png" alt=""></div>
 		</div>
-		<div class="result-content" :style="{minHeight: availHeight + 'px'}">
+		<div class="result-content">
 			<div class="result-content-img">
 				<img v-for="(item, index) in resultData.bg_images" :src="item" alt="" :key="index">
 			</div>
 			<div class="result-content-btn-wrap">
 				<img v-if="resultData.button_image" :src="resultData.button_image" alt="" class="result-content-btn" @click="onClickBack">
 			</div>
-			<div v-if="resultData.show_recommend_list" class="result-content-recommend">
-				<recommend_list v-if="isLogin" :model="model" v-on:listenerRecommendClick="onClickRecommend"></recommend_list>
-			</div>
 		</div>
+		<recommend_list v-if="isLogin && resultData.show_recommend_list" :model="model" v-on:listenerRecommendClick="onClickRecommend"></recommend_list>
 	</div>
 </template>
 <script>
@@ -34,23 +32,28 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["isAppending", "appId", "channelId", "isLogin", "isGameBack", "resultId", "availHeight", "fraction", "resultData"]),
-		...mapGetters(["appApiUrl", "appResourcesUrl", "appIconUrl"]),
+		...mapState(["isAppending", "appId", "channelId", "isGameBack", "resultId", "availHeight", "fraction", "resultData", "indexData"]),
+		...mapGetters(["appApiUrl", "appResourcesUrl", "appIconUrl", "isLogin"]),
 	},
-
+	beforeRouteLeave(to, from, next) {
+		// 关闭插屏广告
+		AdUtils.closeScreenAd();
+		if (to.name === "index") {
+			if (this.isLogin && this.indexData.show_recommend_layer) this.setGameBack(true);
+			next();
+		} else {
+			next()
+		}
+	},
 	activated() {
 		// 设置appId和channelId到vuex
 		this.setAppId(this.$route.query.YzAppId);
 		this.setChannelId(this.$route.query.YzChannelId);
-		// 打开插屏广告
-		AdUtils.openScreenAd(this.appId);
 		this.initData(() => {
-			this.createResultRecord()
+			// 打开插屏广告
+			AdUtils.openScreenAd(this.appId);
+			this.createResultRecord();
 		})
-	},
-	deactivated() {
-		// 关闭插屏广告
-		AdUtils.closeScreenAd();
 	},
 	methods: {
 
@@ -72,7 +75,10 @@ export default {
 					result_id: this.resultId,
 				},
 				callback: (res, err) => {
-					if (err || res.code !== 0) return this.$toast("网络错误，请稍后");
+					if (err || res.code !== 0) {
+						console.error(err);
+						return this.$toast("网络错误，请稍后，" + err);
+					}
 					// 设置结果页数据到store
 					this.setResultData({
 						data: res.body,
@@ -87,7 +93,11 @@ export default {
 
 		// 初始化
 		initData(callback) {
-			if (this.isLogin && this.resultData.app_id === this.appId) return false;
+			if (this.isLogin && this.resultData.app_id && this.resultData.result_id &&
+				this.resultData.app_id === this.appId && this.resultData.result_id === this.resultId) {
+				if (typeof callback === "function") callback();
+				return false;
+			}
 			// 开启加载提示框
 			!this.isAppending && this.changeAppending(true);
 			// 用户登录
@@ -97,7 +107,7 @@ export default {
 					this.timer = setTimeout(() => {
 						// 关闭加载提示框
 						this.changeAppending(false);
-					}, 500);
+					}, 200);
 					if (typeof callback === "function") callback();
 				});
 			});
@@ -119,7 +129,6 @@ export default {
 		// 返回按钮事件
 		onClickBack() {
 			AdUtils.closeScreenAd(() => {
-				this.setGameBack(true);
 				this.$router.replace({path: "/", query: {YzAppId: this.appId, YzChannelId: this.channelId, t: new Date().getTime()}});
 			});
 		},
