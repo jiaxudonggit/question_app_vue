@@ -62,30 +62,46 @@ const mutations = {
     },
 
     // 设置主页数据
-    setIndexData(state, indexData) {
-        state.indexData = indexData;
-    },
-
-    // 设置主页数据
-    resetIndexData(state, indexData) {
-        state.indexData = indexData;
+    setIndexData(state, payload) {
+        for (let i = 0; i < payload.data.bg_images.length; i++) payload.data.bg_images[i] = payload.appResourcesUrl(payload.model, payload.data.bg_images[i]);
+        for (let i = 0; i < payload.data.describes_images.length; i++) payload.data.describes_images[i] = payload.appResourcesUrl(payload.model, payload.data.describes_images[i]);
+        payload.data.app_icon = payload.appIconUrl(payload.data.app_icon);
+        payload.data.button_image = payload.appResourcesUrl(payload.model, payload.data.button_image);
+        state.indexData = payload.data;
     },
 
     // 设置答题页数据
-    setPlayData(state, playData) {
-        state.playData = playData;
+    setPlayData(state, payload) {
+        payload.data.app_icon = payload.appIconUrl(payload.data.app_icon);
+        for (let i = 0; i < payload.data.question_list.length; i++) {
+            let question = payload.data.question_list[i];
+            if (question.question_audio) question.question_audio = payload.appResourcesUrl(payload.model, question.question_audio);
+            if (question.question_image) question.question_image = payload.appResourcesUrl(payload.model, question.question_image);
+            if (question.question_video) question.question_video = payload.appResourcesUrl(payload.model, question.question_video);
+            for (let j = 0; j < question.question_answers.length; j++) {
+                let answer = question.question_answers[j];
+                if(answer.answer_image) answer.answer_image = payload.appResourcesUrl(payload.model, answer.answer_image);
+                question.question_answers[j] = answer;
+            }
+            payload.data.question_list[i] = question;
+        }
+        state.playData = payload.data;
     },
 
     // 设置结果页数据
-    setResultData(state, resultData) {
-        state.resultData = resultData;
+    setResultData(state, payload) {
+        payload.data.app_icon = payload.appIconUrl(payload.data.app_icon);
+        payload.data.button_image = payload.appResourcesUrl(payload.model, payload.data.button_image);
+        for (let i = 0; i < payload.data.bg_images.length; i++) payload.data.bg_images[i] = payload.appResourcesUrl(payload.model, payload.data.bg_images[i]);
+        state.resultData = payload.data;
     },
 
     // 更新推荐列表
-    updateRecommendData(state, recommendData) {
-        state.recommendData.total_page = recommendData.total_page;
-        state.recommendData.page = recommendData.page;
-        state.recommendData.recommend_list = state.recommendData.recommend_list.concat(recommendData.recommend_list);
+    updateRecommendData(state, payload) {
+        state.recommendData.total_page = payload.data.total_page;
+        state.recommendData.page = payload.data.page;
+        for (let i = 0; i < payload.data.recommend_list.length; i++) payload.data.recommend_list[i].app_icon = payload.appIconUrl(payload.data.recommend_list[i].app_icon);
+        state.recommendData.recommend_list = state.recommendData.recommend_list.concat(payload.data.recommend_list);
     },
 
     // 设置弹幕数据
@@ -112,8 +128,9 @@ const mutations = {
     },
 
     // 设置推荐弹窗数据
-    setPopupData(state, popupData) {
-        state.popupData = popupData;
+    setPopupData(state, payload) {
+        for (let i = 0; i < payload.data.recommend_list.length; i++) payload.data.recommend_list[i].app_icon = payload.appIconUrl(payload.data.recommend_list[i].app_icon);
+        state.popupData = payload.data;
     },
 
 }

@@ -13,7 +13,7 @@
 				<div class="recommend-row-block">
 					<div class="recommend-row" v-for="(item, index) in recommend_list" :key="index" @click="onRecommendClick(item, index)">
 						<div class="recommend-row-left">
-							<img class="recommend-row-icon" :src="appIconUrl(item.app_icon)" alt="加载错误">
+							<img class="recommend-row-icon" :src="item.app_icon" alt="加载错误">
 						</div>
 						<div class="recommend-row-center">
 							<div class="recommend-row-title"><img src="../../assets/images/recommend/new.png" alt="" v-if="item.is_new">
@@ -62,9 +62,15 @@ export default {
 		...mapState(["appId", "recommendData", "isLogin"]),
 		...mapGetters(["appApiUrl", "appResourcesUrl", "appIconUrl"]),
 	},
+	activated() {
+		console.log("------activated------")
+		this.total_page = 0;
+		this.page = 0;
+		this.recommend_list = [];
+		this.getRecommendData();
+	},
 	created() {
 		console.log("------created------")
-		this.page = 0;
 		this.getRecommendData();
 	},
 	methods: {
@@ -105,6 +111,7 @@ export default {
 					// 更新推荐列表
 					this.total_page = res.body.total_page;
 					this.page = res.body.page;
+					for (let i = 0; i < res.body.recommend_list.length; i++) res.body.recommend_list[i].app_icon = this.appIconUrl(res.body.recommend_list[i].app_icon);
 					this.recommend_list = this.recommend_list.concat(res.body.recommend_list);
 					if (typeof callback === "function") callback();
 				},

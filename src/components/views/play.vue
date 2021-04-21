@@ -63,7 +63,7 @@ export default {
 	},
 	computed: {
 		...mapState(["isAppending", "appId", "channelId", "playData", "barrageData", "isLogin", "availHeight"]),
-		...mapGetters(["appApiUrl", "appResourcesUrl", "appBarrageAvatarUrl"]),
+		...mapGetters(["appApiUrl", "appResourcesUrl", "appBarrageAvatarUrl", "appIconUrl"]),
 
 		fraction() {
 			let result = 0;
@@ -138,9 +138,17 @@ export default {
 					app_id: this.appId,
 				},
 				callback: (res, err) => {
-					if (err || res.code !== 0) return this.$toast("网络错误，请稍后");
+					if (err || res.code !== 0) {
+						console.error(err);
+						return this.$toast("网络错误，请稍后");
+					}
 					// 设置首页数据到store
-					this.setPlayData(res.body);
+					this.setPlayData({
+						data: res.body,
+						appIconUrl: this.appIconUrl,
+						appResourcesUrl: this.appResourcesUrl,
+						model: this.model,
+					});
 					if (typeof callback === "function") callback();
 				},
 			})

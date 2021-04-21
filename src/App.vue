@@ -33,9 +33,17 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["isAppending", "appId", "channelId", "isGameBack","debugUserId", "debug",
+		...mapState(["isAppending", "isGameBack","debugUserId", "debug",
 			"isRunBrowser", "centerAppId", "isLogin", "indexData"]),
 		...mapGetters(["appApiUrl"]),
+		appId() {
+			this.setAppId(this.$route.query.YzAppId);
+			return this.$route.query.YzAppId
+		},
+		channelId() {
+			this.setChannelId(this.$route.query.YzChannelId);
+			return this.$route.query.YzChannelId
+		}
 	},
 	watch: {
 		isAppending(val) {
@@ -46,6 +54,12 @@ export default {
 				})
 				: this.$toast.clear();
 		},
+		appId() {
+			this.setAppId(this.$route.query.YzAppId);
+		},
+		channelId() {
+			this.setChannelId(this.$route.query.YzChannelId);
+		}
 	},
 	mounted() {
 		window.onresize = () => {
@@ -71,7 +85,6 @@ export default {
 			setUserInfo: "setUserInfo",
 			setAvailHeight: "setAvailHeight",
 			setGameBack: "setGameBack",
-			setPopupData: "setPopupData",
 		}),
 
 		// 监听移动端返回键事件

@@ -3,7 +3,7 @@
 	<div id="index" class="index" :style="{backgroundColor: indexData.bg_color}">
 		<div class="index-content" :style="{minHeight: availHeight + 'px'}">
 			<div class="index-bg-images">
-				<img v-for="(item, index) in indexData.bg_images" :src="appResourcesUrl(model, item)" alt="" :key="index">
+				<img v-for="(item, index) in indexData.bg_images" :src="item" alt="" :key="index">
 			</div>
 			<div v-if="indexData.show_describes" class="index-content-describes-wrap" :style="{backgroundColor: indexData.bg_color}">
 				<div class="index-content-title" :style="{color: indexData.title_color}">{{ indexData.title }}</div>
@@ -35,13 +35,13 @@
 					</div>
 				</div>
 				<div class="index-content-describes-images">
-					<img v-for="(item, index) in indexData.describes_images" :src="appResourcesUrl(model, item)" alt="" :key="index">
+					<img v-for="(item, index) in indexData.describes_images" :src="item" alt="" :key="index">
 				</div>
 			</div>
 			<recommend_list v-if="isLogin" :model="model" v-on:listenerRecommendClick="onClickRecommend"></recommend_list>
 		</div>
 		<div class="index-btn-wrap fixed-fix" @click="$router.push({path: '/play', query: {YzAppId: appId, YzChannelId: channelId}})">
-			<img v-if="indexData.button_image" class="index-btn" :src="appResourcesUrl(model, indexData.button_image)" alt="">
+			<img v-if="indexData.button_image" class="index-btn" :src="indexData.button_image" alt="">
 		</div>
 		<div v-if="indexData.show_recommend_list && indexData.show_more_btn" class="index-more-btn animate__animated animate__bounceIn" @click="onClickMoreRecommend">
 			<img src="../../assets/images/index/more.png" alt="">
@@ -52,7 +52,7 @@
 				<div class="app-popup-app-list">
 					<div class="app-popup-app" v-for="(item, index) in popupData.recommend_list" :key="index" @click="onPopupClick(item, index)">
 						<div class="app-popup-left">
-							<img class="app-popup-icon" :src="appIconUrl(item.app_icon)" alt="加载错误">
+							<img class="app-popup-icon" :src="item.app_icon" alt="加载错误">
 						</div>
 						<div class="app-popup-center">
 							<div class="app-popup-title">{{ item.app_name }}</div>
@@ -87,8 +87,9 @@ export default {
 	data() {
 		return {
 			model: "index",
-			timer: null,
+			timer: [],
 			showPopup: false,
+			isShowExitBtn: false,
 		}
 	},
 	computed: {
@@ -98,27 +99,34 @@ export default {
 	watch: {
 		isGameBack(val) {
 			val ? this.getPopupData(() => {
-				this.showPopup = true;
+				let timer = setTimeout(() => {
+					this.showPopup = true;
+				}, 600);
+				this.timer.push(timer);
 			}) : this.showPopup = false;
 		},
 	},
 	activated() {
-		console.log("=======activated=======")
+		// 显示关闭按钮
+		if (!this.isShowExitBtn) {
+			if (window.nativeObj !== undefined) window.nativeObj.showExitIcon();
+			this.isShowExitBtn = true;
+		}
 		// 设置appId和channelId到vuex
 		this.setAppId(this.$route.query.YzAppId);
 		this.setChannelId(this.$route.query.YzChannelId);
 		this.initData();
-		// 显示关闭按钮
-		if (window.nativeObj) window.nativeObj.showExitIcon();
-	},
-	created() {
-		console.log("=======created=======")
 	},
 	deactivated() {
 		// 隐藏关闭按钮
-		if (window.nativeObj) window.nativeObj.closeExitIcon();
+		if (this.isShowExitBtn){
+			if (window.nativeObj !== undefined) window.nativeObj.closeExitIcon();
+			this.isShowExitBtn = false;
+		}
 		// 删除定时器
-		if (this.timer) clearTimeout(this.timer);
+		this.timer.forEach((item) => {
+			if (item) clearTimeout(item);
+		})
 	},
 	methods: {
 		...mapMutations({
@@ -132,17 +140,25 @@ export default {
 
 		// 初始化
 		initData(callback) {
-			if (this.isLogin && this.indexData.app_id === this.appId) return false;
+			if (this.isLogin && this.indexData.app_id === this.appId) {
+				if (typeof callback === "function") callback();
+				return false;
+			}
 			// 开启加载提示框
 			!this.isAppending && this.changeAppending(true);
 			// 用户登录
 			this.autoLogin(() => {
 				// 获取主页数据
 				this.getIndexData(() => {
-					this.timer = setTimeout(() => {
+					let timer = setTimeout(() => {
 						// 关闭加载提示框
 						this.changeAppending(false);
+						// 判断是否显示推荐弹窗
+						// this.isGameBack ? this.getPopupData(() => {
+						// 	this.showPopup = true;
+						// }) : this.showPopup = false;
 					}, 500)
+					this.timer.push(timer);
 					if (typeof callback === "function") callback();
 				});
 			});
@@ -156,9 +172,17 @@ export default {
 					app_id: this.appId,
 				},
 				callback: (res, err) => {
-					if (err || res.code !== 0) return this.$toast("网络错误，请稍后");
+					if (err || res.code !== 0) {
+						console.error(err);
+						return this.$toast("网络错误，请稍后");
+					}
 					// 设置首页数据到store
-					this.setIndexData(res.body);
+					this.setIndexData({
+						data: res.body,
+						appIconUrl: this.appIconUrl,
+						appResourcesUrl: this.appResourcesUrl,
+						model: this.model,
+					});
 					if (typeof callback === "function") callback();
 				},
 			})
@@ -184,8 +208,16 @@ export default {
 					app_id: this.appId,
 				},
 				callback: (res, err) => {
-					if (err || res.code !== 0) return false;
-					this.setPopupData(res.body);
+					if (err || res.code !== 0) {
+						console.error(err);
+						return false;
+					}
+					this.setPopupData({
+						data: res.body,
+						appIconUrl: this.appIconUrl,
+						appResourcesUrl: this.appResourcesUrl,
+						model: this.model,
+					});
 					if (typeof callback === "function") callback();
 				},
 			})
@@ -193,8 +225,8 @@ export default {
 
 		// 点击更多推荐事件
 		onClickRecommend(item) {
-			this.reload(() => {
-				this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
+			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}}).then(() => {
+				this.reload();
 			});
 		},
 
@@ -211,7 +243,7 @@ export default {
 		onPopupClick(item) {
 			this.createRecommendRecord(this.appId, item.app_id, () => {
 				this.setGameBack(false);
-				this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
+				this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date()}});
 			})
 		},
 

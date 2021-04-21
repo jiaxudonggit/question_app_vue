@@ -18,8 +18,8 @@
         left: calc((100% - 640px) / 2) !important;
     }
 
-    .index-more-btn {
-        right: calc(((100% - 640) / 2) + 20px);
+    #index .index-more-btn {
+        right: calc(((100% - 640px) / 2) + 20px) !important;
     }
 }
 

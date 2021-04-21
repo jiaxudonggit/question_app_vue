@@ -6,10 +6,10 @@
 		</div>
 		<div class="result-content" :style="{minHeight: availHeight + 'px'}">
 			<div class="result-content-img">
-				<img v-for="(item, index) in resultData.bg_images" :src="appResourcesUrl(model, item)" alt="" :key="index">
+				<img v-for="(item, index) in resultData.bg_images" :src="item" alt="" :key="index">
 			</div>
 			<div class="result-content-btn-wrap">
-				<img v-if="resultData.button_image" :src="appResourcesUrl(model, resultData.button_image)" alt="" class="result-content-btn" @click="onClickBack">
+				<img v-if="resultData.button_image" :src="resultData.button_image" alt="" class="result-content-btn" @click="onClickBack">
 			</div>
 			<div v-if="resultData.show_recommend_list" class="result-content-recommend">
 				<recommend_list v-if="isLogin" :model="model" v-on:listenerRecommendClick="onClickRecommend"></recommend_list>
@@ -44,7 +44,7 @@ export default {
 		this.setChannelId(this.$route.query.YzChannelId);
 		// 打开插屏广告
 		AdUtils.openScreenAd(this.appId);
-		this.initData(()=>{
+		this.initData(() => {
 			this.createResultRecord()
 		})
 	},
@@ -74,7 +74,12 @@ export default {
 				callback: (res, err) => {
 					if (err || res.code !== 0) return this.$toast("网络错误，请稍后");
 					// 设置结果页数据到store
-					this.setResultData(res.body);
+					this.setResultData({
+						data: res.body,
+						appIconUrl: this.appIconUrl,
+						appResourcesUrl: this.appResourcesUrl,
+						model: this.model,
+					});
 					if (typeof callback === "function") callback();
 				},
 			})

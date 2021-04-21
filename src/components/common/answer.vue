@@ -4,18 +4,18 @@
 	<div class="game-question-block">
 		<div class="game-question">{{ question.question_title }}</div>
 		<div v-if="question.question_image" class="game-question-img">
-			<img :src="appResourcesUrl(model, question.question_image)" class="animate__animated animate__flipInX" alt="">
+			<img :src="question.question_image" class="animate__animated animate__flipInX" alt="">
 		</div>
 		<div v-if="question.question_audio" class="game-question-audio">
-			<mini-audio :audio-source="appResourcesUrl(model,question.question_audio)" html5="true"></mini-audio>
+			<mini-audio :audio-source="question.question_audio" html5="true"></mini-audio>
 		</div>
 		<div v-if="question.question_video" class="game-question-video">
-			<img :src="appResourcesUrl(model,question.question_video)" class="animate__animated animate__flipInX" alt="">
+			<img :src="question.question_video" class="animate__animated animate__flipInX" alt="">
 		</div>
 		<div class="game-question-answers">
 			<!--图片-->
 			<div v-for="(item, index) in imageAnswers" :key="index" @click="onAnswerClick(item, index)" class="game-question-answer-img animate__animated" :class="imageAnimate" v-press>
-				<img :src="appResourcesUrl(model,item.answer_image)" alt="">
+				<img :src="item.answer_image" alt="">
 				<div></div>
 			</div>
 			<!--文字-->
