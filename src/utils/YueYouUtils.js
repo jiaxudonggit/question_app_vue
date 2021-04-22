@@ -34,7 +34,7 @@ export default class YueYouUtils {
                 }),
             },
             callback: (res, err) => {
-                if (err || res.status !== 0) return alert(err);
+                if (err || res.status !== 0) return alert(JSON.stringify(res));
                 store.commit("setSignStr", res.info.signtrue);
                 if (typeof callback === "function") callback(res.info.signtrue, openTs);
             },
@@ -63,7 +63,7 @@ export default class YueYouUtils {
                 app_id: appId,
             },
             callback: (res, err) => {
-                if (err || res.status !== 0) return alert(err);
+                if (err || res.status !== 0) return alert(JSON.stringify(res));
                 if (typeof callback === "function") callback(res.info.interface_url);
             },
         });
@@ -80,7 +80,7 @@ export default class YueYouUtils {
                 ts: Utils.currentTimeMillis(true),
             },
             callback: (res, err) => {
-                if (err || res.status !== 0) return alert(err);
+                if (err || res.status !== 0) return alert(JSON.stringify(res));
                 if (typeof callback === "function") callback(res.info);
             },
         });

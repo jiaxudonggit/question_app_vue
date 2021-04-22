@@ -287,7 +287,7 @@ export default {
 		}
 
 		.game-question-answer-text-active {
-			width: 100%;
+			width: 85%;
 			height: 50px;
 			position: relative;
 			box-sizing: border-box;

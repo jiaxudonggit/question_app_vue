@@ -30,8 +30,8 @@ const state = {
     // 浏览器调试时用户ID
     debugUserId: 999666,
     // 阅友单独使用的数据
-    signStr: "bN+DCt54G2EEmPCuniaN19tAMkndGCBAzHqp/evDS7QpC3WJQRzsRRmTLsQ8feqzklw/DxoGwMecz3CcjjNs5fhCLjz2B9qUslm9MGoztxpnMDtLar6qT2l4OSF3grr6r1DhBrn5GhuPxg1EVfmCRNgz6r45dBA+k1xf6vROCWc=",      // 验签串
-    centerAppId: "999999",
+    signStr: "bi6tUL8Tf31I+DHx9KRJkVP1M7S0jqQ9vTnUjDARxI6APhslppch7qofwgz8ikdJ2xzY4t8dsH2mhto4s1bHk7+X196BWZ+Iut7dby1dqECTMK17xOAOOb8ABT1AmHuaSIMIrsWicJ43f4TNzC+WF4jTUksL9FiqLYstgS0auAY=",      // 验签串
+    centerAppId: "700085",
     // UI相关
     isAppending: false,
     isGameBack: false,
