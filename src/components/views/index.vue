@@ -39,7 +39,7 @@
 				</div>
 			</div>
 		</div>
-		<recommend_list v-if="isLogin && indexData.show_recommend_list" :model="model" v-on:listenerRecommendClick="onClickRecommend"></recommend_list>
+		<recommend_list v-if="isLogin && indexData.show_recommend_list" :model="model" :padding-bottom="'150px'" v-on:listenerRecommendClick="onClickRecommend"></recommend_list>
 		<div class="index-btn-wrap fixed-fix" @click="$router.push({path: '/play', query: {YzAppId: appId, YzChannelId: channelId, t: new Date().getTime()}})">
 			<img v-if="indexData.button_image" class="index-btn" :src="indexData.button_image" alt="">
 		</div>
@@ -99,10 +99,7 @@ export default {
 	watch: {
 		isGameBack(val) {
 			val ? this.getPopupData(() => {
-				let timer = setTimeout(() => {
-					this.showPopup = true;
-				}, 300);
-				this.timer.push(timer);
+				this.showPopup = true;
 			}) : this.showPopup = false;
 		},
 	},
@@ -119,7 +116,7 @@ export default {
 	},
 	deactivated() {
 		// 隐藏关闭按钮
-		if (this.isShowExitBtn){
+		if (this.isShowExitBtn) {
 			if (window.nativeObj !== undefined) window.nativeObj.closeExitIcon();
 			this.isShowExitBtn = false;
 		}
@@ -153,7 +150,7 @@ export default {
 					let timer = setTimeout(() => {
 						// 关闭加载提示框
 						this.changeAppending(false);
-					}, 200)
+					}, 100)
 					this.timer.push(timer);
 					if (typeof callback === "function") callback();
 				});
@@ -202,6 +199,7 @@ export default {
 				url: this.appApiUrl + "/test_app/get_popup_data",
 				data: {
 					app_id: this.appId,
+					page_name: "layer",
 				},
 				callback: (res, err) => {
 					if (err || res.code !== 0) {

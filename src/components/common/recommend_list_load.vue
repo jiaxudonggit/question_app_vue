@@ -1,42 +1,44 @@
 <template>
 	<!--game推荐组件-->
-	<div class="recommend-content" id="recommend-content" :style="{paddingBottom: paddingBottom}">
+	<div class="recommend-content" id="recommend-content">
 		<div class="recommend-title">
 			<div class="recommend-title-left">
 				<img src="../../assets/images/recommend/hot.png" alt="">
 				<div>热门测试</div>
 			</div>
-			<div class="recommend-title-right" @click="onRefreshClick">
-				<img src="../../assets/images/recommend/refresh.png" alt="">
-				<span>换一换</span>
-			</div>
+			<div class="recommend-title-right">更多好玩的测试--本产品仅供娱乐</div>
 		</div>
 		<div class="recommend-rows-wrap">
-			<div class="recommend-row-block">
-				<div class="recommend-row" v-for="(item, index) in recommend_list" :key="index" @click="onRecommendClick(item, index)">
-					<div class="recommend-row-left">
-						<img class="recommend-row-icon" :src="item.app_icon" alt="加载错误">
-					</div>
-					<div class="recommend-row-center">
-						<div class="recommend-row-title"><img src="../../assets/images/recommend/new.png" alt="" v-if="item.is_new">
-							<p>{{ item.app_name }}</p></div>
-						<div class="recommend-row-desc">{{ item.app_desc }}</div>
-						<div class="recommend-row-people-num"><img src="../../assets/images/recommend/hot2.png" alt=""><span>{{ item.user_number }}w人已测</span></div>
-					</div>
-					<div class="recommend-row-right">
-						<div class="recommend-row-btn">{{ item.btn_text }}</div>
+			<van-list v-model="loading" :finished="page === total_page" :error.sync="error" error-text="请求失败，点击重新加载" @load="onLoad">
+				<div class="recommend-row-block">
+					<div class="recommend-row" v-for="(item, index) in recommend_list" :key="index" @click="onRecommendClick(item, index)">
+						<div class="recommend-row-left">
+							<img class="recommend-row-icon" :src="item.app_icon" alt="加载错误">
+						</div>
+						<div class="recommend-row-center">
+							<div class="recommend-row-title"><img src="../../assets/images/recommend/new.png" alt="" v-if="item.is_new">
+								<p>{{ item.app_name }}</p></div>
+							<div class="recommend-row-desc">{{ item.app_desc }}</div>
+							<div class="recommend-row-people-num"><img src="../../assets/images/recommend/hot2.png" alt=""><span>{{ item.user_number }}w人已测</span></div>
+						</div>
+						<div class="recommend-row-right">
+							<div class="recommend-row-btn">{{ item.btn_text }}</div>
+						</div>
 					</div>
 				</div>
-			</div>
-			<div v-show="loading" class="recommend-content-loading">
-				<div class="recommend-content-loading-inner"></div>
-			</div>
+			</van-list>
 		</div>
+
 	</div>
 </template>
 <script>
 import {Request} from "@/utils/Utils";
 import {mapGetters, mapMutations, mapState} from "vuex";
+import Vue from 'vue';
+import {List} from 'vant';
+
+Vue.use(List);
+
 
 export default {
 	name: "recommend-list",
@@ -44,14 +46,15 @@ export default {
 		model: {
 			type: String
 		},
-		paddingBottom: {
-			type: String,
-			default: '30px',
-		}
 	},
 	data() {
 		return {
+			col: 1,
+			isRequesting: false,
+			error: false,
 			loading: false,
+			total_page: 0,
+			page: 0,
 			recommend_list: []
 		}
 	},
@@ -60,6 +63,8 @@ export default {
 		...mapGetters(["appApiUrl", "appResourcesUrl", "appIconUrl", "isLogin"]),
 	},
 	activated() {
+		this.total_page = 0;
+		this.page = 0;
 		this.recommend_list = [];
 		this.getRecommendData();
 	},
@@ -78,11 +83,6 @@ export default {
 			});
 		},
 
-		onRefreshClick() {
-			// 换一换
-			this.getRecommendData();
-		},
-
 		// 记录用户点击推荐应用
 		createRecommendRecord(from_app_id, to_app_id, callback) {
 			Request.request({
@@ -97,26 +97,35 @@ export default {
 
 		// 获得测一测推荐配置
 		getRecommendData(callback = null) {
-			this.loading = true;
 			Request.request({
 				url: this.appApiUrl + "/test_app/get_recommend_data",
 				data: {
 					app_id: this.appId,
+					page: this.page + 1,
 					page_name: this.model,
 				},
 				callback: (res, err) => {
-					if (err || res.code !== 0) {
-						this.loading = false;
-						return this.$toast("网络错误，请稍后，" + err);
-					}
+					if (err || res.code !== 0) return this.error = true;
 					// 更新推荐列表
+					this.total_page = res.body.total_page;
+					this.page = res.body.page;
 					for (let i = 0; i < res.body.recommend_list.length; i++) res.body.recommend_list[i].app_icon = this.appIconUrl(res.body.recommend_list[i].app_icon);
-					this.recommend_list = res.body.recommend_list;
-					this.loading = false;
+					this.recommend_list = this.recommend_list.concat(res.body.recommend_list);
 					if (typeof callback === "function") callback();
 				},
 			})
 		},
+
+		onLoad() {
+			// 异步更新数据
+			setTimeout(() => {
+				this.getRecommendData(() => {
+					// 加载状态结束
+					this.loading = false;
+				});
+			}, 1000);
+		},
+
 	}
 }
 </script>
@@ -171,24 +180,15 @@ export default {
 			font-size: 12px;
 			line-height: 50px;
 			text-align: right;
-			color: #2c2c2c;
-			display: flex;
-			flex-wrap: wrap;
-			justify-content: center;
-			align-items: center;
-
-			img {
-				width: 15px;
-				height: 15px;
-				margin-right: 5px;
-			}
-
+			color: #959494;
+			overflow: hidden; //超出的文本隐藏
+			text-overflow: ellipsis; //溢出用省略号显示
+			white-space: nowrap; //溢出不换行
 		}
 	}
 
 	.recommend-rows-wrap {
 		width: 100%;
-		min-height: 500px;
 		position: relative;
 
 		.recommend-row-block {
@@ -333,67 +333,6 @@ export default {
 			}
 
 		}
-
-		.recommend-content-loading {
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			background-color: #ffffff;
-			z-index: 99;
-
-			.recommend-content-loading-inner {
-				display: block;
-				position: relative;
-				left: 50%;
-				top: 15%;
-				width: 50px;
-				height: 50px;
-				margin: -25px 0 0 -25px;
-				border-radius: 50%;
-				border: 2px solid #f3730b;
-				border-right-color: transparent;
-				animation: spin 2s linear infinite;
-			}
-
-			.recommend-content-loading-inner:before {
-				content: "";
-				position: absolute;
-				top: 5px;
-				left: 5px;
-				right: 5px;
-				bottom: 5px;
-				border-radius: 50%;
-				border: 2px solid #f13d18;
-				border-top-color: transparent;
-				animation: spin 2s linear infinite;
-			}
-
-			.recommend-content-loading-inner:after {
-				content: "";
-				position: absolute;
-				top: 15px;
-				left: 15px;
-				right: 15px;
-				bottom: 15px;
-				border-radius: 50%;
-				border: 2px solid #ff1edd;
-				border-bottom-color: transparent;
-				animation: spin 2s linear infinite;
-			}
-
-		}
-
-		@keyframes spin {
-			0% {
-				transform: rotate(0deg);
-			}
-			to {
-				transform: rotate(1turn);
-			}
-		}
-
 	}
 }
 </style>

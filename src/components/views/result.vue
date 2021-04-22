@@ -107,7 +107,7 @@ export default {
 					this.timer = setTimeout(() => {
 						// 关闭加载提示框
 						this.changeAppending(false);
-					}, 200);
+					}, 100);
 					if (typeof callback === "function") callback();
 				});
 			});
