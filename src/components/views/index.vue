@@ -73,7 +73,7 @@
 <script>
 import Vue from 'vue';
 import recommend_list from "@/components/common/recommend_list";
-import {Request} from "@/utils/Utils";
+import {Request, Utils} from "@/utils/Utils";
 import {mapGetters, mapMutations, mapState} from "vuex";
 import {Popup} from 'vant';
 
@@ -104,6 +104,8 @@ export default {
 		},
 	},
 	activated() {
+		// 页面滚到顶部
+		Utils.scrollToTop();
 		// 显示关闭按钮
 		if (!this.isShowExitBtn) {
 			if (window.nativeObj !== undefined) window.nativeObj.showExitIcon();
@@ -150,7 +152,7 @@ export default {
 					let timer = setTimeout(() => {
 						// 关闭加载提示框
 						this.changeAppending(false);
-					}, 100)
+					}, 300)
 					this.timer.push(timer);
 					if (typeof callback === "function") callback();
 				});
@@ -219,8 +221,8 @@ export default {
 
 		// 点击更多推荐事件
 		onClickRecommend(item) {
-			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}}).then(() => {
-				this.reload();
+			this.reload(() => {
+				this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
 			});
 		},
 
@@ -237,7 +239,7 @@ export default {
 		onPopupClick(item) {
 			this.createRecommendRecord(this.appId, item.app_id, () => {
 				this.setGameBack(false);
-				this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
+				this.onClickRecommend(item);
 			})
 		},
 

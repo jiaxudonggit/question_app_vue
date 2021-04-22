@@ -17,7 +17,7 @@
 </template>
 <script>
 import recommend_list from '@/components/common/recommend_list';
-import {Request} from "@/utils/Utils";
+import {Request, Utils} from "@/utils/Utils";
 import AdUtils from "@/utils/AdUtils";
 import {mapGetters, mapMutations, mapState} from "vuex";
 
@@ -46,6 +46,8 @@ export default {
 		}
 	},
 	activated() {
+		// 页面滚到顶部
+		Utils.scrollToTop();
 		// 设置appId和channelId到vuex
 		this.setAppId(this.$route.query.YzAppId);
 		this.setChannelId(this.$route.query.YzChannelId);

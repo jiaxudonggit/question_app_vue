@@ -68,7 +68,7 @@ export default {
 	},
 	methods: {
 		...mapMutations({
-			updateRecommendData: "updateRecommendData",
+			changeAppending: "changeAppending",
 		}),
 
 		onRecommendClick(item, index) {
@@ -97,6 +97,7 @@ export default {
 
 		// 获得测一测推荐配置
 		getRecommendData(callback = null) {
+			// 开启加载提示框
 			this.loading = true;
 			Request.request({
 				url: this.appApiUrl + "/test_app/get_recommend_data",
@@ -123,6 +124,7 @@ export default {
 <style lang="less" scoped>
 .recommend-content {
 	width: 100%;
+	min-height: 800px;
 	background-color: #ffffff;
 	padding: 10px 20px 0;
 	border-top-left-radius: 12px;
@@ -188,7 +190,6 @@ export default {
 
 	.recommend-rows-wrap {
 		width: 100%;
-		min-height: 500px;
 		position: relative;
 
 		.recommend-row-block {

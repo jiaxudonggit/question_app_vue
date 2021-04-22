@@ -39,7 +39,7 @@ import {vueBaberrage} from 'vue-baberrage';
 import answer from '@/components/common/answer';
 import AdUtils from "@/utils/AdUtils";
 import {mapGetters, mapMutations, mapState} from "vuex";
-import {Request} from "@/utils/Utils";
+import {Request, Utils} from "@/utils/Utils";
 import {Popup} from 'vant';
 
 Vue.use(Popup);
@@ -77,6 +77,8 @@ export default {
 		}
 	},
 	activated() {
+		// 页面滚到顶部
+		Utils.scrollToTop();
 		// 设置appId和channelId到vuex
 		this.setAppId(this.$route.query.YzAppId);
 		this.setChannelId(this.$route.query.YzChannelId);

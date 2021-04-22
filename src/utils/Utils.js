@@ -19,6 +19,13 @@ const Utils = class Utils {
         if (r) result = unescape(r[2]);
         return result;
     }
+
+    // 页面滚到顶部
+    static scrollToTop() {
+        var element = document.documentElement.scrollTop ? document.documentElement : document.body;
+        element.scrollTop = 0;
+        document.getElementById('app').scrollTop = 0;
+    }
 }
 
 // 封装一个支持过期时间的localstorage类
