@@ -38,6 +38,7 @@ const state = {
     isShowResultPopup: false,
     timer: null,
     availHeight: window.screen.availHeight,
+    loadingTime: 300,
     // 业务数据
     indexData: {
         "app_id": null,

@@ -93,7 +93,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["isAppending", "appId", "channelId", "indexData", "isGameBack", "popupData", "availHeight", "recommendData"]),
+		...mapState(["isAppending", "appId", "channelId", "indexData", "isGameBack", "popupData", "availHeight", "recommendData", "loadingTime"]),
 		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl", "isLogin"]),
 	},
 	watch: {
@@ -107,25 +107,18 @@ export default {
 		// 页面滚到顶部
 		Utils.scrollToTop();
 		// 显示关闭按钮
-		if (!this.isShowExitBtn) {
-			if (window.nativeObj !== undefined) window.nativeObj.showExitIcon();
-			this.isShowExitBtn = true;
-		}
+		this.showExitBtn();
 		// 设置appId和channelId到vuex
 		this.setAppId(this.$route.query.YzAppId);
 		this.setChannelId(this.$route.query.YzChannelId);
+		// 初始化
 		this.initData();
 	},
 	deactivated() {
 		// 隐藏关闭按钮
-		if (this.isShowExitBtn) {
-			if (window.nativeObj !== undefined) window.nativeObj.closeExitIcon();
-			this.isShowExitBtn = false;
-		}
+		this.hideExitBtn();
 		// 删除定时器
-		this.timer.forEach((item) => {
-			if (item) clearTimeout(item);
-		})
+		this.cancelTimeOut();
 	},
 	methods: {
 		...mapMutations({
@@ -149,10 +142,10 @@ export default {
 			this.autoLogin(() => {
 				// 获取主页数据
 				this.getIndexData(() => {
+					// 关闭加载提示框
 					let timer = setTimeout(() => {
-						// 关闭加载提示框
 						this.changeAppending(false);
-					}, 300)
+					}, this.loadingTime)
 					this.timer.push(timer);
 					if (typeof callback === "function") callback();
 				});
@@ -168,16 +161,16 @@ export default {
 				},
 				callback: (res, err) => {
 					if (err || res.code !== 0) {
-						console.error(err);
-						return this.$toast("网络错误，请稍后，" + err);
+						this.$toast("网络错误，请稍后，" + err);
+					} else {
+						// 设置首页数据到store
+						this.setIndexData({
+							data: res.body,
+							appIconUrl: this.appIconUrl,
+							appResourcesUrl: this.appResourcesUrl,
+							model: this.model,
+						});
 					}
-					// 设置首页数据到store
-					this.setIndexData({
-						data: res.body,
-						appIconUrl: this.appIconUrl,
-						appResourcesUrl: this.appResourcesUrl,
-						model: this.model,
-					});
 					if (typeof callback === "function") callback();
 				},
 			})
@@ -204,10 +197,7 @@ export default {
 					page_name: "layer",
 				},
 				callback: (res, err) => {
-					if (err || res.code !== 0) {
-						console.error(err);
-						return false;
-					}
+					if (err || res.code !== 0) return false;
 					this.setPopupData({
 						data: res.body,
 						appIconUrl: this.appIconUrl,
@@ -258,6 +248,28 @@ export default {
 			this.setGameBack(false);
 		},
 
+		// 显示关闭按钮
+		showExitBtn() {
+			if (this.channelId === "YueYou" && !this.isShowExitBtn && window.nativeObj !== undefined) {
+				window.nativeObj.showExitIcon();
+				this.isShowExitBtn = true;
+			}
+		},
+
+		// 隐藏关闭按钮
+		hideExitBtn() {
+			if (this.channelId === "YueYou" && !this.isShowExitBtn && window.nativeObj !== undefined) {
+				window.nativeObj.closeExitIcon();
+				this.isShowExitBtn = false;
+			}
+		},
+
+		// 取消定时器
+		cancelTimeOut() {
+			this.timer.forEach((item) => {
+				if (item) clearTimeout(item);
+			});
+		}
 	},
 }
 </script>

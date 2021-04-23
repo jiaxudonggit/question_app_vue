@@ -32,18 +32,8 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["isAppending", "appId", "channelId", "isGameBack", "resultId", "availHeight", "fraction", "resultData", "indexData"]),
+		...mapState(["isAppending", "appId", "channelId", "isGameBack", "resultId", "availHeight", "fraction", "resultData", "indexData", "loadingTime"]),
 		...mapGetters(["appApiUrl", "appResourcesUrl", "appIconUrl", "isLogin"]),
-	},
-	beforeRouteLeave(to, from, next) {
-		// 关闭插屏广告
-		AdUtils.closeScreenAd();
-		if (to.name === "index") {
-			if (this.isLogin && this.indexData.show_recommend_layer) this.setGameBack(true);
-			next();
-		} else {
-			next()
-		}
 	},
 	activated() {
 		// 页面滚到顶部
@@ -51,11 +41,22 @@ export default {
 		// 设置appId和channelId到vuex
 		this.setAppId(this.$route.query.YzAppId);
 		this.setChannelId(this.$route.query.YzChannelId);
+		// 初始化
 		this.initData(() => {
 			// 打开插屏广告
-			AdUtils.openScreenAd(this.appId);
+			if (this.appId) AdUtils.openScreenAd(this.appId);
+			// 创建查看结果记录
 			this.createResultRecord();
 		})
+	},
+	beforeRouteLeave(to, from, next) {
+		// 关闭插屏广告
+		AdUtils.closeScreenAd();
+		// 关闭定时器
+		if (this.timer) clearTimeout(this.timer);
+		// 打开推荐弹窗
+		if (to.name === "index" && this.isLogin && this.indexData.show_recommend_layer) this.setGameBack(true);
+		next();
 	},
 	methods: {
 
@@ -78,16 +79,16 @@ export default {
 				},
 				callback: (res, err) => {
 					if (err || res.code !== 0) {
-						console.error(err);
-						return this.$toast("网络错误，请稍后，" + err);
+						this.$toast("网络错误，请稍后，" + err);
+					} else {
+						// 设置结果页数据到store
+						this.setResultData({
+							data: res.body,
+							appIconUrl: this.appIconUrl,
+							appResourcesUrl: this.appResourcesUrl,
+							model: this.model,
+						});
 					}
-					// 设置结果页数据到store
-					this.setResultData({
-						data: res.body,
-						appIconUrl: this.appIconUrl,
-						appResourcesUrl: this.appResourcesUrl,
-						model: this.model,
-					});
 					if (typeof callback === "function") callback();
 				},
 			})
@@ -106,10 +107,10 @@ export default {
 			this.autoLogin(() => {
 				// 获取主页数据
 				this.getResultData(() => {
+					// 关闭加载提示框
 					this.timer = setTimeout(() => {
-						// 关闭加载提示框
 						this.changeAppending(false);
-					}, 100);
+					}, this.loadingTime);
 					if (typeof callback === "function") callback();
 				});
 			});
