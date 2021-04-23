@@ -191,7 +191,7 @@ export default {
 		// 推荐弹窗数据 setPopupData
 		getPopupData(callback) {
 			Request.request({
-				url: this.appApiUrl + "/test_app/get_popup_data",
+				url: this.appApiUrl + "/test_app/get_recommend_data",
 				data: {
 					app_id: this.appId,
 					page_name: "layer",
