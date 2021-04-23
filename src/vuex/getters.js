@@ -5,7 +5,7 @@ export default {
 
     // 是否已登录
     isLogin: (state) => {
-        return window.sessionStorage.getItem("accessToken") !== null || state.accessToken !== null;
+        return (window.sessionStorage.getItem("accessToken") !== null || state.accessToken !== null) && state.appId;
     },
 
     // 返回后端接口地址
