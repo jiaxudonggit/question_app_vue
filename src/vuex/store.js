@@ -9,9 +9,9 @@ Vue.use(Vuex)
 
 const state = {
     // 工程配置相关
-    debug: true,
+    debug: false,
     isRunBrowser: window.nativeObj === undefined,
-    appApiUrl: "http://interest.app.ezhigame.com", // 后端接口地址（正式服）
+    appApiUrl: "http://interest.ezhigame.com", // 后端接口地址（正式服）
     testAppApiUrl: "http://interest.test.ezhigame.com", // 后端接口地址(测试服)
     // 基础配置
     appId: null,
@@ -28,7 +28,7 @@ const state = {
     sex: 0,           // 性别
     accessToken: null, // 身份令牌
     // 浏览器调试时用户ID
-    debugUserId: 999666,
+    debugUserId: "0123456789",
     // 阅友单独使用的数据
     signStr: "bi6tUL8Tf31I+DHx9KRJkVP1M7S0jqQ9vTnUjDARxI6APhslppch7qofwgz8ikdJ2xzY4t8dsH2mhto4s1bHk7+X196BWZ+Iut7dby1dqECTMK17xOAOOb8ABT1AmHuaSIMIrsWicJ43f4TNzC+WF4jTUksL9FiqLYstgS0auAY=",      // 验签串
     centerAppId: "700085",
