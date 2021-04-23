@@ -107,6 +107,8 @@ export default {
 		if (this.timer) clearTimeout(this.timer);
 		// 关闭结果提示框
 		this.setShowResultPopup(false);
+		// 清空弹幕
+		this.barrageList = [];
 		// 打开推荐弹窗
 		if (to.name === "index" && this.isLogin && this.indexData.show_recommend_layer) this.setGameBack(true);
 		next();
@@ -172,6 +174,7 @@ export default {
 
 		// 获得弹幕数据
 		getBarrageData(callback) {
+			if (this.barrageData.msg_list.length > 0) return false;
 			Request.request({
 				url: this.appApiUrl + "/test_app/get_barrage_data",
 				callback: (res, err) => {

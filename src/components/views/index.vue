@@ -191,7 +191,7 @@ export default {
 		// 推荐弹窗数据 setPopupData
 		getPopupData(callback) {
 			Request.request({
-				url: this.appApiUrl + "/test_app/get_recommend_data",
+				url: this.appApiUrl + "/test_app/get_popup_data",
 				data: {
 					app_id: this.appId,
 					page_name: "layer",
@@ -258,7 +258,7 @@ export default {
 
 		// 隐藏关闭按钮
 		hideExitBtn() {
-			if (this.channelId === "YueYou" && !this.isShowExitBtn && window.nativeObj !== undefined) {
+			if (this.channelId === "YueYou" && this.isShowExitBtn && window.nativeObj !== undefined) {
 				window.nativeObj.closeExitIcon();
 				this.isShowExitBtn = false;
 			}

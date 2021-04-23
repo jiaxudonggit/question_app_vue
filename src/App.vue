@@ -115,7 +115,7 @@ export default {
 
 		// 获取渠道用户信息
 		getChannelUserInfo(callback) {
-			if (this.debug && this.isRunBrowser) {
+			if ((this.debug && this.isRunBrowser) || this.isRunBrowser) {
 				// 浏览器调试时使用默认用户信息
 				if (typeof callback === "function") callback({userid: this.debugUserId});
 			} else {
