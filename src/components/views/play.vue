@@ -62,7 +62,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["isAppending", "appId", "channelId", "playData", "barrageData", "availHeight", "isShowResultPopup", "indexData", "loadingTime"]),
+		...mapState(["isAppending", "appId", "channelId", "playData", "barrageData", "availHeight", "isShowResultPopup", "indexData", "loadingTime", "resultId"]),
 		...mapGetters(["appApiUrl", "appResourcesUrl", "appBarrageAvatarUrl", "appIconUrl", "isLogin"]),
 
 		fraction() {
@@ -85,7 +85,7 @@ export default {
 		this.initData(() => {
 			// 初始化数据
 			this.setShowResultPopup(false); // 关闭结果提示框
-			this.setResultId(10001); // 重置结果ID
+			this.setResultId(null); // 重置结果ID
 			this.setFraction(0); // 重置题目
 			this.questionIndex = 0; // 重置题目索引
 			this.fractionArray = []; // 重置分数
@@ -129,7 +129,7 @@ export default {
 
 		// 初始化
 		initData(callback) {
-			if (this.isLogin && this.playData.app_id && this.playData.app_id === this.appId) {
+			if (this.isLogin && this.playData.app_id && parseInt(this.playData.app_id) === parseInt(this.appId)) {
 				if (typeof callback === "function") callback();
 				return false;
 			}
@@ -246,6 +246,8 @@ export default {
 
 		// 结果弹窗确认事件
 		onClickPopup() {
+			console.log("得分：" + this.fraction);
+			console.log("结果ID：" + this.resultId);
 			this.setShowResultPopup(false);
 			AdUtils.openVideoAd(this.appId, this.channelId, () => {
 				this.$router.replace({

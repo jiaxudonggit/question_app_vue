@@ -33,8 +33,8 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["isAppending", "isGameBack","debugUserId", "debug",
-			"isRunBrowser", "indexData", "appId", "channelId"]),
+		...mapState(["isAppending", "isGameBack", "debugUserId", "debug",
+			"isRunBrowser", "indexData", "appId", "channelId", "isRecordAccess"]),
 		...mapGetters(["appApiUrl", "isLogin"]),
 	},
 	watch: {
@@ -69,6 +69,7 @@ export default {
 			setGameBack: "setGameBack",
 			setShowResultPopup: "setShowResultPopup",
 			setAppStatus: "setAppStatus",
+			doRecordAccess: "doRecordAccess",
 		}),
 
 		// 监听移动端返回键事件
@@ -163,6 +164,7 @@ export default {
 						this.userLogin(userInfo, () => {
 							// 记录用户进入应用
 							this.createAccessRecord(() => {
+								console.log("========用户登录成功=========");
 								if (typeof callback === "function") callback();
 							});
 						});
@@ -173,14 +175,21 @@ export default {
 
 		// 记录用户进入应用
 		createAccessRecord(callback) {
-			// 记录用户进入应用
-			Request.request({
-				url: this.appApiUrl + "/test_app/create_access_record",
-				data: {
-					app_id: this.appId,
-				},
-				callback: callback
-			});
+			if (this.isRecordAccess) {
+				if (typeof callback == "function") callback();
+			} else {
+				// 记录用户进入应用
+				Request.request({
+					url: this.appApiUrl + "/test_app/create_access_record",
+					data: {
+						app_id: this.appId,
+					},
+					callback: (res) => {
+						if (res && res.code === 0) this.doRecordAccess();
+						if (typeof callback == "function") callback();
+					}
+				});
+			}
 		},
 
 		// 刷新路由

@@ -66,6 +66,7 @@ export default {
 			changeAppending: "changeAppending",
 			setResultData: "setResultData",
 			setGameBack: "setGameBack",
+			setResultId: "setResultId",
 		}),
 
 		// 获得首页数据
@@ -88,6 +89,7 @@ export default {
 							appResourcesUrl: this.appResourcesUrl,
 							model: this.model,
 						});
+						this.setResultId(res.body.result_id);
 					}
 					if (typeof callback === "function") callback();
 				},
@@ -96,8 +98,8 @@ export default {
 
 		// 初始化
 		initData(callback) {
-			if (this.isLogin && this.resultData.app_id && this.resultData.result_id &&
-				this.resultData.app_id === this.appId && this.resultData.result_id === this.resultId) {
+			if (this.isLogin && this.resultData.app_id && this.resultData.result_id && parseInt(this.resultData.app_id) === parseInt(this.appId) &&
+				parseInt(this.resultData.result_id) === parseInt(this.resultId)) {
 				if (typeof callback === "function") callback();
 				return false;
 			}

@@ -19,10 +19,11 @@ const state = {
     appTemplateId: null,  // 应用主题ID
     channelId: Utils.getQueryParams("YzChannelId"), // 渠道ID
     channelVersion: 330, // 渠道初始版本号
-    resultId: 10001, // 答题结果ID
+    resultId: null, // 答题结果ID
     fraction: 0, // 答题结果分数
     // 用户数据
     isLogin: false, // 是否已登陆
+    isRecordAccess: false, // 是否已记录访问
     nickname: "",     // 昵称
     headImage: "",      // 头像
     sex: 0,           // 性别

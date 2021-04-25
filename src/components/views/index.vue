@@ -132,7 +132,7 @@ export default {
 
 		// 初始化
 		initData(callback) {
-			if (this.isLogin && this.indexData.app_id && this.indexData.app_id === this.appId) {
+			if (this.isLogin && this.indexData.app_id && parseInt(this.indexData.app_id) === parseInt(this.appId)) {
 				if (typeof callback === "function") callback();
 				return false;
 			}

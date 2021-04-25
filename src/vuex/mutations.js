@@ -12,6 +12,11 @@ const mutations = {
         state.appId = appId;
     },
 
+    // 改变登录记录状态
+    doRecordAccess(state) {
+        state.isRecordAccess = true;
+    },
+
     // 设置应用ID
     setAppStatus(state, payload) {
         state.appId = payload.appId;
