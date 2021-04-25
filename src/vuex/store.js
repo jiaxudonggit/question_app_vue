@@ -41,6 +41,17 @@ const state = {
     availHeight: window.screen.availHeight,
     loadingTime: 300,
     // 业务数据
+    homeData: {
+        banner_list: [
+            require("@/assets/images/home/1.jpg"),
+            require("@/assets/images/home/2.jpg"),
+            require("@/assets/images/home/3.jpg"),
+            require("@/assets/images/home/4.jpg"),
+        ],
+        type_list: [],
+        module_list: [],
+        like_play: [],
+    },
     indexData: {
         "app_id": null,
         "app_icon": null,

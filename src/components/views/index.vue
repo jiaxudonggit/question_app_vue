@@ -103,7 +103,7 @@ export default {
 			}) : this.showPopup = false;
 		},
 	},
-	activated() {
+	created() {
 		// 页面滚到顶部
 		Utils.scrollToTop();
 		// 显示关闭按钮
@@ -112,9 +112,13 @@ export default {
 		this.setAppId(this.$route.query.YzAppId);
 		this.setChannelId(this.$route.query.YzChannelId);
 		// 初始化
-		this.initData();
+		this.initData(() => {
+			this.isGameBack ? this.getPopupData(() => {
+				this.showPopup = true;
+			}) : this.showPopup = false;
+		});
 	},
-	deactivated() {
+	destroyed() {
 		// 隐藏关闭按钮
 		this.hideExitBtn();
 		// 删除定时器

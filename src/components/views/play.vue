@@ -62,7 +62,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["isAppending", "appId", "channelId", "playData", "barrageData", "availHeight", "isShowResultPopup", "indexData", "loadingTime", "resultId"]),
+		...mapState(["isAppending", "appId", "channelId", "playData", "barrageData", "availHeight", "isShowResultPopup", "indexData", "loadingTime", "resultId", "isGameBack"]),
 		...mapGetters(["appApiUrl", "appResourcesUrl", "appBarrageAvatarUrl", "appIconUrl", "isLogin"]),
 
 		fraction() {
@@ -76,7 +76,7 @@ export default {
 			this.showResultPopup = val;
 		}
 	},
-	activated() {
+	created() {
 		// 页面滚到顶部
 		Utils.scrollToTop();
 		// 设置appId和channelId到vuex

@@ -12,11 +12,19 @@ Router.prototype.push = function push(location) {
 //app整体由店面页和店内页组成 暂时并没有用到嵌套路由
 const routes = [
     {
+        path: '/home',
+        name: "home",
+        component: resolve => require(["../components/views/home"], resolve),
+        meta: {
+            keepAlive: false,
+        }
+    },
+    {
         path: '/',
         name: "index",
         component: resolve => require(["../components/views/index"], resolve),
         meta: {
-            keepAlive: true,
+            keepAlive: false,
         }
     },
     {
@@ -24,7 +32,7 @@ const routes = [
         name: "play",
         component: resolve => require(["../components/views/play"], resolve),
         meta: {
-            keepAlive: true,
+            keepAlive: false,
         }
     },
     {
@@ -32,7 +40,7 @@ const routes = [
         name: "result",
         component: resolve => require(["../components/views/result"], resolve),
         meta: {
-            keepAlive: true,
+            keepAlive: false,
         }
     },
 ]

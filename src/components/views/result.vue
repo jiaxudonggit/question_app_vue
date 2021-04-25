@@ -35,7 +35,7 @@ export default {
 		...mapState(["isAppending", "appId", "channelId", "isGameBack", "resultId", "availHeight", "fraction", "resultData", "indexData", "loadingTime"]),
 		...mapGetters(["appApiUrl", "appResourcesUrl", "appIconUrl", "isLogin"]),
 	},
-	activated() {
+	created() {
 		// 页面滚到顶部
 		Utils.scrollToTop();
 		// 设置appId和channelId到vuex

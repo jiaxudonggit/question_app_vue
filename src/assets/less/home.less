@@ -1,0 +1,423 @@
+#home {
+  width: 100%;
+  position: relative;
+  box-sizing: border-box;
+  background-color: #ffffff;
+
+  .home-content {
+    width: 100%;
+    color: #ffffff;
+    box-sizing: border-box;
+    position: relative;
+
+    .home-content-bg {
+      display: block;
+      width: 100%;
+      position: absolute;
+      vertical-align: bottom;
+    }
+
+    .home-content-top {
+      width: 100%;
+      margin: 0 auto;
+      box-sizing: border-box;
+      overflow: hidden;
+      position: relative;
+
+      .home-search-wrap {
+        position: relative;
+        width: 90%;
+        margin: 18% auto 0;
+        color: #ffffff !important;
+
+        .van-search{
+          padding: 0;
+
+          .van-search__content {
+            background-color: rgba(255, 255, 255, 0.3);
+            border: none;
+            color: #ffffff;
+
+            .van-icon-search {
+              color: #ffffff;
+            }
+
+            ::-webkit-input-placeholder { /* WebKit browsers */
+              color: #ffffff;
+            }
+
+            ::-moz-placeholder { /* Mozilla Firefox 19+ */
+              color: #ffffff;
+            }
+
+            :-ms-input-placeholder { /* Internet Explorer 10+ */
+              color: #ffffff;
+            }
+
+          }
+
+        }
+
+      }
+
+      .home-banner-wrap {
+        position: relative;
+        width: 90%;
+        overflow: hidden;
+        box-sizing: border-box;
+        margin: 15% auto 0;
+
+        border-radius: 10px;
+
+        .home-banner {
+          width: 100%;
+
+          .van-swipe-item {
+            width: 100%;
+            height: auto;
+
+            img {
+              display: block;
+              width: 100%;
+              border-radius: 10px;
+            }
+          }
+        }
+      }
+    }
+
+    .home-content-describes-wrap {
+      width: 100%;
+      position: relative;
+      padding-top: 20px;
+      box-sizing: border-box;
+      overflow: hidden;
+      margin-top: -25px;
+      margin-bottom: -25px;
+      border-radius: 20px;
+      border-top-color: #ffffff;
+      box-shadow: 0 4px 0px -2.5px #ffffff inset;
+
+
+      .home-content-title {
+        width: 100%;
+        padding: 0 30px;
+        text-align: center;
+        font-size: 24px;
+        line-height: 45px;
+        z-home: 2;
+      }
+
+      .home-content-describes {
+        width: 100%;
+        padding: 0 30px;
+        text-align: left;
+        font-size: 16px;
+        line-height: 28px;
+        z-home: 2;
+        box-sizing: border-box;
+        margin: 10px auto 15px;
+      }
+
+      .home-content-describes-box {
+        width: calc(100% - 60px);
+        padding: 10px;
+        margin: 0 auto;
+        box-sizing: border-box;
+        background-color: #eaf1ff;
+        border-radius: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+
+        .home-content-describes-cell {
+          width: 33%;
+
+          .home-content-describes-item {
+            width: 100%;
+            padding: 15px 5px;
+
+            .home-content-describes-item-top {
+              font-size: 10px;
+              color: #328fd2;
+              text-align: center;
+              line-height: 26px;
+              margin-bottom: 5px;
+              letter-spacing: 1px;
+
+              span {
+                font-size: 18px;
+              }
+            }
+
+            .home-content-describes-item-bottom {
+              font-size: 18px;
+              color: #000;
+              text-align: center;
+              line-height: 30px;
+            }
+
+          }
+        }
+
+      }
+
+      .home-content-describes-images {
+        width: 100%;
+        position: relative;
+
+        img {
+          width: 100%;
+          vertical-align: bottom;
+        }
+      }
+
+    }
+
+  }
+
+  .home-btn-wrap {
+    position: fixed;
+    width: 100%;
+    bottom: 60px;
+
+    .home-btn {
+      display: block;
+      width: 60%;
+      margin: 0 auto;
+      vertical-align: bottom;
+      -webkit-animation-name: scaleDraw; /*关键帧名称*/
+      -webkit-animation-timing-function: ease-in-out; /*动画的速度曲线*/
+      -webkit-animation-iteration-count: infinite; /*动画播放的次数*/
+      -webkit-animation-duration: 2s; /*动画所花费的时间*/
+    }
+
+  }
+
+  .home-more-btn {
+    position: fixed;
+    right: 20px;
+    top: 20px;
+    z-home: 11;
+
+    img {
+      width: 100px;
+      vertical-align: bottom;
+    }
+  }
+
+  .app-popup {
+    width: 95%;
+    max-width: 360px;
+    min-width: 330px;
+    height: 570px;
+    top: 45%;
+    overflow-y: inherit;
+    box-sizing: border-box;
+    background-color: transparent;
+
+    img {
+      vertical-align: bottom;
+    }
+
+    .app-popup-title {
+      display: block;
+      width: 100%;
+      position: absolute;
+      box-sizing: border-box;
+      top: 19%;
+      z-home: 99;
+    }
+
+    .app-popup-content {
+      width: 85%;
+      height: 100%;
+      z-home: 98;
+      margin: 0 auto;
+      overflow: hidden;
+      position: relative;
+      box-sizing: border-box;
+      background-color: transparent;
+      background-image: url("../images/popup/layer-bg.png");
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+
+      .app-popup-app-list {
+        width: 100%;
+        height: 60%;
+        top: 30%;
+        padding: 5px 25px 75px 38px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        position: relative;
+
+        .app-popup-app {
+          width: 100%;
+          height: 65px;
+          margin: 0 auto 10px;
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-between;
+          align-items: center;
+          position: relative;
+
+          .app-popup-left {
+            width: 65px;
+            height: 100%;
+            overflow: hidden;
+            float: left;
+
+            .app-popup-icon {
+              display: block;
+              width: 100%;
+              height: 100%;
+              border-radius: 10px;
+              box-sizing: border-box;
+              border: 1px solid #640173;
+              vertical-align: bottom;
+            }
+          }
+
+          .app-popup-center {
+            width: calc(100% - 65px);
+            height: 100%;
+            padding: 0 12px;
+            overflow: hidden;
+            position: relative;
+            float: left;
+
+            .app-popup-title {
+              width: 100%;
+              height: 22px;
+              position: relative;
+              top: 2px;
+              box-sizing: border-box;
+              font-size: 16px;
+              line-height: 20px;
+              text-align: left;
+              color: #161616;
+              overflow: hidden; //超出的文本隐藏
+              text-overflow: ellipsis; //溢出用省略号显示
+              white-space: nowrap; //溢出不换行
+            }
+
+            .app-popup-desc {
+              width: 100%;
+              height: 16px;
+              margin-top: 4px;
+              font-size: 12px;
+              line-height: 15px;
+              text-align: left;
+              color: #959494;
+              overflow: hidden; //超出的文本隐藏
+              text-overflow: ellipsis; //溢出用省略号显示
+              white-space: nowrap; //溢出不换行
+            }
+
+          }
+
+          .app-popup-right {
+            width: 80px;
+            height: 20px;
+            position: absolute;
+            right: 20px;
+            bottom: 0;
+
+            .app-popup-btn {
+              width: 80px;
+              height: 20px;
+              line-height: 20px;
+              font-size: 10px;
+              text-align: center;
+              box-sizing: border-box;
+              position: absolute;
+              right: 0;
+              bottom: 1px;
+              color: #ffffff;
+              background-color: #52a1fe;
+              border-radius: 25px;
+            }
+
+          }
+        }
+
+        /* 设置滚动条的样式 */
+
+        ::-webkit-scrollbar {
+          width: 0;
+        }
+
+        /* 滚动槽 */
+
+        ::-webkit-scrollbar-track {
+          -webkit-box-shadow: inset006pxrgba(0, 0, 0, 0);
+          border-radius: 10px;
+        }
+
+        /* 滚动条滑块 */
+
+        ::-webkit-scrollbar-thumb {
+          border-radius: 10px;
+          background: rgba(0, 0, 0, 0);
+          -webkit-box-shadow: inset006pxrgba(0, 0, 0, 0);
+        }
+
+        ::-webkit-scrollbar-thumb:window-inactive {
+          background: rgba(255, 0, 0, 0);
+        }
+
+      }
+    }
+
+    .app-popup-content-bottom {
+      display: block;
+      width: 85%;
+      height: 130px;
+      position: absolute;
+      box-sizing: border-box;
+      bottom: 0;
+      left: 7.5%;
+      z-home: 99;
+    }
+
+    .app-popup-btn {
+      display: block;
+      width: 50%;
+      position: absolute;
+      box-sizing: border-box;
+      bottom: 20px;
+      left: 25%;
+      z-home: 100;
+    }
+
+    .app-popup-close {
+      width: 30px;
+      height: 30px;
+      display: block;
+      position: absolute;
+      bottom: -40px;
+      left: calc((100% - 30px) / 2);
+    }
+
+  }
+
+  @keyframes scaleDraw { /*定义关键帧、scaleDrew是需要绑定到选择器的关键帧名称*/
+    0% {
+      transform: scale(1); /*开始为原始大小*/
+    }
+    25% {
+      transform: scale(1.1); /*放大1.1倍*/
+    }
+    50% {
+      transform: scale(1);
+    }
+    75% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+}
+
