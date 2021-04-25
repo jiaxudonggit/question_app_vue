@@ -244,8 +244,6 @@ export default {
 							height: 16px;
 							box-sizing: border-box;
 							display: block;
-							//line-height: 16px;
-							//border-radius: 8px;
 							margin-right: 5px;
 						}
 

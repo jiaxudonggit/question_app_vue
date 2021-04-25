@@ -3,31 +3,48 @@
 	<div id="home" class="home" :style="{minHeight: availHeight + 'px'}">
 		<div class="home-content">
 			<img class="home-content-bg" src="../../assets/images/home/home-top-bg.png" alt="">
-			<div class="home-content-top">
-				<div class="home-search-wrap">
-					<van-search shape="round" :background="'transparent'" placeholder="搜你想搜的，这里会有你所爱~"/>
-				</div>
-				<div class="home-banner-wrap">
-					<van-swipe :autoplay="3000" class="home-banner">
-						<van-swipe-item v-for="(image, index) in homeData.banner_list" :key="index">
-							<img :src="image" alt=""/>
-						</van-swipe-item>
-					</van-swipe>
-				</div>
-				<div class="home-type-wrap"></div>
+			<div class="home-search-wrap">
+				<van-search shape="round" :background="'transparent'" placeholder="搜你想搜的，这里会有你所爱~"/>
 			</div>
-
+			<div class="home-banner-wrap">
+				<van-swipe :autoplay="3000" class="home-banner">
+					<van-swipe-item v-for="(image, index) in homeData.banner_list" :key="index">
+						<img :src="image" alt=""/>
+					</van-swipe-item>
+				</van-swipe>
+			</div>
+			<div class="home-type-wrap">
+				<van-grid>
+					<van-grid-item v-for="item in homeData.type_list" :icon="item.type_icon" :text="item.type_title" :key="item.type_id"/>
+				</van-grid>
+			</div>
+			<div class="home-module-wrap">
+				<div class="home-module-top">
+					<div class="home-module-title"><img src="../../assets/images/home/like.png" alt=""><span>趣味精选</span></div>
+					<div class="home-module-tip">更多好玩测试--本产品仅供娱乐</div>
+				</div>
+				<div class="home-module-center">
+					<div class="home-module-item" v-for="(item, index) in homeData.module_list" :key="index" :style="{backgroundImage: item.bg_color}">
+						<img class="home-module-item-icon" :src="item.app_icon" alt="">
+						<div class="home-module-item-name">{{ item.module_title }}</div>
+						<div class="home-module-item-title">{{ item.app_name }}</div>
+						<div class="home-module-item-btn">{{ item.btn_text }}</div>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </template>
 <script>
 import Vue from 'vue';
 import {mapGetters, mapMutations, mapState} from "vuex";
-import {Search, Swipe, SwipeItem} from 'vant';
+import {Search, Swipe, SwipeItem, Grid, GridItem} from 'vant';
 
 Vue.use(Swipe);
 Vue.use(SwipeItem);
 Vue.use(Search);
+Vue.use(Grid);
+Vue.use(GridItem);
 
 export default {
 	inject: ['reload', "autoLogin"],
