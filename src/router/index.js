@@ -17,6 +17,25 @@ const routes = [
         component: resolve => require(["../components/views/home"], resolve),
         meta: {
             keepAlive: false,
+            showTabbar: true,
+        }
+    },
+    {
+        path: '/user',
+        name: "user",
+        component: resolve => require(["../components/views/type"], resolve),
+        meta: {
+            keepAlive: false,
+            showTabbar: true,
+        }
+    },
+    {
+        path: '/type',
+        name: "type",
+        component: resolve => require(["../components/views/type"], resolve),
+        meta: {
+            keepAlive: false,
+            showTabbar: false,
         }
     },
     {
@@ -25,6 +44,7 @@ const routes = [
         component: resolve => require(["../components/views/index"], resolve),
         meta: {
             keepAlive: false,
+            showTabbar: false,
         }
     },
     {
@@ -33,6 +53,7 @@ const routes = [
         component: resolve => require(["../components/views/play"], resolve),
         meta: {
             keepAlive: false,
+            showTabbar: false,
         }
     },
     {
@@ -41,6 +62,7 @@ const routes = [
         component: resolve => require(["../components/views/result"], resolve),
         meta: {
             keepAlive: false,
+            showTabbar: false,
         }
     },
 ]

@@ -8,10 +8,12 @@
 		<transition name="custom-classes-transition" :enter-active-class="enterAnimate">
 			<router-view v-if="!$route.meta.keepAlive && isRouterAlive"></router-view>
 		</transition>
+		<app_bottom></app_bottom>
 	</div>
 </template>
 
 <script>
+import app_bottom from "@/components/common/app_bottom";
 import YueYouUtils from "@/utils/YueYouUtils";
 import {Request, Utils} from "@/utils/Utils";
 import ChannelUtils from "@/utils/ChannelUtils";
@@ -25,6 +27,9 @@ export default {
 			reload: this.reload,
 			autoLogin: this.autoLogin,
 		}
+	},
+	components: {
+		app_bottom,
 	},
 	data() {
 		return {

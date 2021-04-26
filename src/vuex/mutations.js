@@ -113,16 +113,11 @@ const mutations = {
         state.resultData = payload.data;
     },
 
-    // 更新推荐列表
-    updateRecommendData(state, payload) {
-        state.recommendData.total_page = payload.data.total_page;
-        state.recommendData.page = payload.data.page;
-        for (let i = 0; i < payload.data.recommend_list.length; i++) payload.data.recommend_list[i].app_icon = payload.appIconUrl(payload.data.recommend_list[i].app_icon);
-        state.recommendData.recommend_list = state.recommendData.recommend_list.concat(payload.data.recommend_list);
-    },
 
     // 设置弹幕数据
-    setBarrageData(state, barrageData) {
+    setBarrageData(state, payload) {
+        let barrageData = payload.data;
+        state.barrageData.barrageList = [];
         state.barrageData.barrage_number = barrageData.barrage_number;
         state.barrageData.barrage_loop = barrageData.barrage_loop;
         state.barrageData.barrage_time = barrageData.barrage_time;
@@ -142,6 +137,15 @@ const mutations = {
                 state.barrageData.barrage_type = MESSAGE_TYPE.FROM_BOTTOM;
                 break;
         }
+        for (let i = 1; i < state.barrageData.barrage_number + 1; i++) state.barrageData.barrageList.push({
+            id: i,
+            avatar: payload.appBarrageAvatarUrl(state.barrageData.avatar_list.randomElement()),
+            msg: state.barrageData.msg_list.randomElement(),
+            time: state.barrageData.barrage_time,
+            type: state.barrageData.barrage_type,
+            barrageStyle: state.barrageData.barrage_style,
+            extraWidth: Math.floor(Math.random() * (200 - 80 + 1) + 80),
+        });
     },
 
     // 设置推荐弹窗数据

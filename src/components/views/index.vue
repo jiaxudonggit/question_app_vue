@@ -1,10 +1,15 @@
+<!--主页组件-->
 <template>
-	<!--index组件-->
-	<div id="index" class="index" :style="{minHeight: availHeight + 'px', backgroundColor: indexData.bg_color}">
-		<div class="index-content">
+	<div id="index" class="index app-model" :style="{backgroundColor: indexData.bg_color}">
+		<div class="index-header fixed-fix">
+			<div class="index-header-home" @click="onClickHome"><img src="../../assets/images/index/home.png" alt=""></div>
+		</div>
+		<div class="index-content app-content" :style="{minHeight: availHeight + 'px'}">
+			<!-- 背景图片 -->
 			<div class="index-bg-images">
 				<img v-for="(item, index) in indexData.bg_images" :src="item" alt="" :key="index">
 			</div>
+			<!-- 简介背景图 -->
 			<div v-if="indexData.show_describes" class="index-content-describes-wrap" :style="{backgroundColor: indexData.bg_color}">
 				<div class="index-content-title" :style="{color: indexData.title_color}">{{ indexData.title }}</div>
 				<div class="index-content-describes" :style="{color: indexData.title_color}">{{ indexData.describes }}</div>
@@ -39,40 +44,24 @@
 				</div>
 			</div>
 		</div>
-		<recommend_list v-if="isLogin && indexData.show_recommend_list" :model="model" :padding-bottom="'150px'" v-on:listenerRecommendClick="onClickRecommend"></recommend_list>
+		<!-- 推荐列表 -->
+		<recommend_list v-if="isLogin && indexData.show_recommend_list" :model="model" :padding-bottom="'130px'" v-on:listenerRecommendClick="onClickRecommend"></recommend_list>
+		<!-- 按钮 -->
 		<div class="index-btn-wrap fixed-fix" @click="$router.push({path: '/play', query: {YzAppId: appId, YzChannelId: channelId, t: new Date().getTime()}})">
 			<img v-if="indexData.button_image" class="index-btn" :src="indexData.button_image" alt="">
 		</div>
+		<!-- 更多按钮 -->
 		<div v-if="indexData.show_recommend_list && indexData.show_more_btn" class="index-more-btn animate__animated animate__bounceIn" @click="onClickMoreRecommend">
 			<img src="../../assets/images/index/more.png" alt="">
 		</div>
-		<van-popup v-if="indexData.show_recommend_layer && showPopup" v-model="showPopup" class="app-popup" :lock-scroll="true" :close-on-click-overlay="false">
-			<img class="app-popup-title" src="../../assets/images/popup/layer-title.png" alt="">
-			<div class="app-popup-content">
-				<div class="app-popup-app-list">
-					<div class="app-popup-app" v-for="(item, index) in popupData.recommend_list" :key="index" @click="onPopupClick(item, index)">
-						<div class="app-popup-left">
-							<img class="app-popup-icon" :src="item.app_icon" alt="加载错误">
-						</div>
-						<div class="app-popup-center">
-							<div class="app-popup-title">{{ item.app_name }}</div>
-							<div class="app-popup-desc">{{ item.app_desc }}</div>
-						</div>
-						<div class="app-popup-right">
-							<div class="app-popup-btn">{{ item.btn_text }}</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<img class="app-popup-content-bottom" src="../../assets/images/popup/layer-bottom.png" alt="">
-			<img class="app-popup-btn" src="../../assets/images/popup/layer-btn.png" alt="" @click="onClickMorePopup">
-			<img class="app-popup-close" src="../../assets/images/popup/layer-close.png" alt="" @click="onClickClosePopup">
-		</van-popup>
+		<!-- 推荐弹窗 -->
+		<recommend_layer :show="showPopup" @listenerPopupClick="onPopupClick" @listenerPopupMoreClick="onPopupMoreClick" @listenerPopupCloseClick="onPopupCloseClick"></recommend_layer>
 	</div>
 </template>
 <script>
 import Vue from 'vue';
 import recommend_list from "@/components/common/recommend_list";
+import recommend_layer from "@/components/common/recommend_layer";
 import {Request, Utils} from "@/utils/Utils";
 import {mapGetters, mapMutations, mapState} from "vuex";
 import {Popup} from 'vant';
@@ -83,6 +72,7 @@ export default {
 	inject: ['reload', "autoLogin"],
 	components: {
 		recommend_list,
+		recommend_layer,
 	},
 	data() {
 		return {
@@ -93,13 +83,16 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["isAppending", "appId", "channelId", "indexData", "isGameBack", "popupData", "availHeight", "recommendData", "loadingTime"]),
+		...mapState(["isAppending", "appId", "channelId", "indexData", "isGameBack", "loadingTime", "availHeight"]),
 		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl", "isLogin"]),
 	},
 	watch: {
 		isGameBack(val) {
 			val ? this.getPopupData(() => {
-				this.showPopup = true;
+				let timer = setTimeout(()=>{
+					this.showPopup = true;
+				}, this.loadingTime)
+				this.timer.push(timer);
 			}) : this.showPopup = false;
 		},
 	},
@@ -114,15 +107,19 @@ export default {
 		// 初始化
 		this.initData(() => {
 			this.isGameBack ? this.getPopupData(() => {
-				this.showPopup = true;
+				let timer = setTimeout(()=>{
+					this.showPopup = true;
+				}, this.loadingTime)
+				this.timer.push(timer);
 			}) : this.showPopup = false;
 		});
 	},
-	destroyed() {
-		// 隐藏关闭按钮
-		this.hideExitBtn();
+	beforeRouteLeave(to, from, next) {
 		// 删除定时器
 		this.cancelTimeOut();
+		// 隐藏关闭按钮
+		if (to.name === "home" && this.isLogin && this.indexData.show_recommend_layer) this.hideExitBtn();
+		next();
 	},
 	methods: {
 		...mapMutations({
@@ -238,7 +235,7 @@ export default {
 		},
 
 		// 点击弹窗更多按钮
-		onClickMorePopup() {
+		onPopupMoreClick() {
 			this.setGameBack(false);
 			this.$el.querySelector(".recommend-content").scrollIntoView({
 				behavior: "smooth",
@@ -248,8 +245,13 @@ export default {
 		},
 
 		// 点击弹窗关闭按钮
-		onClickClosePopup() {
+		onPopupCloseClick() {
 			this.setGameBack(false);
+		},
+
+		// 点击返回商店主页按钮
+		onClickHome() {
+			this.$router.replace({path: "/home", query: {YzChannelId: this.channelId, t: new Date().getTime()}})
 		},
 
 		// 显示关闭按钮

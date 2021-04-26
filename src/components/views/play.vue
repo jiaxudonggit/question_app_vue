@@ -1,15 +1,15 @@
+<!--答题页组件-->
 <template>
-	<!--game组件-->
-	<div id="game" class="game" :style="{minHeight: availHeight + 'px', backgroundColor: playData.bg_color}">
+	<div id="game" class="game app-model" :style="{backgroundColor: playData.bg_color}">
 		<div class="game-header fixed-fix">
 			<div class="game-header-back" @click="onClickBack"><img src="../../assets/images/play/back.png" alt=""></div>
 			<div class="game-header-title">答题中</div>
 		</div>
-		<div class="game-content" :style="{minHeight: availHeight + 'px'}">
+		<div class="game-content app-content" :style="{minHeight: availHeight + 'px'}">
 			<div class="game-title-wrap">
 				<img src="../../assets/images/play/game-title.png" alt="">
 				<div class="game-title">
-					<div class="game-title-headimg">
+					<div class="game-title-head-image">
 						<img src="../../assets/images/play/game-title-head.png" alt="">
 					</div>
 					<div class="game-title-text" :style="{color: playData.title_color}">{{ playData.title }}</div>
@@ -25,7 +25,7 @@
 				<answer v-if="showAnswer && Object.keys(question).length > 0" :question="question" :model="model" v-on:listenerAnswerClick="onClickAnswer"></answer>
 			</div>
 			<div class="game-barrage-wrap">
-				<vue-baberrage :throttle-gap="barrageData.throttle_gap" :lanes-count="barrageData.lanes_count" :is-show="playData.show_barrage" :barrage-list="barrageList" :loop="barrageData.barrage_loop"></vue-baberrage>
+				<vue-baberrage :throttle-gap="barrageData.throttle_gap" :lanes-count="barrageData.lanes_count" :is-show="playData.show_barrage" :barrage-list="barrageData.barrageList" :loop="barrageData.barrage_loop"></vue-baberrage>
 			</div>
 		</div>
 		<van-popup v-if="showResultPopup" v-model="showResultPopup" class="result-popup" @click="onClickPopup" @click-overlay="onClickPopup" :lock-scroll="true" :close-on-click-overlay="false">
@@ -57,12 +57,11 @@ export default {
 			fractionArray: [],
 			question: {},
 			showResultPopup: false,
-			barrageList: [],
 			model: "question",
 		}
 	},
 	computed: {
-		...mapState(["isAppending", "appId", "channelId", "playData", "barrageData", "availHeight", "isShowResultPopup", "indexData", "loadingTime", "resultId", "isGameBack"]),
+		...mapState(["isAppending", "appId", "channelId", "playData", "barrageData", "availHeight", "isShowResultPopup", "indexData", "loadingTime", "resultId"]),
 		...mapGetters(["appApiUrl", "appResourcesUrl", "appBarrageAvatarUrl", "appIconUrl", "isLogin"]),
 
 		fraction() {
@@ -83,6 +82,8 @@ export default {
 		this.setAppId(this.$route.query.YzAppId);
 		this.setChannelId(this.$route.query.YzChannelId);
 		this.initData(() => {
+			// 获得弹幕数据
+			this.getBarrageData();
 			// 初始化数据
 			this.setShowResultPopup(false); // 关闭结果提示框
 			this.setResultId(null); // 重置结果ID
@@ -93,11 +94,6 @@ export default {
 			this.getQuestion(0);
 			// 打开banner广告
 			AdUtils.openBannerAd(this.appId);
-			// 获得弹幕数据
-			this.getBarrageData(() => {
-				// 渲染弹幕数据
-				this.renderBarrageData()
-			});
 		});
 	},
 	beforeRouteLeave(to, from, next) {
@@ -107,8 +103,6 @@ export default {
 		if (this.timer) clearTimeout(this.timer);
 		// 关闭结果提示框
 		this.setShowResultPopup(false);
-		// 清空弹幕
-		this.barrageList = [];
 		// 打开推荐弹窗
 		if (to.name === "index" && this.isLogin && this.indexData.show_recommend_layer) this.setGameBack(true);
 		next();
@@ -125,6 +119,7 @@ export default {
 			setBarrageData: "setBarrageData",
 			setGameBack: "setGameBack",
 			setShowResultPopup: "setShowResultPopup",
+			updateBarrageData: "updateBarrageData",
 		}),
 
 		// 初始化
@@ -174,29 +169,18 @@ export default {
 
 		// 获得弹幕数据
 		getBarrageData(callback) {
-			if (this.barrageData.msg_list.length > 0) return false;
 			Request.request({
 				url: this.appApiUrl + "/test_app/get_barrage_data",
 				callback: (res, err) => {
 					if (err || res.code !== 0) return this.$toast("网络错误，请稍后");
 					// 设置首页数据到store
-					this.setBarrageData(res.body);
+					this.setBarrageData({
+						data: res.body,
+						appBarrageAvatarUrl: this.appBarrageAvatarUrl,
+					});
 					if (typeof callback === "function") callback();
 				},
 			})
-		},
-
-		// 生成弹幕数据
-		renderBarrageData() {
-			for (let i = 1; i < this.barrageData.barrage_number + 1; i++) this.barrageList.push({
-				id: i,
-				avatar: this.appBarrageAvatarUrl(this.barrageData.avatar_list.randomElement()),
-				msg: this.barrageData.msg_list.randomElement(),
-				time: this.barrageData.barrage_time,
-				type: this.barrageData.barrage_type,
-				barrageStyle: this.barrageData.barrage_style,
-				extraWidth: Math.floor(Math.random() * (200 - 80 + 1) + 80),
-			});
 		},
 
 		// 获得指定题目
@@ -246,8 +230,6 @@ export default {
 
 		// 结果弹窗确认事件
 		onClickPopup() {
-			console.log("得分：" + this.fraction);
-			console.log("结果ID：" + this.resultId);
 			this.setShowResultPopup(false);
 			AdUtils.openVideoAd(this.appId, this.channelId, () => {
 				this.$router.replace({

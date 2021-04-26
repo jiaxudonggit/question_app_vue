@@ -1,10 +1,10 @@
+<!--测试结果页组件-->
 <template>
-	<!--result组件-->
-	<div id="result" class="result" :style="{minHeight: availHeight + 'px', backgroundColor: resultData.bg_color}">
+	<div id="result" class="result app-model" :style="{backgroundColor: resultData.bg_color}">
 		<div class="result-header fixed-fix">
 			<div class="result-header-back" @click="onClickBack"><img src="../../assets/images/play/back.png" alt=""></div>
 		</div>
-		<div class="result-content">
+		<div class="result-content app-content" :style="{minHeight: availHeight + 'px'}">
 			<div class="result-content-img">
 				<img v-for="(item, index) in resultData.bg_images" :src="item" alt="" :key="index">
 			</div>
@@ -32,7 +32,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["isAppending", "appId", "channelId", "isGameBack", "resultId", "availHeight", "fraction", "resultData", "indexData", "loadingTime"]),
+		...mapState(["isAppending", "appId", "channelId", "resultId", "fraction", "resultData", "indexData", "loadingTime", "availHeight"]),
 		...mapGetters(["appApiUrl", "appResourcesUrl", "appIconUrl", "isLogin"]),
 	},
 	created() {

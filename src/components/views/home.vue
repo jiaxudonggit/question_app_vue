@@ -1,98 +1,112 @@
+<!--主页商店页面组件-->
 <template>
-	<!--index组件-->
-	<div id="home" class="home" :style="{minHeight: availHeight + 'px'}">
-		<div class="home-content">
+	<div id="home" class="home app-model">
+		<div class="home-content app-content"  :style="{minHeight: (availHeight - 50) + 'px'}">
 			<img class="home-content-bg" src="../../assets/images/home/home-top-bg.png" alt="">
 			<div class="home-search-wrap">
 				<van-search shape="round" :background="'transparent'" placeholder="搜你想搜的，这里会有你所爱~"/>
 			</div>
 			<div class="home-banner-wrap">
-				<van-swipe :autoplay="3000" class="home-banner">
-					<van-swipe-item v-for="(image, index) in homeData.banner_list" :key="index">
-						<img :src="image" alt=""/>
-					</van-swipe-item>
-				</van-swipe>
+				<home_swiper_banner :banner-list="homeData.banner_list" :pagination="true" @listenerBannerClick="onBannerClick"></home_swiper_banner>
 			</div>
 			<div class="home-type-wrap">
-				<van-grid>
-					<van-grid-item v-for="item in homeData.type_list" :icon="item.type_icon" :text="item.type_title" :key="item.type_id"/>
+				<van-grid :border="false" :square="true">
+					<van-grid-item v-for="item in homeData.type_list" :icon="item.type_icon" :text="item.type_title" :key="item.type_id" @click="onTypeClick(item)"></van-grid-item>
 				</van-grid>
 			</div>
 			<div class="home-module-wrap">
-				<div class="home-module-top">
-					<div class="home-module-title"><img src="../../assets/images/home/like.png" alt=""><span>趣味精选</span></div>
-					<div class="home-module-tip">更多好玩测试--本产品仅供娱乐</div>
-				</div>
-				<div class="home-module-center">
-					<div class="home-module-item" v-for="(item, index) in homeData.module_list" :key="index" :style="{backgroundImage: item.bg_color}">
-						<img class="home-module-item-icon" :src="item.app_icon" alt="">
-						<div class="home-module-item-name">{{ item.module_title }}</div>
-						<div class="home-module-item-title">{{ item.app_name }}</div>
-						<div class="home-module-item-btn">{{ item.btn_text }}</div>
-					</div>
-				</div>
+				<home_swiper_interest :module-list="homeData.module_list" @listenerModuleClick="onModuleClick"></home_swiper_interest>
+			</div>
+
+			<div class="home-like-wrap">
+				<home_swiper_like :like-list="homeData.like_list" @listenerLikeClick="onLikeClick" @listenerMoreClick="onLikeMoreClick"></home_swiper_like>
+			</div>
+
+			<div class="home-more-wrap">
+				<home_more @listenerMoreClick="onMoreClick"></home_more>
 			</div>
 		</div>
 	</div>
 </template>
 <script>
 import Vue from 'vue';
+import home_more from "@/components/common/home/home_more";
+import home_swiper_banner from "@/components/common/home/home_swiper_banner";
+import home_swiper_interest from "@/components/common/home/home_swiper_interest";
+import home_swiper_like from "@/components/common/home/home_swiper_like";
 import {mapGetters, mapMutations, mapState} from "vuex";
-import {Search, Swipe, SwipeItem, Grid, GridItem} from 'vant';
+import {Search, Grid, GridItem} from 'vant';
 
-Vue.use(Swipe);
-Vue.use(SwipeItem);
 Vue.use(Search);
 Vue.use(Grid);
 Vue.use(GridItem);
 
 export default {
 	inject: ['reload', "autoLogin"],
+	components: {
+		home_swiper_banner,
+		home_swiper_interest,
+		home_swiper_like,
+		home_more,
+	},
+	computed: {
+		...mapState(["isAppending", "loadingTime", "channelId", "homeData", "availHeight"]),
+		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl", "isLogin"]),
+	},
 	data() {
 		return {
 			model: "home",
 			timer: [],
-			showPopup: false,
-			isShowExitBtn: false,
 		}
 	},
-	computed: {
-		...mapState(["isAppending", "loadingTime", "appId", "channelId", "homeData", "availHeight"]),
-		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl", "isLogin"]),
-	},
-	watch: {
-		isGameBack(val) {
-			val ? this.getPopupData(() => {
-				this.showPopup = true;
-			}) : this.showPopup = false;
-		},
-	},
 	created() {
-		// // 页面滚到顶部
-		// Utils.scrollToTop();
-		// // 显示关闭按钮
-		// this.showExitBtn();
-		// // 设置appId和channelId到vuex
-		// this.setAppId(this.$route.query.YzAppId);
-		// this.setChannelId(this.$route.query.YzChannelId);
-		// // 初始化
-		// this.initData();
+		// 设置channelId到vuex
+		this.setChannelId(this.$route.query.YzChannelId);
+		// 初始化
+		// this.initData(() => {
+		// 	// 打开插屏广告
+		// 	if (this.appId) AdUtils.openScreenAd(this.appId);
+		// 	// 创建查看结果记录
+		// 	this.createResultRecord();
+		// })
 	},
 	destroyed() {
-		// 隐藏关闭按钮
-		// this.hideExitBtn();
-		// // 删除定时器
-		// this.cancelTimeOut();
+
 	},
 	methods: {
 		...mapMutations({
-			setAppId: "setAppId",
 			setChannelId: "setChannelId",
 			changeAppending: "changeAppending",
-			setIndexData: "setIndexData",
-			setGameBack: "setGameBack",
-			setPopupData: "setPopupData",
 		}),
+
+		// 点击banner
+		onBannerClick(item) {
+			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
+		},
+
+		onTypeClick(item) {
+			console.log(item)
+		},
+
+		// 点击趣味精选
+		onModuleClick(item) {
+			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
+		},
+
+		// 点击大家爱玩
+		onLikeClick(item) {
+			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
+		},
+
+		// 点击大家爱玩 更多
+		onLikeMoreClick() {
+			console.log("========点击了更多按钮======")
+		},
+
+		// 点击更多好玩列表
+		onMoreClick(item) {
+			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
+		}
 
 		// // 初始化
 		// initData(callback) {

@@ -43,8 +43,15 @@ const state = {
     // 业务数据
     homeData: {
         banner_list: [
-            require("@/assets/images/home/222_banner.png"),
-            require("@/assets/images/home/234_banner.png"),
+            {
+                app_id: 234,
+                app_banner: require("@/assets/images/home/234_banner.png"),
+            },
+            {
+                app_id: 222,
+                app_banner: require("@/assets/images/home/222_banner.png"),
+            },
+
         ],
         type_list: [
             {
@@ -96,9 +103,33 @@ const state = {
                 btn_text: "测试",
                 bg_color: "linear-gradient(#01cfff, #157dfc)",
             },
-
         ],
-        like_play: [],
+        like_list: [
+            {
+                app_id: 234,
+                app_name: "看表情猜成语大挑战",
+                app_desc: "看表情猜成语大挑战看表情猜成语大挑战看表情猜成语大挑战看表情猜成语大挑战",
+                app_banner: require("@/assets/images/home/1.jpg"),
+            },
+            {
+                app_id: 234,
+                app_name: "看表情猜成语大挑战",
+                app_desc: "看表情猜成语大挑战看表情猜成语大挑战看表情猜成语大挑战看表情猜成语大挑战",
+                app_banner: require("@/assets/images/home/2.jpg"),
+            },
+            {
+                app_id: 234,
+                app_name: "看表情猜成语大挑战",
+                app_desc: "看表情猜成语大挑战看表情猜成语大挑战看表情猜成语大挑战看表情猜成语大挑战",
+                app_banner: require("@/assets/images/home/3.jpg"),
+            },
+            {
+                app_id: 234,
+                app_name: "看表情猜成语大挑战",
+                app_desc: "看表情猜成语大挑战看表情猜成语大挑战看表情猜成语大挑战看表情猜成语大挑战",
+                app_banner: require("@/assets/images/home/4.jpg"),
+            },
+        ],
     },
     indexData: {
         "app_id": null,
@@ -171,6 +202,7 @@ const state = {
         "throttle_gap": 3000,  // 弹幕之间的节流时间
         "avatar_list": [],
         "msg_list": [],
+        "barrageList": [],
     },
     popupData: {
         "recommend_list": [],

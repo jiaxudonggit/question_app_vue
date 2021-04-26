@@ -1,5 +1,5 @@
+<!--推荐列表组件 瀑布流加载-->
 <template>
-	<!--game推荐组件-->
 	<div class="recommend-content" id="recommend-content">
 		<div class="recommend-title">
 			<div class="recommend-title-left">
@@ -9,23 +9,8 @@
 			<div class="recommend-title-right">更多好玩的测试--本产品仅供娱乐</div>
 		</div>
 		<div class="recommend-rows-wrap">
-			<van-list v-model="loading" :finished="page === total_page" :error.sync="error" error-text="请求失败，点击重新加载" @load="onLoad">
-				<div class="recommend-row-block">
-					<div class="recommend-row" v-for="(item, index) in recommend_list" :key="index" @click="onRecommendClick(item, index)">
-						<div class="recommend-row-left">
-							<img class="recommend-row-icon" :src="item.app_icon" alt="加载错误">
-						</div>
-						<div class="recommend-row-center">
-							<div class="recommend-row-title"><img src="../../assets/images/recommend/new.png" alt="" v-if="item.is_new">
-								<p>{{ item.app_name }}</p></div>
-							<div class="recommend-row-desc">{{ item.app_desc }}</div>
-							<div class="recommend-row-people-num"><img src="../../assets/images/recommend/hot2.png" alt=""><span>{{ item.user_number }}w人已测</span></div>
-						</div>
-						<div class="recommend-row-right">
-							<div class="recommend-row-btn">{{ item.btn_text }}</div>
-						</div>
-					</div>
-				</div>
+			<van-list class="recommend-rows-list" v-model="loading" :finished="page === total_page" finished-text="--我是有底线的--" :error.sync="error" error-text="请求失败，点击重新加载" @load="onLoad">
+				<question_list_horizontal :question-list="recommend_list" @listenerQuestionListClick="onRecommendClick"></question_list_horizontal>
 			</van-list>
 		</div>
 
@@ -33,12 +18,11 @@
 </template>
 <script>
 import {Request} from "@/utils/Utils";
-import {mapGetters, mapMutations, mapState} from "vuex";
+import question_list_horizontal from "@/components/common/question_list_horizontal";
+import {mapGetters, mapState} from "vuex";
 import Vue from 'vue';
 import {List} from 'vant';
-
 Vue.use(List);
-
 
 export default {
 	name: "recommend-list",
@@ -47,10 +31,11 @@ export default {
 			type: String
 		},
 	},
+	components: {
+		question_list_horizontal,
+	},
 	data() {
 		return {
-			col: 1,
-			isRequesting: false,
 			error: false,
 			loading: false,
 			total_page: 0,
@@ -59,23 +44,13 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["appId", "recommendData"]),
+		...mapState(["appId",]),
 		...mapGetters(["appApiUrl", "appResourcesUrl", "appIconUrl", "isLogin"]),
-	},
-	activated() {
-		this.total_page = 0;
-		this.page = 0;
-		this.recommend_list = [];
-		this.getRecommendData();
 	},
 	created() {
 		this.getRecommendData();
 	},
 	methods: {
-		...mapMutations({
-			updateRecommendData: "updateRecommendData",
-		}),
-
 		onRecommendClick(item, index) {
 			// 记录用户点击推荐应用
 			this.createRecommendRecord(this.appId, item.app_id, () => {
@@ -98,7 +73,7 @@ export default {
 		// 获得测一测推荐配置
 		getRecommendData(callback = null) {
 			Request.request({
-				url: this.appApiUrl + "/test_app/get_recommend_data",
+				url: this.appApiUrl + "/test_app/get_recommend_data_load",
 				data: {
 					app_id: this.appId,
 					page: this.page + 1,
@@ -133,7 +108,6 @@ export default {
 .recommend-content {
 	width: 100%;
 	background-color: #ffffff;
-	padding: 10px 20px 0;
 	border-top-left-radius: 12px;
 	border-top-right-radius: 12px;
 	box-sizing: border-box;
@@ -191,145 +165,10 @@ export default {
 		width: 100%;
 		position: relative;
 
-		.recommend-row-block {
-			width: 100%;
+		.recommend-rows-list{
 			position: relative;
-
-			.recommend-row {
-				width: 100%;
-				height: 80px;
-				margin: 10px auto;
-				display: flex;
-				flex-wrap: wrap;
-				justify-content: space-between;
-				align-items: center;
-				position: relative;
-
-				.recommend-row-left {
-					width: 80px;
-					height: 100%;
-					overflow: hidden;
-					float: left;
-
-					.recommend-row-icon {
-						display: block;
-						width: 100%;
-						height: 100%;
-						border-radius: 10px;
-						box-sizing: border-box;
-						border: 1px solid #640173;
-						vertical-align: bottom;
-					}
-				}
-
-				.recommend-row-center {
-					width: calc(100% - 80px);
-					height: 100%;
-					padding: 0 8px;
-					overflow: hidden;
-					position: relative;
-					float: left;
-
-					.recommend-row-title {
-						width: 100%;
-						height: 30px;
-						position: relative;
-						box-sizing: border-box;
-						display: flex;
-						flex-wrap: wrap;
-						justify-content: flex-start;
-						align-items: center;
-
-						img {
-							height: 16px;
-							box-sizing: border-box;
-							display: block;
-							margin-right: 5px;
-						}
-
-						p {
-							width: calc(100% - 40px);
-							display: block;
-							font-size: 16px;
-							line-height: 30px;
-							text-align: left;
-							color: #161616;
-							overflow: hidden; //超出的文本隐藏
-							text-overflow: ellipsis; //溢出用省略号显示
-							white-space: nowrap; //溢出不换行
-						}
-					}
-
-					.recommend-row-desc {
-						height: 25px;
-						width: calc(100% - 80px);
-						font-size: 12px;
-						line-height: 25px;
-						text-align: left;
-						color: #959494;
-						overflow: hidden; //超出的文本隐藏
-						text-overflow: ellipsis; //溢出用省略号显示
-						white-space: nowrap; //溢出不换行
-					}
-
-					.recommend-row-people-num {
-						height: 20px;
-						padding: 0 8px 0 3px;
-						box-sizing: border-box;
-						font-size: 12px;
-						line-height: 20px;
-						text-align: left;
-						color: #ffffff;
-						border-radius: 10px;
-						position: absolute;
-						bottom: 0;
-						background-image: linear-gradient(to right, #ff6a93, #fd939b);
-						display: flex;
-						flex-wrap: wrap;
-						justify-content: flex-start;
-						align-items: center;
-
-						img {
-							display: inline-block;
-							width: 15px;
-							height: 15px;
-							margin-right: 2px;
-							margin-top: -2px;
-						}
-
-						span {
-							line-height: 20px;
-							display: inline-block;
-						}
-					}
-				}
-
-				.recommend-row-right {
-					width: 80px;
-					height: 100%;
-					position: absolute;
-					right: 0;
-					bottom: 0;
-
-					.recommend-row-btn {
-						width: 80px;
-						height: 30px;
-						line-height: 28px;
-						font-size: 12px;
-						text-align: center;
-						box-sizing: border-box;
-						position: absolute;
-						right: 0;
-						bottom: 2px;
-						background-color: #ffd452;
-						border: 1px solid #640173;
-						border-radius: 25px;
-					}
-
-				}
-
-			}
-
+			width: 100%;
+			box-sizing: border-box;
 		}
 	}
 }
