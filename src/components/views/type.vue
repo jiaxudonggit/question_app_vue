@@ -36,7 +36,7 @@ export default {
 			page: 0,
 		}
 	},
-	created() {
+	activated() {
 		// 设置channelId到vuex
 		this.setChannelId(this.$route.query.YzChannelId);
 		// 初始化

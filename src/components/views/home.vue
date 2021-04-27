@@ -59,7 +59,7 @@ export default {
 			timer: [],
 		}
 	},
-	created() {
+	activated() {
 		// 设置channelId到vuex
 		this.setChannelId(this.$route.query.YzChannelId);
 		// 初始化
@@ -70,7 +70,7 @@ export default {
 		// 	this.createResultRecord();
 		// })
 	},
-	destroyed() {
+	deactivated() {
 
 	},
 	methods: {

@@ -75,7 +75,7 @@ export default {
 			this.showResultPopup = val;
 		}
 	},
-	created() {
+	activated() {
 		// 页面滚到顶部
 		Utils.scrollToTop();
 		// 设置appId和channelId到vuex
@@ -120,6 +120,7 @@ export default {
 			setGameBack: "setGameBack",
 			setShowResultPopup: "setShowResultPopup",
 			updateBarrageData: "updateBarrageData",
+			setShowCloseBtn: "setShowCloseBtn",
 		}),
 
 		// 初始化
@@ -239,6 +240,9 @@ export default {
 						YzChannelId: this.channelId,
 						t: new Date().getTime()
 					}
+				}).then(() => {
+					// 看过广告 关闭倒计时退出
+					this.setShowCloseBtn(false);
 				});
 			});
 		},

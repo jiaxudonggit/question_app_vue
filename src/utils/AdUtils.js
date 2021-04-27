@@ -228,10 +228,12 @@ export default class AdUtils {
     // 获取版本
     static getAppVersion() {
         let appVersion = 330;
-        try {
-            appVersion = window.nativeObj.getAppVersionId();
-        } catch (err) {
-            console.error(err);
+        if (window.nativeObj !== undefined) {
+            try {
+                appVersion = window.nativeObj.getAppVersionId();
+            } catch (err) {
+                console.error(err);
+            }
         }
         console.log("app版本号：" + appVersion);
         return appVersion;

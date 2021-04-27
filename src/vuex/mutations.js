@@ -38,15 +38,37 @@ const mutations = {
         state.fraction = fraction;
     },
 
-    // 设置弹窗显示状态
+    // 设置广告统计次数
+    addAdCount(state) {
+        state.adCount += 1;
+    },
+
+    // 设置推荐弹窗显示状态
     setGameBack(state, status) {
         state.isGameBack = status;
     },
 
-    // 设置弹窗显示状态
+    // 设置关闭webview悬浮按钮状态
+    setShowExitBtn(state, status) {
+        state.isShowExitBtn = status;
+    },
+
+    // 设置关闭按钮显示状态
+    setShowCloseBtn(state, status) {
+        state.countdownSwitch = status;
+        state.showCloseBtn = status;
+    },
+
+    // 设置测试结果弹窗显示状态
+    setCountdownSwitch(state, status) {
+        state.countdownSwitch = status;
+    },
+
+    // 设置测试结果弹窗显示状态
     setShowResultPopup(state, status) {
         state.isShowResultPopup = status;
     },
+
 
     // 阅友设置签名串
     setSignStr(state, sign) {

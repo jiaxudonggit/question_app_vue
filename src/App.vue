@@ -9,11 +9,13 @@
 			<router-view v-if="!$route.meta.keepAlive && isRouterAlive"></router-view>
 		</transition>
 		<app_bottom></app_bottom>
+		<close_btn v-show="showCloseBtnRoute"></close_btn>
 	</div>
 </template>
 
 <script>
 import app_bottom from "@/components/common/app_bottom";
+import close_btn from "@/components/common/close_btn";
 import YueYouUtils from "@/utils/YueYouUtils";
 import {Request, Utils} from "@/utils/Utils";
 import ChannelUtils from "@/utils/ChannelUtils";
@@ -26,20 +28,25 @@ export default {
 		return {
 			reload: this.reload,
 			autoLogin: this.autoLogin,
+			showExitBtn: this.showExitBtn,
+			hideExitBtn: this.hideExitBtn,
 		}
 	},
 	components: {
 		app_bottom,
+		close_btn,
 	},
 	data() {
 		return {
 			enterAnimate: '',
 			isRouterAlive: true,
+			showCloseBtnRoute: false,
 		}
 	},
 	computed: {
 		...mapState(["isAppending", "isGameBack", "debugUserId", "debug",
-			"isRunBrowser", "indexData", "appId", "channelId", "isRecordAccess"]),
+			"isRunBrowser", "indexData", "appId", "channelId", "isRecordAccess",
+			"isShowExitBtn", "showCloseBtn"]),
 		...mapGetters(["appApiUrl", "isLogin"]),
 	},
 	watch: {
@@ -51,6 +58,16 @@ export default {
 				})
 				: this.$toast.clear();
 		},
+		$route(to) {
+			this.showCloseBtnRoute = (to.name === "index" || to.name === "home") && this.showCloseBtn;
+			if (to.name === "index" || to.name === " home") {
+				// 显示关闭按钮
+				this.showExitBtn();
+			} else {
+				// 隐藏关闭按钮
+				this.hideExitBtn();
+			}
+		}
 	},
 	mounted() {
 		window.onresize = () => {
@@ -75,6 +92,8 @@ export default {
 			setShowResultPopup: "setShowResultPopup",
 			setAppStatus: "setAppStatus",
 			doRecordAccess: "doRecordAccess",
+			setShowExitBtn: "setShowExitBtn",
+			setShowCloseBtn: "setShowCloseBtn",
 		}),
 
 		// 监听移动端返回键事件
@@ -205,7 +224,26 @@ export default {
 				this.isRouterAlive = true;
 				if (typeof callback == "function") callback();
 			})
-		}
+		},
+
+		// 显示关闭webview按钮
+		showExitBtn() {
+			if (this.channelId === "YueYou" && !this.isShowExitBtn && !this.showCloseBtn && window.nativeObj !== undefined) {
+				console.log("============显示关闭按钮===============")
+				window.nativeObj.showExitIcon();
+				this.setShowExitBtn(true);
+			}
+		},
+
+		// 隐藏关闭webview按钮
+		hideExitBtn() {
+			if (this.channelId === "YueYou" && this.isShowExitBtn && window.nativeObj !== undefined) {
+				console.log("============隐藏关闭按钮===============")
+				window.nativeObj.closeExitIcon();
+				this.setShowExitBtn(false);
+			}
+		},
+
 	}
 }
 </script>

@@ -79,7 +79,6 @@ export default {
 			model: "index",
 			timer: [],
 			showPopup: false,
-			isShowExitBtn: false,
 		}
 	},
 	computed: {
@@ -96,20 +95,20 @@ export default {
 			}) : this.showPopup = false;
 		},
 	},
-	created() {
+	activated() {
 		// 页面滚到顶部
 		Utils.scrollToTop();
-		// 显示关闭按钮
-		this.showExitBtn();
 		// 设置appId和channelId到vuex
 		this.setAppId(this.$route.query.YzAppId);
 		this.setChannelId(this.$route.query.YzChannelId);
 		// 初始化
 		this.initData(() => {
 			this.isGameBack ? this.getPopupData(() => {
+				// 显示推荐弹窗
 				let timer = setTimeout(()=>{
 					this.showPopup = true;
 				}, this.loadingTime)
+				// 加入定时器数组
 				this.timer.push(timer);
 			}) : this.showPopup = false;
 		});
@@ -117,8 +116,6 @@ export default {
 	beforeRouteLeave(to, from, next) {
 		// 删除定时器
 		this.cancelTimeOut();
-		// 隐藏关闭按钮
-		if (to.name === "home" && this.isLogin && this.indexData.show_recommend_layer) this.hideExitBtn();
 		next();
 	},
 	methods: {
@@ -252,22 +249,6 @@ export default {
 		// 点击返回商店主页按钮
 		onClickHome() {
 			this.$router.replace({path: "/home", query: {YzChannelId: this.channelId, t: new Date().getTime()}})
-		},
-
-		// 显示关闭按钮
-		showExitBtn() {
-			if (this.channelId === "YueYou" && !this.isShowExitBtn && window.nativeObj !== undefined) {
-				window.nativeObj.showExitIcon();
-				this.isShowExitBtn = true;
-			}
-		},
-
-		// 隐藏关闭按钮
-		hideExitBtn() {
-			if (this.channelId === "YueYou" && this.isShowExitBtn && window.nativeObj !== undefined) {
-				window.nativeObj.closeExitIcon();
-				this.isShowExitBtn = false;
-			}
 		},
 
 		// 取消定时器

@@ -21,6 +21,7 @@ const state = {
     channelVersion: 330, // 渠道初始版本号
     resultId: null, // 答题结果ID
     fraction: 0, // 答题结果分数
+    adCount: 0, // 播放激励视频广告次数
     // 用户数据
     isLogin: false, // 是否已登陆
     isRecordAccess: false, // 是否已记录访问
@@ -40,6 +41,10 @@ const state = {
     timer: null,
     availHeight: window.screen.availHeight,
     loadingTime: 300,
+    showCloseBtn: true, // 是否注销倒计时按钮
+    isShowExitBtn: false, // 是否显示webview退出悬浮按钮
+    countdownTimer: 120, // 倒计时退出时间,单位：秒  3分钟
+    countdownSwitch: true, // 倒计时状态，暂停|开始
     // 业务数据
     homeData: {
         banner_list: [
