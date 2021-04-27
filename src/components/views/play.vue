@@ -25,7 +25,7 @@
 				<answer v-if="showAnswer && Object.keys(question).length > 0" :question="question" :model="model" v-on:listenerAnswerClick="onClickAnswer"></answer>
 			</div>
 			<div class="game-barrage-wrap">
-				<vue-baberrage :throttle-gap="barrageData.throttle_gap" :lanes-count="barrageData.lanes_count" :is-show="playData.show_barrage" :barrage-list="barrageData.barrageList" :loop="barrageData.barrage_loop"></vue-baberrage>
+				<vue-baberrage :throttle-gap="barrageData.throttle_gap" :lanes-count="barrageData.lanes_count" :is-show="playData.show_barrage && showBarrage" :barrage-list="barrageList" :loop="barrageData.barrage_loop"></vue-baberrage>
 			</div>
 		</div>
 		<van-popup v-if="showResultPopup" v-model="showResultPopup" class="result-popup" @click="onClickPopup" @click-overlay="onClickPopup" :lock-scroll="true" :close-on-click-overlay="false">
@@ -34,6 +34,8 @@
 	</div>
 </template>
 <script>
+
+import lodash from 'lodash';
 import Vue from 'vue';
 import {vueBaberrage} from 'vue-baberrage';
 import answer from '@/components/common/answer';
@@ -55,7 +57,9 @@ export default {
 			showAnswer: true,
 			questionIndex: 0,
 			fractionArray: [],
+			barrageList: [],
 			question: {},
+			showBarrage: false,
 			showResultPopup: false,
 			model: "question",
 		}
@@ -83,13 +87,17 @@ export default {
 		this.setChannelId(this.$route.query.YzChannelId);
 		this.initData(() => {
 			// 获得弹幕数据
-			this.getBarrageData();
+			this.getBarrageData(() => {
+				this.renderBarrageData();
+			});
 			// 初始化数据
 			this.setShowResultPopup(false); // 关闭结果提示框
 			this.setResultId(null); // 重置结果ID
 			this.setFraction(0); // 重置题目
 			this.questionIndex = 0; // 重置题目索引
 			this.fractionArray = []; // 重置分数
+			this.barrageList = []; // 重置弹幕数据
+			this.showBarrage = false; // 隐藏弹幕
 			// 获得题目
 			this.getQuestion(0);
 			// 打开banner广告
@@ -170,6 +178,10 @@ export default {
 
 		// 获得弹幕数据
 		getBarrageData(callback) {
+			if (this.barrageData.barrageList.length >= this.barrageData.barrage_number) {
+				if (typeof callback === "function") callback();
+				return;
+			}
 			Request.request({
 				url: this.appApiUrl + "/test_app/get_barrage_data",
 				callback: (res, err) => {
@@ -182,6 +194,15 @@ export default {
 					if (typeof callback === "function") callback();
 				},
 			})
+		},
+
+		// 渲染弹幕数据
+		renderBarrageData() {
+			this.showBarrage = false;
+			this.barrageList = lodash.cloneDeep(this.barrageData.barrageList);
+			this.$nextTick(() => {
+				this.showBarrage = true;
+			});
 		},
 
 		// 获得指定题目
@@ -229,9 +250,11 @@ export default {
 			}
 		},
 
-		// 结果弹窗确认事件
-		onClickPopup() {
+		// 结果弹窗确认事件 防抖
+		onClickPopup: lodash.debounce(function () {
+			// 关闭结果弹窗
 			this.setShowResultPopup(false);
+			// 播放广告
 			AdUtils.openVideoAd(this.appId, this.channelId, () => {
 				this.$router.replace({
 					path: "/result",
@@ -245,7 +268,7 @@ export default {
 					this.setShowCloseBtn(false);
 				});
 			});
-		},
+		}, 800, {'leading': true, 'trailing': false}),
 	}
 }
 </script>

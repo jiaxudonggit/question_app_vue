@@ -59,8 +59,9 @@
 	</div>
 </template>
 <script>
+
 import Vue from 'vue';
-import recommend_list from "@/components/common/recommend_list";
+import recommend_list from "@/components/common/recommend_list_load";
 import recommend_layer from "@/components/common/recommend_layer";
 import {Request, Utils} from "@/utils/Utils";
 import {mapGetters, mapMutations, mapState} from "vuex";

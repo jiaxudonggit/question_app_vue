@@ -11,7 +11,7 @@
 				<span>换一换</span>
 			</div>
 		</div>
-		<div class="recommend-rows-wrap"  :style="{paddingBottom: paddingBottom}">
+		<div class="recommend-rows-wrap" :style="{paddingBottom: paddingBottom}">
 			<question_list_horizontal :question-list="recommend_list" @listenerQuestionListClick="onRecommendClick"></question_list_horizontal>
 			<div v-show="loading" class="recommend-content-loading">
 				<div class="recommend-content-loading-inner"></div>
@@ -50,6 +50,10 @@ export default {
 		...mapGetters(["appApiUrl", "appResourcesUrl", "appIconUrl", "isLogin"]),
 	},
 	created() {
+		this.getRecommendData();
+	},
+	activated() {
+		this.recommend_list = [];
 		this.getRecommendData();
 	},
 	methods: {
@@ -120,7 +124,7 @@ export default {
 	.recommend-title {
 		width: 100%;
 		height: 50px;
-		padding: 0 20px;
+		padding: 0 5%;
 		position: relative;
 		display: flex;
 		flex-wrap: wrap;
@@ -230,7 +234,7 @@ export default {
 
 		}
 
-		.recommend-content-tip{
+		.recommend-content-tip {
 			position: absolute;
 			bottom: 3px;
 			width: 100%;

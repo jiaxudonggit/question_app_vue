@@ -6,7 +6,7 @@
 		</div>
 		<div class="home-more-center">
 			<van-list class="home-more-list" v-model="loading" :finished="page === total_page" finished-text="--我是有底线的--" :error.sync="error" error-text="请求失败，点击重新加载" @load="onLoad">
-				<question_list_horizontal :question-list="moreList" :user-bg-color="'background-color: #6e88ff;'" :padding="'0'" @listenerQuestionListClick="onMoreClick"></question_list_horizontal>
+				<question_list_horizontal :question-list="moreList" :user-bg-color="'background-color: #6e88ff;'" @listenerQuestionListClick="onMoreClick"></question_list_horizontal>
 			</van-list>
 		</div>
 	</div>
@@ -17,6 +17,7 @@ import {mapGetters} from "vuex";
 import {Request} from "@/utils/Utils";
 import Vue from 'vue';
 import {List} from 'vant';
+
 Vue.use(List);
 
 export default {
@@ -38,6 +39,13 @@ export default {
 		...mapGetters(["appApiUrl", "appResourcesUrl", "appIconUrl", "isLogin"]),
 	},
 	created() {
+		this.getMoreData();
+	},
+	activated() {
+		// 初始化数据
+		this.page = 0;
+		this.total_page = 0;
+		this.moreList = []
 		this.getMoreData();
 	},
 	methods: {
@@ -85,6 +93,7 @@ export default {
 	box-sizing: border-box;
 
 	.home-more-top {
+		padding: 0 5%;
 		width: 100%;
 		height: 50px;
 		display: flex;
@@ -143,7 +152,7 @@ export default {
 		justify-content: space-between;
 		align-items: center;
 
-		.home-more-list{
+		.home-more-list {
 			position: relative;
 			box-sizing: border-box;
 			width: 100%;

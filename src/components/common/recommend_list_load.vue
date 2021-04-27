@@ -22,6 +22,7 @@ import question_list_horizontal from "@/components/common/question_list_horizont
 import {mapGetters, mapState} from "vuex";
 import Vue from 'vue';
 import {List} from 'vant';
+
 Vue.use(List);
 
 export default {
@@ -48,6 +49,13 @@ export default {
 		...mapGetters(["appApiUrl", "appResourcesUrl", "appIconUrl", "isLogin"]),
 	},
 	created() {
+		this.getRecommendData();
+	},
+	activated() {
+		// 初始化数据
+		this.page = 0;
+		this.total_page = 0;
+		this.recommend_list = [];
 		this.getRecommendData();
 	},
 	methods: {
@@ -116,6 +124,7 @@ export default {
 
 	.recommend-title {
 		width: 100%;
+		padding: 0 5%;
 		height: 50px;
 		position: relative;
 		display: flex;
@@ -165,7 +174,7 @@ export default {
 		width: 100%;
 		position: relative;
 
-		.recommend-rows-list{
+		.recommend-rows-list {
 			position: relative;
 			width: 100%;
 			box-sizing: border-box;

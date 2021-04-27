@@ -59,7 +59,9 @@ export default {
 				: this.$toast.clear();
 		},
 		$route(to) {
+			// 判断是否显示倒计时关闭按钮
 			this.showCloseBtnRoute = (to.name === "index" || to.name === "home") && this.showCloseBtn;
+			// 判断显示/隐藏webview关闭按钮
 			if (to.name === "index" || to.name === " home") {
 				// 显示关闭按钮
 				this.showExitBtn();
@@ -70,6 +72,7 @@ export default {
 		}
 	},
 	mounted() {
+		// 获得屏幕可视区域高度
 		window.onresize = () => {
 			return (() => {
 				this.setAvailHeight(window.screen.availHeight);
@@ -229,7 +232,7 @@ export default {
 		// 显示关闭webview按钮
 		showExitBtn() {
 			if (this.channelId === "YueYou" && !this.isShowExitBtn && !this.showCloseBtn && window.nativeObj !== undefined) {
-				console.log("============显示关闭按钮===============")
+				console.log("============显示关闭按钮===============");
 				window.nativeObj.showExitIcon();
 				this.setShowExitBtn(true);
 			}
@@ -238,7 +241,7 @@ export default {
 		// 隐藏关闭webview按钮
 		hideExitBtn() {
 			if (this.channelId === "YueYou" && this.isShowExitBtn && window.nativeObj !== undefined) {
-				console.log("============隐藏关闭按钮===============")
+				console.log("============隐藏关闭按钮===============");
 				window.nativeObj.closeExitIcon();
 				this.setShowExitBtn(false);
 			}

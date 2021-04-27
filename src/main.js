@@ -6,13 +6,12 @@ import axios from 'axios';
 import store from './vuex/store';
 import filters from './filters'; //将全部过滤器放在 filters/index.js 中便于管理
 import animated from 'animate.css'; // 动画库
-import waterfall from "vue-waterfall2"; // 瀑布流
 import VConsole from "vconsole";
 import '@vant/touch-emulator';
 import {Toast} from 'vant';
 
 //技巧 同时 use 多个插件 被依赖的插件应放在偏后方
-Vue.use(animated, waterfall, Toast, vuex);
+Vue.use(animated, Toast, vuex);
 
 // 注册全局过滤器
 filters(Vue)

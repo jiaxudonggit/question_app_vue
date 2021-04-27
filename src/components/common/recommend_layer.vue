@@ -1,6 +1,6 @@
 <!--推荐弹窗-->
 <template>
-	<van-popup v-if="indexData.show_recommend_layer" v-model="show" class="app-popup" :lock-scroll="true" :close-on-click-overlay="false">
+	<van-popup v-if="indexData.show_recommend_layer" v-model="showSelf" class="app-popup" :lock-scroll="true" :close-on-click-overlay="false">
 		<img class="app-popup-title" src="../../assets/images/popup/layer-title.png" alt="">
 		<div class="app-popup-content">
 			<div class="app-popup-app-list">
@@ -27,6 +27,7 @@
 import {mapState} from "vuex";
 import Vue from 'vue';
 import {Popup} from 'vant';
+
 Vue.use(Popup);
 
 export default {
@@ -37,8 +38,21 @@ export default {
 			default: false,
 		},
 	},
+	data() {
+		return {
+			showSelf: false,
+		}
+	},
 	computed: {
 		...mapState(["indexData", "popupData"]),
+	},
+	watch: {
+		show(val) {
+			this.showSelf = val;
+		}
+	},
+	activated() {
+		this.showSelf = this.show;
 	},
 	methods: {
 		// 点击弹窗推荐事件

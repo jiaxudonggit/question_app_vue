@@ -11,6 +11,8 @@
 	</div>
 </template>
 <script>
+
+import lodash from "lodash";
 import {mapMutations, mapState} from "vuex";
 import Countdown from '@choujiaojiao/vue2-countdown'
 import AdUtils from "@/utils/AdUtils";
@@ -60,7 +62,7 @@ export default {
 		}),
 
 		// 点击关闭按钮事件
-		onBtnClick() {
+		onBtnClick: lodash.debounce(function () {
 			// 播放广告
 			AdUtils.openVideoAd(this.appId, this.channelId, () => {
 				// 添加广告统计次数
@@ -68,7 +70,7 @@ export default {
 				// 隐藏按钮
 				this.setShowCloseBtn(false);
 			});
-		},
+		}, 800, {'leading': true, 'trailing': false}),
 
 		onCountdownEnd() {
 			console.log("============倒计时结束=============")

@@ -1,7 +1,7 @@
 <!-- 题目列表 横向-->
 <template>
-	<div class="question-block" :style="{padding: padding}">
-		<div class="question-row" v-for="(item, index) in questionList" :key="index" @click="onQuestionListClick(item, index)">
+	<div class="question-block">
+		<div class="question-row" v-for="(item, index) in questionList" :key="index" @click="onQuestionListClick(item, index)" :style="{background: bgColor ? 'linear-gradient(to top right, #ffffff, #ffffff,#ffffff, rgba(207, 63, 232, 0.3))' : ''}">
 			<div class="question-row-left">
 				<img class="question-row-icon" :src="item.app_icon" alt="加载错误">
 			</div>
@@ -29,9 +29,9 @@ export default {
 			type: String,
 			default: "background-image: linear-gradient(to right, #ff6a93, #fd939b);",
 		},
-		padding: {
-			type: String,
-			default: '10px 20px',
+		bgColor: {
+			type: Boolean,
+			default: false,
 		}
 	},
 	methods: {
@@ -45,139 +45,139 @@ export default {
 <style lang="less" scoped>
 .question-block {
 	width: 100%;
+	padding-left: 5%;
 	position: relative;
 	box-sizing: border-box;
 
 	.question-row {
 		width: 100%;
 		height: 80px;
-		margin: 10px auto;
+		margin: 0 auto 10px;
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: space-between;
 		align-items: center;
 		position: relative;
+	}
 
-		.question-row-left {
-			width: 80px;
+	.question-row-left {
+		width: 80px;
+		height: 100%;
+		overflow: hidden;
+		float: left;
+
+		.question-row-icon {
+			display: block;
+			width: 100%;
 			height: 100%;
-			overflow: hidden;
-			float: left;
-
-			.question-row-icon {
-				display: block;
-				width: 100%;
-				height: 100%;
-				border-radius: 10px;
-				box-sizing: border-box;
-				border: 1px solid #640173;
-				vertical-align: bottom;
-			}
+			border-radius: 10px;
+			box-sizing: border-box;
+			border: 1px solid #640173;
+			vertical-align: bottom;
 		}
+	}
 
-		.question-row-center {
-			width: calc(100% - 80px);
-			height: 100%;
-			padding: 0 8px;
-			overflow: hidden;
+	.question-row-center {
+		width: calc(100% - 80px);
+		height: 100%;
+		padding: 0 8px;
+		overflow: hidden;
+		position: relative;
+		float: left;
+
+		.question-row-title {
+			width: 100%;
+			height: 30px;
 			position: relative;
-			float: left;
+			box-sizing: border-box;
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: flex-start;
+			align-items: center;
 
-			.question-row-title {
-				width: 100%;
-				height: 30px;
-				position: relative;
+			img {
+				height: 16px;
 				box-sizing: border-box;
-				display: flex;
-				flex-wrap: wrap;
-				justify-content: flex-start;
-				align-items: center;
-
-				img {
-					height: 16px;
-					box-sizing: border-box;
-					display: block;
-					margin-right: 5px;
-				}
-
-				p {
-					width: calc(100% - 40px);
-					display: block;
-					font-size: 16px;
-					line-height: 30px;
-					text-align: left;
-					color: #161616;
-					overflow: hidden; //超出的文本隐藏
-					text-overflow: ellipsis; //溢出用省略号显示
-					white-space: nowrap; //溢出不换行
-				}
+				display: block;
+				margin-right: 5px;
 			}
 
-			.question-row-desc {
-				height: 25px;
-				width: calc(100% - 80px);
-				font-size: 12px;
-				line-height: 25px;
+			p {
+				width: calc(100% - 40px);
+				display: block;
+				font-size: 16px;
+				line-height: 30px;
 				text-align: left;
-				color: #959494;
+				color: #161616;
 				overflow: hidden; //超出的文本隐藏
 				text-overflow: ellipsis; //溢出用省略号显示
 				white-space: nowrap; //溢出不换行
 			}
-
-			.question-row-people-num {
-				height: 20px;
-				padding: 0 8px 0 3px;
-				box-sizing: border-box;
-				font-size: 12px;
-				line-height: 20px;
-				text-align: left;
-				color: #ffffff;
-				border-radius: 10px;
-				position: absolute;
-				bottom: 0;
-				display: flex;
-				flex-wrap: wrap;
-				justify-content: flex-start;
-				align-items: center;
-
-				img {
-					display: inline-block;
-					width: 15px;
-					height: 15px;
-					margin-right: 2px;
-					margin-top: -2px;
-				}
-
-				span {
-					line-height: 20px;
-					display: inline-block;
-				}
-			}
 		}
 
-		.question-row-right {
+		.question-row-desc {
+			height: 25px;
+			width: calc(100% - 80px);
+			font-size: 12px;
+			line-height: 25px;
+			text-align: left;
+			color: #959494;
+			overflow: hidden; //超出的文本隐藏
+			text-overflow: ellipsis; //溢出用省略号显示
+			white-space: nowrap; //溢出不换行
+		}
+
+		.question-row-people-num {
+			height: 20px;
+			padding: 0 8px 0 3px;
+			box-sizing: border-box;
+			font-size: 12px;
+			line-height: 20px;
+			text-align: left;
+			color: #ffffff;
+			border-radius: 10px;
+			position: absolute;
+			bottom: 0;
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: flex-start;
+			align-items: center;
+
+			img {
+				display: inline-block;
+				width: 15px;
+				height: 15px;
+				margin-right: 2px;
+				margin-top: -2px;
+			}
+
+			span {
+				line-height: 20px;
+				display: inline-block;
+			}
+		}
+	}
+
+	.question-row-right {
+		width: 80px;
+		height: 100%;
+		position: absolute;
+		right: 5%;
+		bottom: 0;
+
+		.question-row-btn {
 			width: 80px;
-			height: 100%;
+			height: 25px;
+			line-height: 23px;
+			font-size: 12px;
+			text-align: center;
+			box-sizing: border-box;
 			position: absolute;
 			right: 0;
 			bottom: 0;
-
-			.question-row-btn {
-				width: 80px;
-				height: 30px;
-				line-height: 28px;
-				font-size: 12px;
-				text-align: center;
-				box-sizing: border-box;
-				position: absolute;
-				right: 0;
-				bottom: 2px;
-				background-color: #ffd452;
-				border: 1px solid #640173;
-				border-radius: 25px;
-			}
-
+			background-color: #ffd452;
+			border: 1px solid #640173;
+			border-radius: 25px;
 		}
 
 	}
