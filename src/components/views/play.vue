@@ -254,8 +254,6 @@ export default {
 			AdUtils.openVideoAd(this.appId, this.channelId, () => {
 				// 添加广告统计次数
 				this.addAdCount();
-				// 隐藏按钮
-				this.setShowCloseBtn(false);
 				// 跳转结果页
 				this.$router.replace({
 					path: "/result",
@@ -264,6 +262,9 @@ export default {
 						YzChannelId: this.channelId,
 						t: new Date().getTime()
 					}
+				}).then(()=>{
+					// 隐藏按钮
+					this.setShowCloseBtn(false);
 				});
 			});
 		},

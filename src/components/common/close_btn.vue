@@ -2,7 +2,7 @@
 <template>
 	<div v-if="showCloseBtn" class="app-close-block" @click="onBtnClick">
 		<div class="app-close-timer">
-			<Countdown :time="time" format="ss" :switch="countdownSwitch" @on-end="onCountdownEnd">
+			<Countdown :time="countdownTimer" format="ss" :switch="countdownSwitch" @on-end="onCountdownEnd">
 				<template slot-scope="{ time }">{{ time }}</template>
 			</Countdown>
 		</div>
@@ -19,22 +19,20 @@ export default {
 	name: "close-btn",
 	props: {},
 	computed: {
-		...mapState(["appId", "channelId", "showCloseBtn", "channelVersion"]),
+		...mapState(["appId", "channelId", "showCloseBtn", "channelVersion", "isShowExitBtn", "countdownTimer"]),
 	},
 	components: {
 		Countdown,
 	},
 	data() {
 		return {
-			time: 60 * 3, // 3分钟
-			isShowExitBtn: false, // 是否显示webview关闭按钮
 			countdownSwitch: true,
 		}
 	},
 	watch: {
 		showCloseBtn(val) {
-			val ? this.hideExitBtn() : this.showExitBtn();
-		}
+			if (!val && this.$route.name === "index") this.showExitBtn();
+		},
 	},
 	created() {
 		if (AdUtils.getAppVersion() >= this.channelVersion && this.channelId === "YueYou") {
@@ -59,6 +57,7 @@ export default {
 	methods: {
 		...mapMutations({
 			setShowCloseBtn: "setShowCloseBtn",
+			setShowExitBtn: "setShowExitBtn",
 			addAdCount: "addAdCount",
 		}),
 
@@ -66,7 +65,7 @@ export default {
 		showExitBtn() {
 			if (this.channelId === "YueYou" && !this.isShowExitBtn && window.nativeObj !== undefined) {
 				window.nativeObj.showExitIcon();
-				this.isShowExitBtn = true;
+				this.setShowExitBtn(true);
 			}
 		},
 
@@ -74,7 +73,7 @@ export default {
 		hideExitBtn() {
 			if (this.channelId === "YueYou" && this.isShowExitBtn && window.nativeObj !== undefined) {
 				window.nativeObj.closeExitIcon();
-				this.isShowExitBtn = false;
+				this.setShowExitBtn(false);
 			}
 		},
 
@@ -110,25 +109,19 @@ export default {
 	top: 10px;
 	border-radius: 20px;
 	box-sizing: border-box;
-	background-color: rgba(255, 255, 255, .3);
+	background-color: rgba(0, 0, 0, .3);
 
 	.app-close-timer {
 		width: 35px;
 		height: 35px;
 		margin: 0 auto;
-		background-color: #2c2c2c;
+		//background-color: #4f75d9;
+		border: 1px solid #d9d9d9;
 		border-radius: 40px;
 		color: #ffffff;
 		font-size: 14px;
 		line-height: 35px;
 		text-align: center;
-
-		.block {
-			color: #ffffff;
-			font-size: 14px;
-			line-height: 35px;
-			text-align: center;
-		}
 	}
 
 	.app-close-icon {

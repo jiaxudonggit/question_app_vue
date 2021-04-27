@@ -47,6 +47,10 @@ const mutations = {
     setGameBack(state, status) {
         state.isGameBack = status;
     },
+    // 设置弹窗显示状态
+    setShowExitBtn(state, status) {
+        state.isShowExitBtn = status;
+    },
 
     // 设置关闭按钮显示状态
     setShowCloseBtn(state, status) {

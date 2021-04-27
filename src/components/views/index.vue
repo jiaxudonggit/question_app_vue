@@ -68,6 +68,8 @@
 			<img class="app-popup-btn" src="../../assets/images/popup/layer-btn.png" alt="" @click="onClickMorePopup">
 			<img class="app-popup-close" src="../../assets/images/popup/layer-close.png" alt="" @click="onClickClosePopup">
 		</van-popup>
+		<!-- 退出倒计时 -->
+		<close_btn></close_btn>
 	</div>
 </template>
 <script>
@@ -76,6 +78,7 @@ import recommend_list from "@/components/common/recommend_list";
 import {Request, Utils} from "@/utils/Utils";
 import {mapGetters, mapMutations, mapState} from "vuex";
 import {Popup} from 'vant';
+import close_btn from "@/components/common/close_btn";
 
 Vue.use(Popup);
 
@@ -83,17 +86,18 @@ export default {
 	inject: ['reload', "autoLogin"],
 	components: {
 		recommend_list,
+		close_btn
 	},
 	data() {
 		return {
 			model: "index",
 			timer: [],
 			showPopup: false,
-			isShowExitBtn: false,
 		}
 	},
 	computed: {
-		...mapState(["isAppending", "appId", "channelId", "indexData", "isGameBack", "popupData", "availHeight", "recommendData", "loadingTime", "showCloseBtn"]),
+		...mapState(["isAppending", "appId", "channelId", "indexData", "isGameBack", "popupData", "availHeight",
+			"recommendData", "loadingTime", "showCloseBtn", "isShowExitBtn"]),
 		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl", "isLogin"]),
 	},
 	watch: {
@@ -107,7 +111,7 @@ export default {
 		// 页面滚到顶部
 		Utils.scrollToTop();
 		// 显示关闭按钮
-		// this.showExitBtn();
+		this.showExitBtn();
 		// 设置appId和channelId到vuex
 		this.setAppId(this.$route.query.YzAppId);
 		this.setChannelId(this.$route.query.YzChannelId);
@@ -116,7 +120,7 @@ export default {
 	},
 	deactivated() {
 		// 隐藏关闭按钮
-		// this.hideExitBtn();
+		this.hideExitBtn();
 		// 删除定时器
 		this.cancelTimeOut();
 	},
@@ -128,6 +132,7 @@ export default {
 			setIndexData: "setIndexData",
 			setGameBack: "setGameBack",
 			setPopupData: "setPopupData",
+			setShowExitBtn: "setShowExitBtn",
 		}),
 
 		// 初始化
@@ -252,7 +257,7 @@ export default {
 		showExitBtn() {
 			if (this.channelId === "YueYou" && !this.isShowExitBtn && !this.showCloseBtn && window.nativeObj !== undefined) {
 				window.nativeObj.showExitIcon();
-				this.isShowExitBtn = true;
+				this.setShowExitBtn(true);
 			}
 		},
 
@@ -260,7 +265,7 @@ export default {
 		hideExitBtn() {
 			if (this.channelId === "YueYou" && this.isShowExitBtn && window.nativeObj !== undefined) {
 				window.nativeObj.closeExitIcon();
-				this.isShowExitBtn = false;
+				this.setShowExitBtn(false);
 			}
 		},
 
