@@ -19,7 +19,7 @@ import AdUtils from "@/utils/AdUtils";
 export default {
 	name: "close-btn",
 	computed: {
-		...mapState(["appId", "channelId", "showCloseBtn", "channelVersion", "isShowExitBtn", "countdownTimer", "countdownSwitch"]),
+		...mapState(["appId", "channelId", "showCloseBtn", "channelVersion", "isShowExitBtn", "countdownTimer", "countdownSwitch", "lodashOption"]),
 	},
 	components: {
 		Countdown,
@@ -76,13 +76,17 @@ export default {
 		// 点击关闭按钮事件
 		onBtnClick: lodash.debounce(function () {
 			// 播放广告
+			console.log("------------------")
 			AdUtils.openVideoAd(this.appId, this.channelId, () => {
 				// 添加广告统计次数
 				this.addAdCount();
 				// 隐藏按钮
 				this.setShowCloseBtn(false);
 			});
-		}, 200),
+		}, 800, {
+			'leading': true,
+			'trailing': false
+		}),
 
 		onCountdownEnd() {
 			console.log("============倒计时结束=============")

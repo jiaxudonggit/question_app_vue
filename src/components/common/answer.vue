@@ -159,7 +159,10 @@ export default {
 			// 创建用户答题记录
 			this.createAnswerRecord(item);
 			this.$emit("listenerAnswerClick", item, index);
-		}, 200),
+		}, 500, {
+			'leading': true,
+			'trailing': false
+		}),
 
 		// 创建用户答题记录
 		createAnswerRecord(item, callback) {

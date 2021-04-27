@@ -268,7 +268,10 @@ export default {
 					this.setShowCloseBtn(false);
 				});
 			});
-		}, 200),
+		}, 800, {
+			'leading': true,
+			'trailing': false
+		}),
 	}
 }
 </script>

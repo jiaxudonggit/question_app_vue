@@ -14,7 +14,9 @@ module.exports = {
         // 移除 preload 插件，避免加载多余的资源
         config.plugins.delete('preload');
 
-        config.plugin("loadshReplace").use(new LodashModuleReplacementPlugin());
+        if (process.env.NODE_ENV === "production") {
+            config.plugin("loadshReplace").use(new LodashModuleReplacementPlugin());
+        }
     },
     configureWebpack: config => {
         if (process.env.NODE_ENV === 'production') {
