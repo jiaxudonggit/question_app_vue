@@ -38,9 +38,19 @@ const mutations = {
         state.fraction = fraction;
     },
 
+    // 设置答题结果分数
+    addAdCount(state) {
+        state.adCount += 1;
+    },
+
     // 设置弹窗显示状态
     setGameBack(state, status) {
         state.isGameBack = status;
+    },
+
+    // 设置关闭按钮显示状态
+    setShowCloseBtn(state, status) {
+        state.showCloseBtn = status;
     },
 
     // 设置弹窗显示状态

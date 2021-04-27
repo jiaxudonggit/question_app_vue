@@ -93,7 +93,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["isAppending", "appId", "channelId", "indexData", "isGameBack", "popupData", "availHeight", "recommendData", "loadingTime"]),
+		...mapState(["isAppending", "appId", "channelId", "indexData", "isGameBack", "popupData", "availHeight", "recommendData", "loadingTime", "showCloseBtn"]),
 		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl", "isLogin"]),
 	},
 	watch: {
@@ -107,7 +107,7 @@ export default {
 		// 页面滚到顶部
 		Utils.scrollToTop();
 		// 显示关闭按钮
-		this.showExitBtn();
+		// this.showExitBtn();
 		// 设置appId和channelId到vuex
 		this.setAppId(this.$route.query.YzAppId);
 		this.setChannelId(this.$route.query.YzChannelId);
@@ -116,7 +116,7 @@ export default {
 	},
 	deactivated() {
 		// 隐藏关闭按钮
-		this.hideExitBtn();
+		// this.hideExitBtn();
 		// 删除定时器
 		this.cancelTimeOut();
 	},
@@ -250,7 +250,7 @@ export default {
 
 		// 显示关闭按钮
 		showExitBtn() {
-			if (this.channelId === "YueYou" && !this.isShowExitBtn && window.nativeObj !== undefined) {
+			if (this.channelId === "YueYou" && !this.isShowExitBtn && !this.showCloseBtn && window.nativeObj !== undefined) {
 				window.nativeObj.showExitIcon();
 				this.isShowExitBtn = true;
 			}

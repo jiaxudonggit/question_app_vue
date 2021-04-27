@@ -21,6 +21,10 @@
     #index .index-more-btn {
         right: calc(((100% - 640px) / 2) + 20px) !important;
     }
+
+    #app .app-close-block{
+        right: calc(((100% - 640px) / 2) + 10px) !important;
+    }
 }
 
 #app {

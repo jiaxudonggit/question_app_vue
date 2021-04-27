@@ -8,10 +8,12 @@
 		<transition name="custom-classes-transition" :enter-active-class="enterAnimate">
 			<router-view v-if="!$route.meta.keepAlive && isRouterAlive"></router-view>
 		</transition>
+		<close_btn></close_btn>
 	</div>
 </template>
 
 <script>
+import close_btn from "@/components/common/close_btn";
 import YueYouUtils from "@/utils/YueYouUtils";
 import {Request, Utils} from "@/utils/Utils";
 import ChannelUtils from "@/utils/ChannelUtils";
@@ -25,6 +27,9 @@ export default {
 			reload: this.reload,
 			autoLogin: this.autoLogin,
 		}
+	},
+	components: {
+		close_btn,
 	},
 	data() {
 		return {
@@ -58,6 +63,7 @@ export default {
 		// 设置appId和channelId到vuex
 		this.setAppId(Utils.getQueryParams("YzAppId"));
 		this.setChannelId(Utils.getQueryParams("YzChannelId"));
+
 	},
 	methods: {
 		...mapMutations({
@@ -70,6 +76,7 @@ export default {
 			setShowResultPopup: "setShowResultPopup",
 			setAppStatus: "setAppStatus",
 			doRecordAccess: "doRecordAccess",
+			setShowCloseBtn: "setShowCloseBtn",
 		}),
 
 		// 监听移动端返回键事件

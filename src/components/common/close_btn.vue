@@ -1,0 +1,153 @@
+<!-- 关闭按钮 倒计时结束后显示真实关闭按钮 -->
+<template>
+	<div v-if="showCloseBtn" class="app-close-block" @click="onBtnClick">
+		<div class="app-close-timer">
+			<Countdown :time="time" format="ss" :switch="countdownSwitch" @on-end="onCountdownEnd">
+				<template slot-scope="{ time }">{{ time }}</template>
+			</Countdown>
+		</div>
+		<img class="app-close-icon" src="../../assets/images/app-close.png" alt="">
+		<div class="app-close-text">关闭</div>
+	</div>
+</template>
+<script>
+import {mapMutations, mapState} from "vuex";
+import Countdown from '@choujiaojiao/vue2-countdown'
+import AdUtils from "@/utils/AdUtils";
+
+export default {
+	name: "close-btn",
+	props: {},
+	computed: {
+		...mapState(["appId", "channelId", "showCloseBtn", "channelVersion"]),
+	},
+	components: {
+		Countdown,
+	},
+	data() {
+		return {
+			time: 60 * 3, // 3分钟
+			isShowExitBtn: false, // 是否显示webview关闭按钮
+			countdownSwitch: true,
+		}
+	},
+	watch: {
+		showCloseBtn(val) {
+			val ? this.hideExitBtn() : this.showExitBtn();
+		}
+	},
+	created() {
+		if (AdUtils.getAppVersion() >= this.channelVersion && this.channelId === "YueYou") {
+			// 系统状态监听
+			window.androidLifeCycleCallBack = (from, callback) => {
+				switch (callback) {
+					case "onPause":
+						console.log("androidLifeCycleCallBack onPause --> " + from);
+						this.countdownSwitch = false;
+						break;
+					case "onResume":
+						console.log("androidLifeCycleCallBack onResume --> " + from);
+						this.countdownSwitch = true;
+						break;
+					case "onStop":
+						console.log("androidLifeCycleCallBack onStop --> " + from);
+						break;
+				}
+			};
+		}
+	},
+	methods: {
+		...mapMutations({
+			setShowCloseBtn: "setShowCloseBtn",
+			addAdCount: "addAdCount",
+		}),
+
+		// 显示关闭按钮
+		showExitBtn() {
+			if (this.channelId === "YueYou" && !this.isShowExitBtn && window.nativeObj !== undefined) {
+				window.nativeObj.showExitIcon();
+				this.isShowExitBtn = true;
+			}
+		},
+
+		// 隐藏关闭按钮
+		hideExitBtn() {
+			if (this.channelId === "YueYou" && this.isShowExitBtn && window.nativeObj !== undefined) {
+				window.nativeObj.closeExitIcon();
+				this.isShowExitBtn = false;
+			}
+		},
+
+		// 点击关闭按钮事件
+		onBtnClick() {
+			// 播放广告
+			AdUtils.openVideoAd(this.appId, this.channelId, () => {
+				// 关闭倒计时
+				this.countdownSwitch = false;
+				// 添加广告统计次数
+				this.addAdCount();
+				// 隐藏按钮
+				this.setShowCloseBtn(false);
+			});
+		},
+
+		onCountdownEnd() {
+			console.log("============倒计时结束=============")
+			// 关闭倒计时
+			this.countdownSwitch = false;
+			// 隐藏按钮
+			this.setShowCloseBtn(false);
+		}
+	}
+}
+</script>
+<style lang="less" scoped>
+.app-close-block {
+	width: 45px;
+	padding: 5px;
+	position: fixed;
+	right: 10px;
+	top: 10px;
+	border-radius: 20px;
+	box-sizing: border-box;
+	background-color: rgba(255, 255, 255, .3);
+
+	.app-close-timer {
+		width: 35px;
+		height: 35px;
+		margin: 0 auto;
+		background-color: #2c2c2c;
+		border-radius: 40px;
+		color: #ffffff;
+		font-size: 14px;
+		line-height: 35px;
+		text-align: center;
+
+		.block {
+			color: #ffffff;
+			font-size: 14px;
+			line-height: 35px;
+			text-align: center;
+		}
+	}
+
+	.app-close-icon {
+		display: block;
+		width: 18px;
+		height: 18px;
+		margin: 3px auto 0;
+	}
+
+	.app-close-text {
+		width: 100%;
+		height: 26px;
+		color: #ffffff;
+		margin: 0 auto;
+		font-size: 15px;
+		line-height: 25px;
+		text-align: center;
+		box-sizing: border-box;
+	}
+}
+</style>
+

@@ -125,6 +125,8 @@ export default {
 			setBarrageData: "setBarrageData",
 			setGameBack: "setGameBack",
 			setShowResultPopup: "setShowResultPopup",
+			addAdCount: "addAdCount",
+			setShowCloseBtn: "setShowCloseBtn",
 		}),
 
 		// 初始化
@@ -250,6 +252,11 @@ export default {
 			console.log("结果ID：" + this.resultId);
 			this.setShowResultPopup(false);
 			AdUtils.openVideoAd(this.appId, this.channelId, () => {
+				// 添加广告统计次数
+				this.addAdCount();
+				// 隐藏按钮
+				this.setShowCloseBtn(false);
+				// 跳转结果页
 				this.$router.replace({
 					path: "/result",
 					query: {
