@@ -82,7 +82,7 @@ export default {
 				// 隐藏按钮
 				this.setShowCloseBtn(false);
 			});
-		}, 400),
+		}, 200),
 
 		onCountdownEnd() {
 			console.log("============倒计时结束=============")

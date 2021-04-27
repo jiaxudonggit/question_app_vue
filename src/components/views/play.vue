@@ -268,7 +268,7 @@ export default {
 					this.setShowCloseBtn(false);
 				});
 			});
-		}, 300),
+		}, 200),
 	}
 }
 </script>

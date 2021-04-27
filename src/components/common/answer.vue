@@ -159,7 +159,7 @@ export default {
 			// 创建用户答题记录
 			this.createAnswerRecord(item);
 			this.$emit("listenerAnswerClick", item, index);
-		}, 300),
+		}, 200),
 
 		// 创建用户答题记录
 		createAnswerRecord(item, callback) {
