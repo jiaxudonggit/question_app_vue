@@ -40,7 +40,7 @@
 	</div>
 </template>
 <script>
-
+import lodash from "lodash";
 import {mapGetters, mapState} from "vuex";
 import {Request} from "@/utils/Utils";
 import AudioPlayer from '@liripeng/vue-audio-player'
@@ -155,11 +155,11 @@ export default {
 	},
 	methods: {
 
-		onAnswerClick(item, index) {
+		onAnswerClick: lodash.debounce(function (item, index) {
 			// 创建用户答题记录
 			this.createAnswerRecord(item);
 			this.$emit("listenerAnswerClick", item, index);
-		},
+		}, 300),
 
 		// 创建用户答题记录
 		createAnswerRecord(item, callback) {

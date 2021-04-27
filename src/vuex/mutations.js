@@ -47,13 +47,20 @@ const mutations = {
     setGameBack(state, status) {
         state.isGameBack = status;
     },
+
     // 设置弹窗显示状态
     setShowExitBtn(state, status) {
         state.isShowExitBtn = status;
     },
 
+    // 设置弹窗显示状态
+    setCountdownSwitch(state, status) {
+        state.countdownSwitch = status;
+    },
+
     // 设置关闭按钮显示状态
     setShowCloseBtn(state, status) {
+        if (!status) state.countdownSwitch = status;
         state.showCloseBtn = status;
     },
 

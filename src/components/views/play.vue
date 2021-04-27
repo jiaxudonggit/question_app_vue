@@ -34,6 +34,7 @@
 	</div>
 </template>
 <script>
+import lodash from "lodash";
 import Vue from 'vue';
 import {vueBaberrage} from 'vue-baberrage';
 import answer from '@/components/common/answer';
@@ -247,7 +248,7 @@ export default {
 		},
 
 		// 结果弹窗确认事件
-		onClickPopup() {
+		onClickPopup: lodash.debounce(function () {
 			console.log("得分：" + this.fraction);
 			console.log("结果ID：" + this.resultId);
 			this.setShowResultPopup(false);
@@ -262,12 +263,12 @@ export default {
 						YzChannelId: this.channelId,
 						t: new Date().getTime()
 					}
-				}).then(()=>{
+				}).then(() => {
 					// 隐藏按钮
 					this.setShowCloseBtn(false);
 				});
 			});
-		},
+		}, 300),
 	}
 }
 </script>

@@ -11,23 +11,18 @@
 	</div>
 </template>
 <script>
+import lodash from "lodash";
 import {mapMutations, mapState} from "vuex";
 import Countdown from '@choujiaojiao/vue2-countdown'
 import AdUtils from "@/utils/AdUtils";
 
 export default {
 	name: "close-btn",
-	props: {},
 	computed: {
-		...mapState(["appId", "channelId", "showCloseBtn", "channelVersion", "isShowExitBtn", "countdownTimer"]),
+		...mapState(["appId", "channelId", "showCloseBtn", "channelVersion", "isShowExitBtn", "countdownTimer", "countdownSwitch"]),
 	},
 	components: {
 		Countdown,
-	},
-	data() {
-		return {
-			countdownSwitch: true,
-		}
 	},
 	watch: {
 		showCloseBtn(val) {
@@ -41,11 +36,11 @@ export default {
 				switch (callback) {
 					case "onPause":
 						console.log("androidLifeCycleCallBack onPause --> " + from);
-						this.countdownSwitch = false;
+						this.setCountdownSwitch(false);
 						break;
 					case "onResume":
 						console.log("androidLifeCycleCallBack onResume --> " + from);
-						this.countdownSwitch = true;
+						this.setCountdownSwitch(true);
 						break;
 					case "onStop":
 						console.log("androidLifeCycleCallBack onStop --> " + from);
@@ -58,6 +53,7 @@ export default {
 		...mapMutations({
 			setShowCloseBtn: "setShowCloseBtn",
 			setShowExitBtn: "setShowExitBtn",
+			setCountdownSwitch: "setCountdownSwitch",
 			addAdCount: "addAdCount",
 		}),
 
@@ -78,22 +74,18 @@ export default {
 		},
 
 		// 点击关闭按钮事件
-		onBtnClick() {
+		onBtnClick: lodash.debounce(function () {
 			// 播放广告
 			AdUtils.openVideoAd(this.appId, this.channelId, () => {
-				// 关闭倒计时
-				this.countdownSwitch = false;
 				// 添加广告统计次数
 				this.addAdCount();
 				// 隐藏按钮
 				this.setShowCloseBtn(false);
 			});
-		},
+		}, 400),
 
 		onCountdownEnd() {
 			console.log("============倒计时结束=============")
-			// 关闭倒计时
-			this.countdownSwitch = false;
 			// 隐藏按钮
 			this.setShowCloseBtn(false);
 		}
