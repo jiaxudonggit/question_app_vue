@@ -21,6 +21,8 @@
 	</div>
 </template>
 <script>
+
+import lodash from "lodash";
 import {Request} from "@/utils/Utils";
 import {mapGetters, mapMutations, mapState} from "vuex";
 import question_list_horizontal from "@/components/common/question_list_horizontal";
@@ -67,10 +69,10 @@ export default {
 			this.$emit("listenerRecommendClick", item, index);
 		},
 
-		onRefreshClick() {
-			// 换一换
-			this.getRecommendData();
-		},
+		// 换一换
+		onRefreshClick: lodash.debounce(function () {
+			if (!this.loading) this.getRecommendData();
+		}, 800, {'leading': true, 'trailing': false}),
 
 		// 记录用户点击推荐应用
 		createRecommendRecord(from_app_id, to_app_id, callback) {

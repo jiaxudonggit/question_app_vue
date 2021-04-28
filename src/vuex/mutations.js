@@ -38,30 +38,30 @@ const mutations = {
         state.fraction = fraction;
     },
 
-    // 设置广告统计次数
-    addAdCount(state) {
-        state.adCount += 1;
-    },
-
     // 设置推荐弹窗显示状态
     setGameBack(state, status) {
         state.isGameBack = status;
     },
 
-    // 设置关闭webview悬浮按钮状态
+    // 设置webview关闭按钮状态
     setShowExitBtn(state, status) {
         state.isShowExitBtn = status;
     },
 
-    // 设置关闭按钮显示状态
-    setShowCloseBtn(state, status) {
-        state.countdownSwitch = status;
-        state.showCloseBtn = status;
-    },
-
-    // 设置测试结果弹窗显示状态
+    // 设置计时器状态
     setCountdownSwitch(state, status) {
         state.countdownSwitch = status;
+    },
+
+    // 设置倒计时关闭按钮显示/隐藏状态
+    setShowCloseBtn(state, status) {
+        if (!state.isCloseBtn) state.isShowCloseBtn = false;
+        if (state.isCloseBtn) state.isShowCloseBtn = status;
+    },
+
+    // 设置倒计时关闭按钮显示/隐藏状态
+    setCloseBtn(state, status) {
+        state.isCloseBtn = status;
     },
 
     // 设置测试结果弹窗显示状态
@@ -90,12 +90,18 @@ const mutations = {
 
     },
 
+    // 增加广告统计次数
+    addAdCount(state) {
+        state.adCount += 1;
+    },
+
     // 设置用户信息
     setUserInfo(state, userInfo) {
         state.nickname = String(userInfo.nickname);
         state.headImage = String(userInfo.head_img_url);
         state.sex = userInfo.sex;
         state.accessToken = userInfo.access_token;
+        state.isNewAccount = userInfo.is_new_account;
         state.isLogin = true;
         window.sessionStorage.setItem("accessToken", userInfo.access_token)
     },

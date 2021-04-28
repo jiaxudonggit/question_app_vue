@@ -128,7 +128,8 @@ export default {
 			setGameBack: "setGameBack",
 			setShowResultPopup: "setShowResultPopup",
 			updateBarrageData: "updateBarrageData",
-			setShowCloseBtn: "setShowCloseBtn",
+			setCloseBtn: "setCloseBtn",
+			addAdCount: "addAdCount",
 		}),
 
 		// 初始化
@@ -256,6 +257,11 @@ export default {
 			this.setShowResultPopup(false);
 			// 播放广告
 			AdUtils.openVideoAd(this.appId, this.channelId, () => {
+				// 添加广告统计次数
+				this.addAdCount();
+				// 隐藏倒计时关闭按钮
+				this.setCloseBtn(false);
+				// 跳转结果页
 				this.$router.replace({
 					path: "/result",
 					query: {
@@ -263,9 +269,6 @@ export default {
 						YzChannelId: this.channelId,
 						t: new Date().getTime()
 					}
-				}).then(() => {
-					// 看过广告 关闭倒计时退出
-					this.setShowCloseBtn(false);
 				});
 			});
 		}, 800, {'leading': true, 'trailing': false}),

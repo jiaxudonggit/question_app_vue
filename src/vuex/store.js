@@ -22,6 +22,7 @@ const state = {
     resultId: null, // 答题结果ID
     fraction: 0, // 答题结果分数
     adCount: 0, // 播放激励视频广告次数
+    IndexPageName: ["index", "home"], // 显示关闭按钮的页面名称
     // 用户数据
     isLogin: false, // 是否已登陆
     isRecordAccess: false, // 是否已记录访问
@@ -29,10 +30,11 @@ const state = {
     headImage: "",      // 头像
     sex: 0,           // 性别
     accessToken: null, // 身份令牌
+    isNewAccount: true, // 是否是新用户
     // 浏览器调试时用户ID
     debugUserId: "0123456789",
     // 阅友单独使用的数据
-    signStr: "bi6tUL8Tf31I+DHx9KRJkVP1M7S0jqQ9vTnUjDARxI6APhslppch7qofwgz8ikdJ2xzY4t8dsH2mhto4s1bHk7+X196BWZ+Iut7dby1dqECTMK17xOAOOb8ABT1AmHuaSIMIrsWicJ43f4TNzC+WF4jTUksL9FiqLYstgS0auAY=",      // 验签串
+    signStr: "bi6tUL8Tf31I+DHx9KRJkVP1M7S0jqQ9vTnUjDARxI6APhslppch7qofwgz8ikdJ2xzY4t8dsH2mhto4s1bHk7+X196BWZ+Iut7dby1dqECTMK17xOAOOb8ABT1AmHuaSIMIrsWicJ43f4TNzC+WF4jTUksL9FiqLYstgS0auAY=", // 验签串
     centerAppId: "700085",
     // UI相关
     isAppending: false,
@@ -41,10 +43,13 @@ const state = {
     timer: null,
     availHeight: window.screen.availHeight,
     loadingTime: 300,
-    showCloseBtn: true, // 是否注销倒计时按钮
-    isShowExitBtn: false, // 是否显示webview退出悬浮按钮
+    // 倒计时按钮
+    isShowCloseBtn: false, // 是否显示倒计时按钮
+    isCloseBtn: false, // 是否删除倒计时按钮dom
     countdownTimer: 120, // 倒计时退出时间,单位：秒  3分钟
-    countdownSwitch: true, // 倒计时状态，暂停|开始
+    countdownSwitch: false, // 倒计时状态
+    // webview关闭按钮
+    isShowExitBtn: false, // 是否显示webview退出悬浮按钮
     // 业务数据
     homeData: {
         banner_list: [

@@ -9,7 +9,7 @@
 			<router-view v-if="!$route.meta.keepAlive && isRouterAlive"></router-view>
 		</transition>
 		<app_bottom></app_bottom>
-		<close_btn v-show="showCloseBtnRoute"></close_btn>
+		<close_btn></close_btn>
 	</div>
 </template>
 
@@ -40,13 +40,11 @@ export default {
 		return {
 			enterAnimate: '',
 			isRouterAlive: true,
-			showCloseBtnRoute: false,
 		}
 	},
 	computed: {
-		...mapState(["isAppending", "isGameBack", "debugUserId", "debug",
-			"isRunBrowser", "indexData", "appId", "channelId", "isRecordAccess",
-			"isShowExitBtn", "showCloseBtn"]),
+		...mapState(["isAppending", "isGameBack", "debugUserId", "debug", "isRunBrowser", "indexData", "appId", "channelId", "isRecordAccess" ,
+			"isNewAccount", "adCount", "IndexPageName"]),
 		...mapGetters(["appApiUrl", "isLogin"]),
 	},
 	watch: {
@@ -58,21 +56,9 @@ export default {
 				})
 				: this.$toast.clear();
 		},
-		$route(to) {
-			// 判断是否显示倒计时关闭按钮
-			this.showCloseBtnRoute = (to.name === "index" || to.name === "home") && this.showCloseBtn;
-			// 判断显示/隐藏webview关闭按钮
-			if (to.name === "index" || to.name === " home") {
-				// 显示关闭按钮
-				this.showExitBtn();
-			} else {
-				// 隐藏关闭按钮
-				this.hideExitBtn();
-			}
-		}
 	},
 	mounted() {
-		// 获得屏幕可视区域高度
+		// 绑定window.onresize事件， 获得屏幕可视高度
 		window.onresize = () => {
 			return (() => {
 				this.setAvailHeight(window.screen.availHeight);
@@ -95,31 +81,9 @@ export default {
 			setShowResultPopup: "setShowResultPopup",
 			setAppStatus: "setAppStatus",
 			doRecordAccess: "doRecordAccess",
+			setCloseBtn: "setCloseBtn",
 			setShowExitBtn: "setShowExitBtn",
-			setShowCloseBtn: "setShowCloseBtn",
 		}),
-
-		// 监听移动端返回键事件
-		watchReturn() {
-			switch (this.$route.path) {
-				case "/play":
-					// 关闭banner广告
-					AdUtils.closeBannerAd(() => {
-						this.setShowResultPopup(false);
-						if (this.isLogin && this.indexData.show_recommend_layer) this.setGameBack(true);
-						this.$router.replace({path: "/", query: {YzAppId: this.appId, YzChannelId: this.channelId, t: new Date().getTime()}});
-					});
-					break;
-				case "/result":
-					AdUtils.closeScreenAd(() => {
-						if (this.isLogin && this.indexData.show_recommend_layer) this.setGameBack(true);
-						this.$router.replace({path: "/", query: {YzAppId: this.appId, YzChannelId: this.channelId, t: new Date().getTime()}});
-					});
-					break;
-				case "/":
-					break;
-			}
-		},
 
 		// 用户登录
 		userLogin(userInfo, callback) {
@@ -133,7 +97,11 @@ export default {
 					sex: userInfo.sex,
 				},
 				callback: (res, err) => {
-					if (err || res.code !== 0) return this.$toast("用户登录失败，" + err);
+					if (err || res.code !== 0) {
+						// 打开webview关闭按钮
+						this.setShowExitBtn(true);
+						return this.$toast("用户登录失败，" + err);
+					}
 					// 设置用户信息到store中
 					this.setUserInfo(res.body);
 					if (typeof callback === "function") callback();
@@ -180,20 +148,22 @@ export default {
 				if (this.isLogin) {
 					console.log("========用户已经登录=========");
 					// 记录用户进入应用
-					this.createAccessRecord(() => {
-						if (typeof callback === "function") callback();
-					});
+					this.createAccessRecord();
+					// 打开倒计时关闭按钮
+					if (this.adCount <= 0) this.isNewAccount ? this.setCloseBtn(true) : this.setShowExitBtn(this.IndexPageName.indexOf(this.$route.name) !== -1);
+					if (typeof callback === "function") callback();
 				} else {
 					console.log("========用户开始登录=========");
 					// 获得渠道用户信息
 					this.getChannelUserInfo((userInfo) => {
 						// 请求登录
 						this.userLogin(userInfo, () => {
+							console.log("========用户登录成功=========");
 							// 记录用户进入应用
-							this.createAccessRecord(() => {
-								console.log("========用户登录成功=========");
-								if (typeof callback === "function") callback();
-							});
+							this.createAccessRecord()
+							// 打开倒计时关闭按钮
+							if (this.adCount <= 0) this.isNewAccount ? this.setCloseBtn(true) : this.setShowExitBtn(this.IndexPageName.indexOf(this.$route.name) !== -1);
+							if (typeof callback === "function") callback();
 						});
 					});
 				}
