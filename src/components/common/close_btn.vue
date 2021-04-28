@@ -39,7 +39,7 @@ export default {
 				this.setCountdownSwitch(true);
 			} else {
 				// 关闭倒计时
-				this.setCountdownSwitch(true);
+				this.setCountdownSwitch(false);
 				// 隐藏倒计时按钮
 				this.setShowCloseBtn(false);
 				// 打开webview关闭按钮
