@@ -35,7 +35,7 @@ const state = {
     debugUserId: "0123456789",
     // 阅友单独使用的数据
     signStr: "bi6tUL8Tf31I+DHx9KRJkVP1M7S0jqQ9vTnUjDARxI6APhslppch7qofwgz8ikdJ2xzY4t8dsH2mhto4s1bHk7+X196BWZ+Iut7dby1dqECTMK17xOAOOb8ABT1AmHuaSIMIrsWicJ43f4TNzC+WF4jTUksL9FiqLYstgS0auAY=", // 验签串
-    centerAppId: "700085",
+    centerAppId: "700086",
     // UI相关
     isAppending: false,
     isGameBack: false,

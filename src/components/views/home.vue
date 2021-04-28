@@ -94,6 +94,7 @@ export default {
 		// 点击大家爱玩 更多
 		onLikeMoreClick() {
 			console.log("========点击了更多按钮======")
+			this.$router.replace({path: "/like", query: {YzChannelId: this.channelId, t: new Date().getTime()}});
 		},
 
 		// 点击更多好玩列表

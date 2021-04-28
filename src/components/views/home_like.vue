@@ -1,18 +1,11 @@
 <!--主页商店页面组件-->
 <template>
-	<div id="type" class="type app-model" :style="{minHeight: (availHeight - 46) + 'px'}">
-		<van-nav-bar class="van-nav-bar-customer fixed-fix" :title="$route.query.YzTypeTitle" left-text="返回" left-arrow @click-left="onClickLeft"/>
-		<div class="type-content app-content">
-			<img :src="type_image" class="type-content-bg-image" alt="">
-			<div class="type-content-app-list-wrap">
-				<div class="type-content-app-list-title">
-					{{ $route.query.YzTypeTitle }}
-				</div>
-				<van-list class="type-content-app-list" v-model="loading" :finished="page === total_page" finished-text="--我是有底线的--" :error.sync="error" error-text="请求失败，点击重新加载" @load="onLoad">
-					<question_list_horizontal :question-list="typeList" :user-bg-color="'background-color: #6e88ff;'" :bg-color="true" @listenerQuestionListClick="onTypeClick"></question_list_horizontal>
-				</van-list>
-			</div>
-
+	<div id="like" class="like app-model" :style="{minHeight: (availHeight - 46) + 'px'}">
+		<van-nav-bar class="van-nav-bar-customer fixed-fix" title="大家爱玩" left-text="返回" left-arrow @click-left="onClickLeft"/>
+		<div class="like-content app-content">
+			<van-list class="like-content-app-list" v-model="loading" :finished="page === total_page" finished-text="--我是有底线的--" :error.sync="error" error-text="请求失败，点击重新加载" @load="onLoad">
+				<question_list_horizontal :question-list="likeList" :user-bg-color="'background-color: #6e88ff;'" :bg-color="true" @listenerQuestionListClick="onTypeClick"></question_list_horizontal>
+			</van-list>
 		</div>
 	</div>
 </template>
@@ -43,7 +36,7 @@ export default {
 	data() {
 		return {
 			type_image: require("@/assets/images/home/222_banner.png"),
-			typeList: [],
+			likeList: [],
 			error: false,
 			loading: false,
 			total_page: 0,
@@ -51,8 +44,10 @@ export default {
 		}
 	},
 	created() {
+		// 设置channelId到vuex
+		this.setChannelId(this.$route.query.YzChannelId);
 		// 获取分类下的应用数据
-		this.getTypeData();
+		this.getLikeData();
 	},
 	activated() {
 		// 设置channelId到vuex
@@ -60,9 +55,9 @@ export default {
 		// 初始化数据
 		this.page = 0;
 		this.total_page = 0;
-		this.typeList = [];
+		this.likeList = [];
 		// 获取分类下的应用数据
-		this.getTypeData();
+		this.getLikeData();
 	},
 	methods: {
 		...mapMutations({
@@ -79,7 +74,7 @@ export default {
 		},
 
 		// 获得测一测推荐配置
-		getTypeData(callback = null) {
+		getLikeData(callback = null) {
 			Request.request({
 				url: this.appApiUrl + "/test_app/get_recommend_data_load",
 				data: {
@@ -93,7 +88,7 @@ export default {
 					this.total_page = res.body.total_page;
 					this.page = res.body.page;
 					for (let i = 0; i < res.body.recommend_list.length; i++) res.body.recommend_list[i].app_icon = this.appIconUrl(res.body.recommend_list[i].app_icon);
-					this.typeList = this.typeList.concat(res.body.recommend_list);
+					this.likeList = this.likeList.concat(res.body.recommend_list);
 					if (typeof callback === "function") callback();
 				},
 			})
@@ -102,7 +97,7 @@ export default {
 		onLoad() {
 			// 异步更新数据
 			setTimeout(() => {
-				this.getTypeData(() => {
+				this.getLikeData(() => {
 					// 加载状态结束
 					this.loading = false;
 				});
@@ -113,5 +108,5 @@ export default {
 }
 </script>
 <style lang="less">
-@import "../../assets/less/type.less";
+@import "../../assets/less/like.less";
 </style>

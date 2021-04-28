@@ -23,7 +23,7 @@ const routes = [
     {
         path: '/user',
         name: "user",
-        component: resolve => require(["../components/views/type"], resolve),
+        component: resolve => require(["../components/views/home_type"], resolve),
         meta: {
             keepAlive: true,
             showTabbar: false,
@@ -32,7 +32,16 @@ const routes = [
     {
         path: '/type',
         name: "type",
-        component: resolve => require(["../components/views/type"], resolve),
+        component: resolve => require(["../components/views/home_type"], resolve),
+        meta: {
+            keepAlive: true,
+            showTabbar: false,
+        }
+    },
+    {
+        path: '/like',
+        name: "like",
+        component: resolve => require(["../components/views/home_like"], resolve),
         meta: {
             keepAlive: true,
             showTabbar: false,

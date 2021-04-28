@@ -89,12 +89,6 @@ export default class YueYouUtils {
 
     // 4. 调用init
     static initApp(appId, userInfo, callback) {
-        try {
-            // 显示关闭按钮
-            if (window.nativeObj !== undefined) window.nativeObj.showExitIcon();
-        } catch (e) {
-            console.log(e);
-        }
         if (typeof callback === "function") callback(userInfo);
     }
 }

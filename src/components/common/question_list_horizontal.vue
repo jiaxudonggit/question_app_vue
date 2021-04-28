@@ -1,7 +1,7 @@
 <!-- 题目列表 横向-->
 <template>
 	<div class="question-block">
-		<div class="question-row" v-for="(item, index) in questionList" :key="index" @click="onQuestionListClick(item, index)" :style="{background: bgColor ? 'linear-gradient(to top right, #ffffff, #ffffff,#ffffff, rgba(207, 63, 232, 0.3))' : ''}">
+		<div class="question-row" v-for="(item, index) in questionList" :key="index" @click="onQuestionListClick(item, index)" :style="{background: bgColor ? bgColorArray.randomElement() : ''}">
 			<div class="question-row-left">
 				<img class="question-row-icon" :src="item.app_icon" alt="加载错误">
 			</div>
@@ -32,6 +32,16 @@ export default {
 		bgColor: {
 			type: Boolean,
 			default: false,
+		}
+	},
+	data() {
+		return {
+			bgColorArray: [
+				'linear-gradient(to top right, #ffffff, #ffffff,#ffffff, rgba(207, 63, 232, 0.3))',
+				'linear-gradient(to top right, #ffffff, #ffffff,#ffffff, rgba(2, 180, 250, 0.3))',
+				'linear-gradient(to top right, #ffffff, #ffffff,#ffffff, rgba(253, 187, 15, 0.3))',
+				'linear-gradient(to top right, #ffffff, #ffffff,#ffffff, rgba(88, 255, 0, 0.3))',
+			]
 		}
 	},
 	methods: {
