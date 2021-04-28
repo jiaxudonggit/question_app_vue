@@ -15,56 +15,68 @@
 </template>
 <script>
 import lodash from "lodash";
-import {mapMutations, mapState} from "vuex";
+import {mapGetters, mapMutations, mapState} from "vuex";
 import Countdown from '@choujiaojiao/vue2-countdown'
 import AdUtils from "@/utils/AdUtils";
 
 export default {
 	name: "close-btn",
 	computed: {
-		...mapState(["appId", "channelId", "channelVersion", "countdownTimer", "countdownSwitch", "isNewAccount", "isShowCloseBtn", "isCloseBtn", "isShowExitBtn"]),
+		...mapState(["appId", "channelId", "channelVersion", "countdownTimer", "countdownSwitch", "isNewAccount",
+			"isShowCloseBtn", "isCloseBtn", "isShowExitBtn", "IndexPageName"]),
+		...mapGetters(["isLogin"])
 	},
 	components: {
 		Countdown,
 	},
 	watch: {
 		isCloseBtn(val) {
-			// 显示webview关闭按钮，如果当前路由为index的话
-			if (!val && this.$route.name === "index") this.setShowExitBtn(true);
+			// 倒计时按钮
+			if (val) {
+				// 显示/隐藏倒计时按钮
+				this.IndexPageName.indexOf(this.$route.name) !== -1 ? this.setShowCloseBtn(true) : this.setShowCloseBtn(false);
+				// 开启倒计时
+				this.setCountdownSwitch(true);
+			} else {
+				// 关闭倒计时
+				this.setCountdownSwitch(true);
+				// 隐藏倒计时按钮
+				this.setShowCloseBtn(false);
+				// 打开webview关闭按钮
+				if (this.IndexPageName.indexOf(this.$route.name) !== -1) this.setShowExitBtn(true);
+			}
 		},
 		// 是否显示webview关闭按钮
 		isShowExitBtn(val) {
-			if (val) {
-				if (this.channelId === "YueYou" && !this.isCloseBtn && window.nativeObj !== undefined) {
-					console.log("===============显示webView关闭按钮==================")
-					window.nativeObj.showExitIcon();
-				}
-			} else {
-				if (this.channelId === "YueYou" && window.nativeObj !== undefined) {
-					console.log("===============隐藏webView关闭按钮==================")
+			// 阅友渠道/app环境中
+			if (this.channelId === "YueYou" && window.nativeObj !== undefined) {
+				if (val) {
+					if (!this.isCloseBtn) {
+						console.log("============显示webview关闭按钮==============");
+						window.nativeObj.showExitIcon();
+					}
+				} else {
+					console.log("============隐藏webview关闭按钮==============");
 					window.nativeObj.closeExitIcon();
 				}
 			}
 		},
 		// 如果用户不是新用户则关闭倒计时
 		isNewAccount(val) {
-			if (!val) this.setCloseBtn(false);
+			val ? this.setCloseBtn(true) : this.setCloseBtn(false);
 		},
 		// 监听router
 		$route(to) {
-			// 如果倒计时关闭按钮不存在, 只在index页显示webview关闭按钮
-			this.setShowExitBtn(!this.isCloseBtn && to.name === "index");
-			// 如果倒计时关闭按钮存在，则只在index页显示
-			this.setShowCloseBtn(this.isCloseBtn && to.name === "index");
+			if (this.isLogin) {
+				// 如果倒计时关闭按钮不存在, 只在index页显示webview关闭按钮
+				this.setShowExitBtn(!this.isCloseBtn && this.IndexPageName.indexOf(to.name) !== -1);
+				// 如果倒计时关闭按钮存在，则只在index页显示
+				this.setShowCloseBtn(this.isCloseBtn && this.IndexPageName.indexOf(to.name) !== -1);
+			}
 		},
 	},
-	activated() {
-		// 如果用户不是新用户则关闭倒计时
-		if (!this.isNewAccount) this.setCloseBtn(false);
-	},
+
 	created() {
-		// 如果用户不是新用户则关闭倒计时
-		if (!this.isNewAccount) this.setCloseBtn(false);
 		// 设置安卓生命周期
 		if (AdUtils.getAppVersion() >= this.channelVersion && this.channelId === "YueYou") {
 			// 系统状态监听

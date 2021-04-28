@@ -22,6 +22,7 @@ const state = {
     resultId: null, // 答题结果ID
     fraction: 0, // 答题结果分数
     adCount: 0, // 播放激励视频广告次数
+    IndexPageName: ["index", "home"], // 显示关闭按钮的页面名称
     // 用户数据
     isLogin: false, // 是否已登陆
     isRecordAccess: false, // 是否已记录访问
@@ -29,7 +30,7 @@ const state = {
     headImage: "",      // 头像
     sex: 0,           // 性别
     accessToken: null, // 身份令牌
-    isNewAccount: true,
+    isNewAccount: true, // 是否是新用户
     // 浏览器调试时用户ID
     debugUserId: "0123456789",
     // 阅友单独使用的数据
@@ -42,11 +43,11 @@ const state = {
     availHeight: window.screen.availHeight, // 屏幕可视高度
     loadingTime: 300, // 定时器延时时间：毫秒
     // 倒计时按钮
-    isShowCloseBtn: true, // 是否显示倒计时按钮
-    isCloseBtn: true, // 是否删除倒计时按钮dom
+    isShowCloseBtn: false, // 是否显示倒计时按钮
+    isCloseBtn: false, // 是否删除倒计时按钮dom
     isShowExitBtn: false, // 是否显示webview退出悬浮按钮
     countdownTimer: 120, // 倒计时退出时间,单位：秒  3分钟
-    countdownSwitch: true, // 倒计时状态
+    countdownSwitch: false, // 倒计时状态
     // 业务数据
     indexData: {
         "app_id": null,

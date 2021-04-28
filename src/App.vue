@@ -40,7 +40,8 @@ export default {
 		close_btn,
 	},
 	computed: {
-		...mapState(["isAppending", "isGameBack", "debugUserId", "debug", "isRunBrowser", "indexData", "appId", "channelId", "isRecordAccess"]),
+		...mapState(["isAppending", "isGameBack", "debugUserId", "debug", "isRunBrowser", "indexData",
+			"appId", "channelId", "isRecordAccess", "isNewAccount", "adCount", "IndexPageName"]),
 		...mapGetters(["appApiUrl", "isLogin"]),
 	},
 	watch: {
@@ -78,6 +79,8 @@ export default {
 			setShowResultPopup: "setShowResultPopup",
 			setAppStatus: "setAppStatus",
 			doRecordAccess: "doRecordAccess",
+			setCloseBtn: "setCloseBtn",
+			setShowExitBtn: "setShowExitBtn",
 		}),
 
 		// 用户登录
@@ -92,7 +95,11 @@ export default {
 					sex: userInfo.sex,
 				},
 				callback: (res, err) => {
-					if (err || res.code !== 0) return this.$toast("用户登录失败，" + err);
+					if (err || res.code !== 0) {
+						// 打开webview关闭按钮
+						this.setShowExitBtn(true);
+						return this.$toast("用户登录失败，" + err);
+					}
 					// 设置用户信息到store中
 					this.setUserInfo(res.body);
 					if (typeof callback === "function") callback();
@@ -139,9 +146,10 @@ export default {
 				if (this.isLogin) {
 					console.log("========用户已经登录=========");
 					// 记录用户进入应用
-					this.createAccessRecord(() => {
-						if (typeof callback === "function") callback();
-					});
+					this.createAccessRecord();
+					// 打开倒计时关闭按钮
+					if (this.adCount <= 0) this.isNewAccount ? this.setCloseBtn(true) : this.setShowExitBtn(this.IndexPageName.indexOf(this.$route.name) !== -1);
+					if (typeof callback === "function") callback();
 				} else {
 					console.log("========用户开始登录=========");
 					// 获得渠道用户信息
@@ -149,10 +157,11 @@ export default {
 						// 请求登录
 						this.userLogin(userInfo, () => {
 							// 记录用户进入应用
-							this.createAccessRecord(() => {
-								console.log("========用户登录成功=========");
-								if (typeof callback === "function") callback();
-							});
+							this.createAccessRecord()
+							console.log("========用户登录成功=========");
+							// 打开倒计时关闭按钮
+							if (this.adCount <= 0) this.isNewAccount ? this.setCloseBtn(true) : this.setShowExitBtn(this.IndexPageName.indexOf(this.$route.name) !== -1);
+							if (typeof callback === "function") callback();
 						});
 					});
 				}

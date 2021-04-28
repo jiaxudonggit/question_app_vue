@@ -1,5 +1,7 @@
 import {MESSAGE_TYPE} from 'vue-baberrage'
 
+const IndexPageName = ["index", "home"];
+
 const mutations = {
 
     // 设置渠道ID
@@ -65,8 +67,6 @@ const mutations = {
     },
     // 设置倒计时关闭按钮显示/隐藏状态
     setCloseBtn(state, status) {
-        state.countdownSwitch = status;
-        if (!status) state.isShowCloseBtn = false;
         state.isCloseBtn = status;
     },
 

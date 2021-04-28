@@ -46,8 +46,7 @@ Array.prototype.randomElement = function () {
 axios.interceptors.request.use(
     config => {
         // 有token就加上token
-        let accessToken = window.sessionStorage.getItem("accessToken") || store.state.accessToken;
-        if (accessToken) config.headers.Authorization = accessToken;
+        if (store.state.accessToken) config.headers.Authorization = store.state.accessToken;
         return config;
     },
     error => {
