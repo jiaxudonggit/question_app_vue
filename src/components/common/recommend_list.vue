@@ -35,6 +35,7 @@
 	</div>
 </template>
 <script>
+import lodash from "lodash";
 import {Request} from "@/utils/Utils";
 import {mapGetters, mapMutations, mapState} from "vuex";
 
@@ -52,7 +53,7 @@ export default {
 	data() {
 		return {
 			loading: false,
-			recommend_list: []
+			recommend_list: [],
 		}
 	},
 	computed: {
@@ -78,10 +79,13 @@ export default {
 			});
 		},
 
-		onRefreshClick() {
-			// 换一换
-			this.getRecommendData();
-		},
+		// 换一换
+		onRefreshClick: lodash.debounce(function () {
+			if (!this.loading) this.getRecommendData();
+		}, 800, {
+			'leading': true,
+			'trailing': false
+		}),
 
 		// 记录用户点击推荐应用
 		createRecommendRecord(from_app_id, to_app_id, callback) {
