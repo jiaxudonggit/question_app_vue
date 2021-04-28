@@ -39,6 +39,15 @@ const routes = [
         }
     },
     {
+        path: '/search',
+        name: "search",
+        component: resolve => require(["../components/views/home_search"], resolve),
+        meta: {
+            keepAlive: true,
+            showTabbar: false,
+        }
+    },
+    {
         path: '/like',
         name: "like",
         component: resolve => require(["../components/views/home_like"], resolve),

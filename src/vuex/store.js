@@ -2,7 +2,6 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import mutations from "./mutations"
 import getters from "./getters"
-import { MESSAGE_TYPE } from 'vue-baberrage'
 import {Utils} from "@/utils/Utils";
 
 Vue.use(Vuex)
@@ -207,7 +206,7 @@ const state = {
         "barrage_loop": true,  // 是否循环显示弹幕
         "barrage_time": 3,  // 弹幕速度
         "barrage_style": "barrage-item-custom",  // 弹幕额外样式
-        "barrage_type": MESSAGE_TYPE.NORMAL,  // 弹幕方向
+        "barrage_type": "",  // 弹幕方向
         "lanes_count": 3,  // 弹幕航道数量
         "throttle_gap": 3000,  // 弹幕之间的节流时间
         "avatar_list": [],

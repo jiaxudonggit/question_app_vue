@@ -1,5 +1,3 @@
-import {MESSAGE_TYPE} from 'vue-baberrage'
-
 const mutations = {
 
     // 设置渠道ID
@@ -143,9 +141,7 @@ const mutations = {
 
 
     // 设置弹幕数据
-    setBarrageData(state, payload) {
-        let barrageData = payload.data;
-        state.barrageData.barrageList = [];
+    setBarrageData(state, barrageData) {
         state.barrageData.barrage_number = barrageData.barrage_number;
         state.barrageData.barrage_loop = barrageData.barrage_loop;
         state.barrageData.barrage_time = barrageData.barrage_time;
@@ -154,26 +150,6 @@ const mutations = {
         state.barrageData.throttle_gap = barrageData.throttle_gap;
         state.barrageData.avatar_list = barrageData.avatar_list;
         state.barrageData.msg_list = barrageData.msg_list;
-        switch (barrageData.barrage_type) {
-            case "NORMAL":
-                state.barrageData.barrage_type = MESSAGE_TYPE.NORMAL;
-                break;
-            case "FROM_TOP":
-                state.barrageData.barrage_type = MESSAGE_TYPE.FROM_TOP;
-                break;
-            case "FROM_BOTTOM":
-                state.barrageData.barrage_type = MESSAGE_TYPE.FROM_BOTTOM;
-                break;
-        }
-        for (let i = 1; i < state.barrageData.barrage_number + 1; i++) state.barrageData.barrageList.push({
-            id: i,
-            avatar: payload.appBarrageAvatarUrl(state.barrageData.avatar_list.randomElement()),
-            msg: state.barrageData.msg_list.randomElement(),
-            time: state.barrageData.barrage_time,
-            type: state.barrageData.barrage_type,
-            barrageStyle: state.barrageData.barrage_style,
-            extraWidth: Math.floor(Math.random() * (200 - 80 + 1) + 80),
-        });
     },
 
     // 设置推荐弹窗数据

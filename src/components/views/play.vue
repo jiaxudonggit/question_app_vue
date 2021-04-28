@@ -25,7 +25,27 @@
 				<answer v-if="showAnswer && Object.keys(question).length > 0" :question="question" :model="model" v-on:listenerAnswerClick="onClickAnswer"></answer>
 			</div>
 			<div class="game-barrage-wrap">
-				<vue-baberrage :throttle-gap="barrageData.throttle_gap" :lanes-count="barrageData.lanes_count" :is-show="playData.show_barrage && showBarrage" :barrage-list="barrageList" :loop="barrageData.barrage_loop"></vue-baberrage>
+				<vue-danmaku
+					v-if="showBarrage"
+					class="game-barrage"
+					ref="barrage"
+					:danmus="barrageList"
+					useSlot
+					:channels="barrageData.lanes_count"
+					:loop="barrageData.barrage_loop"
+					:autoplay="true"
+					:randomChannel="true"
+					:speed="barrageData.barrage_time"
+					:top="15">
+					<template slot="dm" slot-scope="{ index, danmu }">
+						<div class="barrage-item">
+							<img :src="danmu.avatar" alt="">
+							<span>{{ danmu.msg }}</span>
+						</div>
+					</template>
+					<!-- 容器插槽 -->
+					<div></div>
+				</vue-danmaku>
 			</div>
 		</div>
 		<van-popup v-if="showResultPopup" v-model="showResultPopup" class="result-popup" @click="onClickPopup" @click-overlay="onClickPopup" :lock-scroll="true" :close-on-click-overlay="false">
@@ -37,7 +57,7 @@
 
 import lodash from 'lodash';
 import Vue from 'vue';
-import {vueBaberrage} from 'vue-baberrage';
+import vueDanmaku from 'vue-danmaku'
 import answer from '@/components/common/answer';
 import AdUtils from "@/utils/AdUtils";
 import {mapGetters, mapMutations, mapState} from "vuex";
@@ -45,12 +65,12 @@ import {Request, Utils} from "@/utils/Utils";
 import {Popup} from 'vant';
 
 Vue.use(Popup);
-Vue.use(vueBaberrage);
 
 export default {
 	inject: ['reload', 'autoLogin'],
 	components: {
 		answer,
+		vueDanmaku,
 	},
 	data() {
 		return {
@@ -80,6 +100,7 @@ export default {
 		}
 	},
 	activated() {
+		console.log(this.$refs)
 		// 页面滚到顶部
 		Utils.scrollToTop();
 		// 设置appId和channelId到vuex
@@ -88,25 +109,28 @@ export default {
 		this.initData(() => {
 			// 获得弹幕数据
 			this.getBarrageData(() => {
-				this.renderBarrageData();
+				// 渲染弹幕数据
+				this.renderBarrageData()
 			});
+			// 打开banner广告
+			AdUtils.openBannerAd(this.appId);
 			// 初始化数据
 			this.setShowResultPopup(false); // 关闭结果提示框
 			this.setResultId(null); // 重置结果ID
 			this.setFraction(0); // 重置题目
 			this.questionIndex = 0; // 重置题目索引
 			this.fractionArray = []; // 重置分数
-			this.barrageList = []; // 重置弹幕数据
-			this.showBarrage = false; // 隐藏弹幕
 			// 获得题目
 			this.getQuestion(0);
-			// 打开banner广告
-			AdUtils.openBannerAd(this.appId);
 		});
 	},
 	beforeRouteLeave(to, from, next) {
 		// 关闭banner广告
 		AdUtils.closeBannerAd();
+		// 清除弹幕
+		this.$refs["barrage"].stop();
+		this.showBarrage = false;
+		this.barrageList = [];
 		// 关闭定时器
 		if (this.timer) clearTimeout(this.timer);
 		// 关闭结果提示框
@@ -179,32 +203,33 @@ export default {
 
 		// 获得弹幕数据
 		getBarrageData(callback) {
-			if (this.barrageData.barrageList.length >= this.barrageData.barrage_number) {
+			if (this.barrageData.msg_list.length > 0) {
 				if (typeof callback === "function") callback();
-				return;
+			} else {
+				Request.request({
+					url: this.appApiUrl + "/test_app/get_barrage_data",
+					callback: (res, err) => {
+						if (err || res.code !== 0) return this.$toast("网络错误，请稍后");
+						// 设置首页数据到store
+						this.setBarrageData(res.body);
+						if (typeof callback === "function") callback();
+					},
+				});
 			}
-			Request.request({
-				url: this.appApiUrl + "/test_app/get_barrage_data",
-				callback: (res, err) => {
-					if (err || res.code !== 0) return this.$toast("网络错误，请稍后");
-					// 设置首页数据到store
-					this.setBarrageData({
-						data: res.body,
-						appBarrageAvatarUrl: this.appBarrageAvatarUrl,
-					});
-					if (typeof callback === "function") callback();
-				},
-			})
 		},
 
-		// 渲染弹幕数据
+		// 生成弹幕数据
 		renderBarrageData() {
 			this.showBarrage = false;
-			this.barrageList = lodash.cloneDeep(this.barrageData.barrageList);
+			for (let i = 1; i < this.barrageData.barrage_number + 1; i++) this.barrageList.push({
+				avatar: this.appBarrageAvatarUrl(this.barrageData.avatar_list.randomElement()),
+				msg: this.barrageData.msg_list.randomElement(),
+			});
 			this.$nextTick(() => {
 				this.showBarrage = true;
 			});
 		},
+
 
 		// 获得指定题目
 		getQuestion(questionIndex = 0) {

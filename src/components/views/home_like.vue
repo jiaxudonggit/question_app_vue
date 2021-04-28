@@ -1,4 +1,4 @@
-<!--主页商店页面组件-->
+<!--主页商店喜欢页组件-->
 <template>
 	<div id="like" class="like app-model" :style="{minHeight: (availHeight - 46) + 'px'}">
 		<van-nav-bar class="van-nav-bar-customer fixed-fix" title="大家爱玩" left-text="返回" left-arrow @click-left="onClickLeft"/>

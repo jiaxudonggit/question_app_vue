@@ -1,4 +1,4 @@
-<!--主页商店页面组件-->
+<!--主页商店分类页组件-->
 <template>
 	<div id="type" class="type app-model" :style="{minHeight: (availHeight - 46) + 'px'}">
 		<van-nav-bar class="van-nav-bar-customer fixed-fix" :title="$route.query.YzTypeTitle" left-text="返回" left-arrow @click-left="onClickLeft"/>
@@ -42,7 +42,7 @@ export default {
 	},
 	data() {
 		return {
-			type_image: require("@/assets/images/home/222_banner.png"),
+			type_image: require("@/assets/images/home/type_10001_big.png"),
 			typeList: [],
 			error: false,
 			loading: false,

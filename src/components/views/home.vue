@@ -4,7 +4,10 @@
 		<div class="home-content app-content" :style="{minHeight: (availHeight - 50) + 'px'}">
 			<img class="home-content-bg" src="../../assets/images/home/home-top-bg.png" alt="">
 			<div class="home-search-wrap">
-				<van-search shape="round" :background="'transparent'" placeholder="搜你想搜的，这里会有你所爱~"/>
+				<div class="home-search" @click="onSearchClick">
+					<img src="../../assets/images/home/home-search.png" alt="">
+					<span>搜你想搜的，这里会有你所爱~</span>
+				</div>
 			</div>
 			<div class="home-banner-wrap">
 				<home_swiper_banner :banner-list="homeData.banner_list" :pagination="true" @listenerBannerClick="onBannerClick"></home_swiper_banner>
@@ -35,9 +38,8 @@ import home_swiper_banner from "@/components/common/home/home_swiper_banner";
 import home_swiper_interest from "@/components/common/home/home_swiper_interest";
 import home_swiper_like from "@/components/common/home/home_swiper_like";
 import {mapGetters, mapMutations, mapState} from "vuex";
-import {Search, Grid, GridItem} from 'vant';
+import {Grid, GridItem} from 'vant';
 
-Vue.use(Search);
 Vue.use(Grid);
 Vue.use(GridItem);
 
@@ -71,6 +73,11 @@ export default {
 			setChannelId: "setChannelId",
 			changeAppending: "changeAppending",
 		}),
+
+		// 点击banner
+		onSearchClick() {
+			this.$router.replace({path: "/search", query: {YzChannelId: this.channelId, t: new Date().getTime()}});
+		},
 
 		// 点击banner
 		onBannerClick(item) {
