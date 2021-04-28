@@ -48,23 +48,29 @@ const mutations = {
         state.isGameBack = status;
     },
 
-    // 设置弹窗显示状态
+    // 设置webview关闭按钮状态
     setShowExitBtn(state, status) {
         state.isShowExitBtn = status;
     },
 
-    // 设置弹窗显示状态
+    // 设置计时器状态
     setCountdownSwitch(state, status) {
         state.countdownSwitch = status;
     },
 
-    // 设置关闭按钮显示状态
+    // 设置倒计时关闭按钮显示/隐藏状态
     setShowCloseBtn(state, status) {
-        if (!status) state.countdownSwitch = status;
-        state.showCloseBtn = status;
+        if (!state.isCloseBtn) state.isShowCloseBtn = false;
+        if (state.isCloseBtn) state.isShowCloseBtn = status;
+    },
+    // 设置倒计时关闭按钮显示/隐藏状态
+    setCloseBtn(state, status) {
+        state.countdownSwitch = status;
+        if (!status) state.isShowCloseBtn = false;
+        state.isCloseBtn = status;
     },
 
-    // 设置弹窗显示状态
+    // 设置结果弹窗显示状态
     setShowResultPopup(state, status) {
         state.isShowResultPopup = status;
     },
@@ -95,6 +101,7 @@ const mutations = {
         state.headImage = String(userInfo.head_img_url);
         state.sex = userInfo.sex;
         state.accessToken = userInfo.access_token;
+        state.isNewAccount = userInfo.is_new_account;
         state.isLogin = true;
         window.sessionStorage.setItem("accessToken", userInfo.access_token)
     },

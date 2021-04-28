@@ -2,14 +2,14 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import mutations from "./mutations"
 import getters from "./getters"
-import { MESSAGE_TYPE } from 'vue-baberrage'
+import {MESSAGE_TYPE} from 'vue-baberrage'
 import {Utils} from "@/utils/Utils";
 
 Vue.use(Vuex)
 
 const state = {
     // 工程配置相关
-    debug: false,
+    debug: true,
     isRunBrowser: window.nativeObj === undefined,
     appApiUrl: "http://interest.ezhigame.com", // 后端接口地址（正式服）
     testAppApiUrl: "http://interest.test.ezhigame.com", // 后端接口地址(测试服)
@@ -29,19 +29,21 @@ const state = {
     headImage: "",      // 头像
     sex: 0,           // 性别
     accessToken: null, // 身份令牌
+    isNewAccount: true,
     // 浏览器调试时用户ID
     debugUserId: "0123456789",
     // 阅友单独使用的数据
     signStr: "bi6tUL8Tf31I+DHx9KRJkVP1M7S0jqQ9vTnUjDARxI6APhslppch7qofwgz8ikdJ2xzY4t8dsH2mhto4s1bHk7+X196BWZ+Iut7dby1dqECTMK17xOAOOb8ABT1AmHuaSIMIrsWicJ43f4TNzC+WF4jTUksL9FiqLYstgS0auAY=",      // 验签串
-    centerAppId: "700085", // 700086=测试服  700085=正式服
+    centerAppId: "700086", // 700086=测试服  700085=正式服
     // UI相关
-    isAppending: false,
-    isGameBack: false,
-    isShowResultPopup: false,
-    timer: null,
-    availHeight: window.screen.availHeight,
-    loadingTime: 300,
-    showCloseBtn: true, // 是否注销倒计时按钮
+    isAppending: false, // 加载动画
+    isGameBack: false,  // 推荐弹窗
+    isShowResultPopup: false, // 结果弹窗
+    availHeight: window.screen.availHeight, // 屏幕可视高度
+    loadingTime: 300, // 定时器延时时间：毫秒
+    // 倒计时按钮
+    isShowCloseBtn: true, // 是否显示倒计时按钮
+    isCloseBtn: true, // 是否删除倒计时按钮dom
     isShowExitBtn: false, // 是否显示webview退出悬浮按钮
     countdownTimer: 120, // 倒计时退出时间,单位：秒  3分钟
     countdownSwitch: true, // 倒计时状态

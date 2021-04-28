@@ -40,7 +40,7 @@
 			</div>
 		</div>
 		<recommend_list v-if="isLogin && indexData.show_recommend_list" :model="model" :padding-bottom="'150px'" v-on:listenerRecommendClick="onClickRecommend"></recommend_list>
-		<div class="index-btn-wrap fixed-fix" @click="$router.push({path: '/play', query: {YzAppId: appId, YzChannelId: channelId, t: new Date().getTime()}})">
+		<div class="index-btn-wrap fixed-fix" @click="$router.push({path: '/play', query: {YzAppId: appId, YzChannelId: channelId, t: String(new Date().getTime())}})">
 			<img v-if="indexData.button_image" class="index-btn" :src="indexData.button_image" alt="">
 		</div>
 		<div v-if="indexData.show_recommend_list && indexData.show_more_btn" class="index-more-btn animate__animated animate__bounceIn" @click="onClickMoreRecommend">
@@ -68,8 +68,6 @@
 			<img class="app-popup-btn" src="../../assets/images/popup/layer-btn.png" alt="" @click="onClickMorePopup">
 			<img class="app-popup-close" src="../../assets/images/popup/layer-close.png" alt="" @click="onClickClosePopup">
 		</van-popup>
-		<!-- 退出倒计时 -->
-		<close_btn></close_btn>
 	</div>
 </template>
 <script>
@@ -78,7 +76,6 @@ import recommend_list from "@/components/common/recommend_list";
 import {Request, Utils} from "@/utils/Utils";
 import {mapGetters, mapMutations, mapState} from "vuex";
 import {Popup} from 'vant';
-import close_btn from "@/components/common/close_btn";
 
 Vue.use(Popup);
 
@@ -86,7 +83,6 @@ export default {
 	inject: ['reload', "autoLogin"],
 	components: {
 		recommend_list,
-		close_btn
 	},
 	data() {
 		return {
@@ -96,8 +92,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["isAppending", "appId", "channelId", "indexData", "isGameBack", "popupData", "availHeight",
-			"recommendData", "loadingTime", "showCloseBtn", "isShowExitBtn"]),
+		...mapState(["isAppending", "appId", "channelId", "indexData", "isGameBack", "popupData", "availHeight", "recommendData", "loadingTime"]),
 		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl", "isLogin"]),
 	},
 	watch: {
@@ -110,8 +105,6 @@ export default {
 	activated() {
 		// 页面滚到顶部
 		Utils.scrollToTop();
-		// 显示关闭按钮
-		this.showExitBtn();
 		// 设置appId和channelId到vuex
 		this.setAppId(this.$route.query.YzAppId);
 		this.setChannelId(this.$route.query.YzChannelId);
@@ -119,8 +112,6 @@ export default {
 		this.initData();
 	},
 	deactivated() {
-		// 隐藏关闭按钮
-		this.hideExitBtn();
 		// 删除定时器
 		this.cancelTimeOut();
 	},
@@ -132,7 +123,6 @@ export default {
 			setIndexData: "setIndexData",
 			setGameBack: "setGameBack",
 			setPopupData: "setPopupData",
-			setShowExitBtn: "setShowExitBtn",
 		}),
 
 		// 初始化
@@ -217,7 +207,7 @@ export default {
 		// 点击更多推荐事件
 		onClickRecommend(item) {
 			this.reload(() => {
-				this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
+				this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: String(new Date().getTime())}});
 			});
 		},
 
@@ -251,22 +241,6 @@ export default {
 		// 点击弹窗关闭按钮
 		onClickClosePopup() {
 			this.setGameBack(false);
-		},
-
-		// 显示关闭按钮
-		showExitBtn() {
-			if (this.channelId === "YueYou" && !this.isShowExitBtn && !this.showCloseBtn && window.nativeObj !== undefined) {
-				window.nativeObj.showExitIcon();
-				this.setShowExitBtn(true);
-			}
-		},
-
-		// 隐藏关闭按钮
-		hideExitBtn() {
-			if (this.channelId === "YueYou" && this.isShowExitBtn && window.nativeObj !== undefined) {
-				window.nativeObj.closeExitIcon();
-				this.setShowExitBtn(false);
-			}
 		},
 
 		// 取消定时器

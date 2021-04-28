@@ -127,7 +127,7 @@ export default {
 			setGameBack: "setGameBack",
 			setShowResultPopup: "setShowResultPopup",
 			addAdCount: "addAdCount",
-			setShowCloseBtn: "setShowCloseBtn",
+			setCloseBtn: "setCloseBtn",
 		}),
 
 		// 初始化
@@ -217,7 +217,7 @@ export default {
 		onClickBack() {
 			// 关闭banner广告
 			AdUtils.closeBannerAd(() => {
-				this.$router.replace({path: "/", query: {YzAppId: this.appId, YzChannelId: this.channelId, t: new Date().getTime()}});
+				this.$router.replace({path: "/", query: {YzAppId: this.appId, YzChannelId: this.channelId, t: String(new Date().getTime())}});
 			});
 		},
 
@@ -255,17 +255,16 @@ export default {
 			AdUtils.openVideoAd(this.appId, this.channelId, () => {
 				// 添加广告统计次数
 				this.addAdCount();
+				// 隐藏倒计时关闭按钮
+				this.setCloseBtn(false);
 				// 跳转结果页
 				this.$router.replace({
 					path: "/result",
 					query: {
 						YzAppId: this.appId,
 						YzChannelId: this.channelId,
-						t: new Date().getTime()
+						t: String(new Date().getTime())
 					}
-				}).then(() => {
-					// 隐藏按钮
-					this.setShowCloseBtn(false);
 				});
 			});
 		}, 800, {

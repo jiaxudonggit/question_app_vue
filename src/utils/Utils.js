@@ -36,7 +36,7 @@ class EasyStorage {
                 name: '',
                 value: '',
                 expires: 24 * 60 * 60 * 1000, // 24小时
-                startTime: new Date().getTime() //记录何时将值存入缓存，毫秒级
+                startTime: String(new Date().getTime()) //记录何时将值存入缓存，毫秒级
             };
             let options = {};
             //将obj和传进来的params合并
@@ -75,7 +75,7 @@ class EasyStorage {
             }
             //如果有startTime的值，说明设置了失效时间
             if (item.startTime) {
-                let date = new Date().getTime();
+                let date = String(new Date().getTime());
                 //何时将值取出减去刚存入的时间，与item.expires比较，如果大于就是过期了，如果小于或等于就还没过期
                 if (date - item.startTime > item.expires) {
                     //缓存过期，清除缓存，返回false

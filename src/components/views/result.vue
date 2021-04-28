@@ -134,13 +134,13 @@ export default {
 		// 返回按钮事件
 		onClickBack() {
 			AdUtils.closeScreenAd(() => {
-				this.$router.replace({path: "/", query: {YzAppId: this.appId, YzChannelId: this.channelId, t: new Date().getTime()}});
+				this.$router.replace({path: "/", query: {YzAppId: this.appId, YzChannelId: this.channelId, t: String(new Date().getTime())}});
 			});
 		},
 
 		// 点击更多推荐事件
 		onClickRecommend(item) {
-			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
+			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: String(new Date().getTime())}});
 		},
 	},
 }

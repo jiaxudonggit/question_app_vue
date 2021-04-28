@@ -8,6 +8,8 @@
 		<transition name="custom-classes-transition" :enter-active-class="enterAnimate">
 			<router-view v-if="!$route.meta.keepAlive && isRouterAlive"></router-view>
 		</transition>
+		<!-- 倒计时退出按钮 -->
+		<close_btn></close_btn>
 	</div>
 </template>
 
@@ -17,6 +19,8 @@ import {Request, Utils} from "@/utils/Utils";
 import ChannelUtils from "@/utils/ChannelUtils";
 import AdUtils from "@/utils/AdUtils";
 import {mapState, mapGetters, mapMutations} from "vuex";
+import close_btn from "@/components/common/close_btn";
+
 
 export default {
 	name: 'app',
@@ -32,12 +36,15 @@ export default {
 			isRouterAlive: true,
 		}
 	},
+	components: {
+		close_btn,
+	},
 	computed: {
-		...mapState(["isAppending", "isGameBack", "debugUserId", "debug",
-			"isRunBrowser", "indexData", "appId", "channelId", "isRecordAccess"]),
+		...mapState(["isAppending", "isGameBack", "debugUserId", "debug", "isRunBrowser", "indexData", "appId", "channelId", "isRecordAccess"]),
 		...mapGetters(["appApiUrl", "isLogin"]),
 	},
 	watch: {
+		// 是否显示加载动画
 		isAppending(val) {
 			val ? this.$toast.loading({
 					message: "加载中...",
@@ -48,6 +55,7 @@ export default {
 		},
 	},
 	mounted() {
+		// 绑定window.onresize事件， 获得屏幕可视高度
 		window.onresize = () => {
 			return (() => {
 				this.setAvailHeight(window.screen.availHeight);
@@ -58,7 +66,6 @@ export default {
 		// 设置appId和channelId到vuex
 		this.setAppId(Utils.getQueryParams("YzAppId"));
 		this.setChannelId(Utils.getQueryParams("YzChannelId"));
-
 	},
 	methods: {
 		...mapMutations({
@@ -71,30 +78,7 @@ export default {
 			setShowResultPopup: "setShowResultPopup",
 			setAppStatus: "setAppStatus",
 			doRecordAccess: "doRecordAccess",
-			setShowCloseBtn: "setShowCloseBtn",
 		}),
-
-		// 监听移动端返回键事件
-		watchReturn() {
-			switch (this.$route.path) {
-				case "/play":
-					// 关闭banner广告
-					AdUtils.closeBannerAd(() => {
-						this.setShowResultPopup(false);
-						if (this.isLogin && this.indexData.show_recommend_layer) this.setGameBack(true);
-						this.$router.replace({path: "/", query: {YzAppId: this.appId, YzChannelId: this.channelId, t: new Date().getTime()}});
-					});
-					break;
-				case "/result":
-					AdUtils.closeScreenAd(() => {
-						if (this.isLogin && this.indexData.show_recommend_layer) this.setGameBack(true);
-						this.$router.replace({path: "/", query: {YzAppId: this.appId, YzChannelId: this.channelId, t: new Date().getTime()}});
-					});
-					break;
-				case "/":
-					break;
-			}
-		},
 
 		// 用户登录
 		userLogin(userInfo, callback) {
@@ -202,7 +186,7 @@ export default {
 				this.isRouterAlive = true;
 				if (typeof callback == "function") callback();
 			})
-		}
+		},
 	}
 }
 </script>

@@ -13,14 +13,14 @@ module.exports = {
         config.plugins.delete('prefetch');
         // 移除 preload 插件，避免加载多余的资源
         config.plugins.delete('preload');
-
+        //  lodash 按需加载  生产环境
         if (process.env.NODE_ENV === "production") {
             config.plugin("loadshReplace").use(new LodashModuleReplacementPlugin());
         }
     },
     configureWebpack: config => {
+        // 生产环境
         if (process.env.NODE_ENV === 'production') {
-            // 生产环境
             config.plugins.push(
                 new CompressionWebpackPlugin({
                     filename: '[path].gz[query]', // 提示 compression-webpack-plugin@3.0.0的话asset改为filename
@@ -31,8 +31,6 @@ module.exports = {
                 })
             );
 
-        } else {
-            // 开发环境
         }
     },
 }
