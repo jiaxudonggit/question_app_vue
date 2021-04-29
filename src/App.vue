@@ -148,7 +148,7 @@ export default {
 					// 记录用户进入应用
 					this.createAccessRecord();
 					// 打开倒计时关闭按钮
-					if (this.adCount <= 0) this.isNewAccount ? this.setCountDown(true) : this.setCountDown(false);
+					this.setCloseBtnStatus();
 					if (typeof callback === "function") callback();
 				} else {
 					console.log("========用户开始登录=========");
@@ -160,7 +160,7 @@ export default {
 							this.createAccessRecord()
 							console.log("========用户登录成功=========");
 							// 打开倒计时关闭按钮
-							if (this.adCount <= 0) this.isNewAccount ? this.setCountDown(true) : this.setCountDown(false);
+							this.setCloseBtnStatus();
 							if (typeof callback === "function") callback();
 						});
 					});
@@ -184,6 +184,21 @@ export default {
 						if (typeof callback == "function") callback();
 					}
 				});
+			}
+		},
+
+		// 根据新/老用户设置退出按钮
+		setCloseBtnStatus() {
+			if (this.adCount <= 0) {
+				if(this.isNewAccount) {
+					// 打开倒计时功能
+					this.setCountDown(true);
+				} else {
+					// 关闭倒计时功能
+					this.setCountDown(false);
+					// 打开webview关闭按钮
+					this.setShowExitBtn(this.IndexPageName.indexOf(this.$route.name) !== -1);
+				}
 			}
 		},
 

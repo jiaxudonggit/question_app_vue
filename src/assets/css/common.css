@@ -23,7 +23,7 @@
     }
 
     #app .app-close-wrap{
-        right: calc(((100% - 640px) / 2) + 10px) !important;
+        right: calc(((100% - 640px) / 2) + 3px) !important;
     }
 }
 

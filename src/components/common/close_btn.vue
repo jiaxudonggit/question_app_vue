@@ -49,6 +49,7 @@ export default {
 		},
 		// 是否显示webview关闭按钮
 		isShowExitBtn(val) {
+			console.log("ShowExitBtn: " + val)
 			// 阅友渠道/app环境中
 			if (this.channelId === "YueYou" && window.nativeObj !== undefined) {
 				if (val) {
@@ -133,8 +134,8 @@ export default {
 <style lang="less" scoped>
 .app-close-wrap {
 	position: fixed;
-	right: 10px;
-	top: 10px;
+	right: 3px;
+	top: 3px;
 	border-radius: 20px;
 	box-sizing: border-box;
 
