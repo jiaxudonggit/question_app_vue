@@ -17,7 +17,6 @@
 import YueYouUtils from "@/utils/YueYouUtils";
 import {Request, Utils} from "@/utils/Utils";
 import ChannelUtils from "@/utils/ChannelUtils";
-import AdUtils from "@/utils/AdUtils";
 import {mapState, mapGetters, mapMutations} from "vuex";
 import close_btn from "@/components/common/close_btn";
 
