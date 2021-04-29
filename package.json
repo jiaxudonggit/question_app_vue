@@ -19,7 +19,7 @@
     "vant": "^2.12.14",
     "vconsole": "^3.4.1",
     "vue": "^2.6.11",
-    "vue-baberrage": "^3.2.4",
+    "vue-danmaku": "^1.1.1",
     "vue-router": "^3.4.3",
     "vue-video-player": "^5.0.2",
     "vuex": "^3.5.1"

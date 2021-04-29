@@ -25,7 +25,17 @@
 				<answer v-if="showAnswer && Object.keys(question).length > 0" :question="question" :model="model" v-on:listenerAnswerClick="onClickAnswer"></answer>
 			</div>
 			<div class="game-barrage-wrap">
-				<vue-baberrage :throttle-gap="barrageData.throttle_gap" :lanes-count="barrageData.lanes_count" :is-show="playData.show_barrage" :barrage-list="barrageList" :loop="barrageData.barrage_loop"></vue-baberrage>
+				<vue-danmaku v-if="showBarrage" class="game-barrage" ref="barrage" :danmus="barrageList" useSlot :channels="barrageData.lanes_count"
+				:loop="barrageData.barrage_loop" :autoplay="true" :randomChannel="true" :speed="barrageData.barrage_time" :top="15">
+					<template slot="dm" slot-scope="{ index, danmu }">
+						<div class="barrage-item">
+							<img :src="danmu.avatar" alt="">
+							<span>{{ danmu.msg }}</span>
+						</div>
+					</template>
+					<!-- 容器插槽 -->
+					<div></div>
+				</vue-danmaku>
 			</div>
 		</div>
 		<van-popup v-if="showResultPopup" v-model="showResultPopup" class="result-popup" @click="onClickPopup" @click-overlay="onClickPopup" :lock-scroll="true" :close-on-click-overlay="false">
@@ -36,7 +46,7 @@
 <script>
 import lodash from "lodash";
 import Vue from 'vue';
-import {vueBaberrage} from 'vue-baberrage';
+import vueDanmaku from 'vue-danmaku';
 import answer from '@/components/common/answer';
 import AdUtils from "@/utils/AdUtils";
 import {mapGetters, mapMutations, mapState} from "vuex";
@@ -44,12 +54,12 @@ import {Request, Utils} from "@/utils/Utils";
 import {Popup} from 'vant';
 
 Vue.use(Popup);
-Vue.use(vueBaberrage);
 
 export default {
 	inject: ['reload', 'autoLogin'],
 	components: {
 		answer,
+		vueDanmaku,
 	},
 	data() {
 		return {
@@ -59,6 +69,7 @@ export default {
 			question: {},
 			showResultPopup: false,
 			barrageList: [],
+			showBarrage: false,
 			model: "question",
 		}
 	},
@@ -84,6 +95,13 @@ export default {
 		this.setAppId(this.$route.query.YzAppId);
 		this.setChannelId(this.$route.query.YzChannelId);
 		this.initData(() => {
+			// 获得弹幕数据
+			this.getBarrageData(() => {
+				// 渲染弹幕数据
+				this.renderBarrageData()
+			});
+			// 打开banner广告
+			AdUtils.openBannerAd(this.appId);
 			// 初始化数据
 			this.setShowResultPopup(false); // 关闭结果提示框
 			this.setResultId(null); // 重置结果ID
@@ -92,24 +110,19 @@ export default {
 			this.fractionArray = []; // 重置分数
 			// 获得题目
 			this.getQuestion(0);
-			// 打开banner广告
-			AdUtils.openBannerAd(this.appId);
-			// 获得弹幕数据
-			this.getBarrageData(() => {
-				// 渲染弹幕数据
-				this.renderBarrageData()
-			});
 		});
 	},
 	beforeRouteLeave(to, from, next) {
 		// 关闭banner广告
 		AdUtils.closeBannerAd();
+		// 清除弹幕
+		this.$refs["barrage"].stop();
+		this.showBarrage = false;
+		this.barrageList = [];
 		// 关闭定时器
 		if (this.timer) clearTimeout(this.timer);
 		// 关闭结果提示框
 		this.setShowResultPopup(false);
-		// 清空弹幕
-		this.barrageList = [];
 		// 打开推荐弹窗
 		if (to.name === "index" && this.isLogin && this.indexData.show_recommend_layer) this.setGameBack(true);
 		next();
@@ -177,28 +190,31 @@ export default {
 
 		// 获得弹幕数据
 		getBarrageData(callback) {
-			if (this.barrageData.msg_list.length > 0) return false;
-			Request.request({
-				url: this.appApiUrl + "/test_app/get_barrage_data",
-				callback: (res, err) => {
-					if (err || res.code !== 0) return this.$toast("网络错误，请稍后");
-					// 设置首页数据到store
-					this.setBarrageData(res.body);
-					if (typeof callback === "function") callback();
-				},
-			})
+			if (this.barrageData.msg_list.length > 0) {
+				if (typeof callback === "function") callback();
+			} else {
+				Request.request({
+					url: this.appApiUrl + "/test_app/get_barrage_data",
+					callback: (res, err) => {
+						if (err || res.code !== 0) return this.$toast("网络错误，请稍后");
+						// 设置首页数据到store
+						this.setBarrageData(res.body);
+						if (typeof callback === "function") callback();
+					},
+				});
+			}
 		},
 
 		// 生成弹幕数据
 		renderBarrageData() {
-			for (let i = 1; i < this.barrageData.barrage_number + 1; i++) this.barrageList.push({
-				id: i,
-				avatar: this.appBarrageAvatarUrl(this.barrageData.avatar_list.randomElement()),
-				msg: this.barrageData.msg_list.randomElement(),
-				time: this.barrageData.barrage_time,
-				type: this.barrageData.barrage_type,
-				barrageStyle: this.barrageData.barrage_style,
-				extraWidth: Math.floor(Math.random() * (200 - 80 + 1) + 80),
+			this.showBarrage = false;
+			let barrageData = lodash.cloneDeep(this.barrageData);
+			for (let i = 1; i < barrageData.barrage_number + 1; i++) this.barrageList.push({
+				avatar: this.appBarrageAvatarUrl(barrageData.avatar_list.randomElement()),
+				msg: barrageData.msg_list.randomElement(),
+			});
+			this.$nextTick(() => {
+				this.showBarrage = true;
 			});
 		},
 

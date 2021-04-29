@@ -1,6 +1,3 @@
-import {MESSAGE_TYPE} from 'vue-baberrage'
-
-const IndexPageName = ["index", "home"];
 
 const mutations = {
 
@@ -159,17 +156,6 @@ const mutations = {
         state.barrageData.throttle_gap = barrageData.throttle_gap;
         state.barrageData.avatar_list = barrageData.avatar_list;
         state.barrageData.msg_list = barrageData.msg_list;
-        switch (barrageData.barrage_type) {
-            case "NORMAL":
-                state.barrageData.barrage_type = MESSAGE_TYPE.NORMAL;
-                break;
-            case "FROM_TOP":
-                state.barrageData.barrage_type = MESSAGE_TYPE.FROM_TOP;
-                break;
-            case "FROM_BOTTOM":
-                state.barrageData.barrage_type = MESSAGE_TYPE.FROM_BOTTOM;
-                break;
-        }
     },
 
     // 设置推荐弹窗数据
