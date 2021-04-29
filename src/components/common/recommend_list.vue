@@ -12,7 +12,7 @@
 			</div>
 		</div>
 		<div class="recommend-rows-wrap" :style="{paddingBottom: paddingBottom}">
-			<question_list_horizontal :question-list="recommend_list" @listenerQuestionListClick="onRecommendClick"></question_list_horizontal>
+			<question_list_horizontal v-if="!loading" :question-list="recommend_list" @listenerQuestionListClick="onRecommendClick"></question_list_horizontal>
 			<div v-show="loading" class="recommend-content-loading">
 				<div class="recommend-content-loading-inner"></div>
 			</div>
@@ -104,7 +104,9 @@ export default {
 					// 更新推荐列表
 					for (let i = 0; i < res.body.recommend_list.length; i++) res.body.recommend_list[i].app_icon = this.appIconUrl(res.body.recommend_list[i].app_icon);
 					this.recommend_list = res.body.recommend_list;
-					this.loading = false;
+					this.$nextTick(() => {
+						this.loading = false;
+					});
 					if (typeof callback === "function") callback();
 				},
 			})
@@ -181,7 +183,7 @@ export default {
 
 	.recommend-rows-wrap {
 		width: 100%;
-		min-height: 500px;
+		min-height: 1030px;
 		box-sizing: border-box;
 		position: relative;
 
