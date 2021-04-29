@@ -90,7 +90,6 @@ export default {
 		}
 	},
 	activated() {
-		console.log(this.$refs)
 		// 页面滚到顶部
 		Utils.scrollToTop();
 		// 设置appId和channelId到vuex
