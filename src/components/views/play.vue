@@ -25,18 +25,8 @@
 				<answer v-if="showAnswer && Object.keys(question).length > 0" :question="question" :model="model" v-on:listenerAnswerClick="onClickAnswer"></answer>
 			</div>
 			<div class="game-barrage-wrap">
-				<vue-danmaku
-					v-if="showBarrage"
-					class="game-barrage"
-					ref="barrage"
-					:danmus="barrageList"
-					useSlot
-					:channels="barrageData.lanes_count"
-					:loop="barrageData.barrage_loop"
-					:autoplay="true"
-					:randomChannel="true"
-					:speed="barrageData.barrage_time"
-					:top="15">
+				<vue-danmaku v-if="showBarrage" class="game-barrage" ref="barrage" :danmus="barrageList" useSlot :channels="barrageData.lanes_count" :loop="barrageData.barrage_loop"
+					:autoplay="true" :randomChannel="true" :speed="barrageData.barrage_time" :top="15">
 					<template slot="dm" slot-scope="{ index, danmu }">
 						<div class="barrage-item">
 							<img :src="danmu.avatar" alt="">
