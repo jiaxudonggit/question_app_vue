@@ -1,11 +1,12 @@
 <!-- 关闭按钮 倒计时结束后显示真实关闭按钮 -->
 <template>
 	<div v-show="isShowCloseBtn" class="app-close-wrap">
-		<div v-if="isCloseBtn" class="app-close-block" @click="onBtnClick">
+		<div class="app-close-block" @click="onBtnClick">
 			<div class="app-close-timer">
-				<Countdown :time="countdownTimer" format="ss" :switch="countdownSwitch" @on-end="onCountdownEnd">
+				<Countdown v-show="isCountDown" ref="countdown"  :time="countdownTimer" format="ss" :switch="countdownSwitch" @on-end="onCountdownEnd">
 					<template slot-scope="{ time }">{{ time }}</template>
 				</Countdown>
+				<span v-show="!isCountDown">0</span>
 			</div>
 			<img class="app-close-icon" src="../../assets/images/app-close.png" alt="">
 			<div class="app-close-text">关闭</div>
@@ -23,14 +24,14 @@ export default {
 	name: "close-btn",
 	computed: {
 		...mapState(["appId", "channelId", "channelVersion", "countdownTimer", "countdownSwitch", "isNewAccount",
-			"isShowCloseBtn", "isCloseBtn", "isShowExitBtn", "IndexPageName"]),
+			"isShowCloseBtn", "isCountDown", "isShowExitBtn", "IndexPageName"]),
 		...mapGetters(["isLogin"])
 	},
 	components: {
 		Countdown,
 	},
 	watch: {
-		isCloseBtn(val) {
+		isCountDown(val) {
 			// 倒计时按钮
 			if (val) {
 				// 显示/隐藏倒计时按钮
@@ -40,18 +41,19 @@ export default {
 			} else {
 				// 关闭倒计时
 				this.setCountdownSwitch(false);
-				// 隐藏倒计时按钮
-				this.setShowCloseBtn(false);
+				// 重置倒计时
+				if (this.$refs.countdown) this.$refs.countdown.reCountdown();
 				// 打开webview关闭按钮
 				if (this.IndexPageName.indexOf(this.$route.name) !== -1) this.setShowExitBtn(true);
 			}
 		},
 		// 是否显示webview关闭按钮
 		isShowExitBtn(val) {
+			console.log("ShowExitBtn: " + val)
 			// 阅友渠道/app环境中
 			if (this.channelId === "YueYou" && window.nativeObj !== undefined) {
 				if (val) {
-					if (!this.isCloseBtn) {
+					if (!this.isCountDown) {
 						console.log("============显示webview关闭按钮==============");
 						window.nativeObj.showExitIcon();
 					}
@@ -63,15 +65,15 @@ export default {
 		},
 		// 如果用户不是新用户则关闭倒计时
 		isNewAccount(val) {
-			val ? this.setCloseBtn(true) : this.setCloseBtn(false);
+			val ? this.setCountDown(true) : this.setCountDown(false);
 		},
 		// 监听router
 		$route(to) {
 			if (this.isLogin) {
 				// 如果倒计时关闭按钮不存在, 只在index页显示webview关闭按钮
-				this.setShowExitBtn(!this.isCloseBtn && this.IndexPageName.indexOf(to.name) !== -1);
+				this.setShowExitBtn(!this.isCountDown && this.IndexPageName.indexOf(to.name) !== -1);
 				// 如果倒计时关闭按钮存在，则只在index页显示
-				this.setShowCloseBtn(this.isCloseBtn && this.IndexPageName.indexOf(to.name) !== -1);
+				this.setShowCloseBtn(this.IndexPageName.indexOf(to.name) !== -1);
 			}
 		},
 	},
@@ -100,7 +102,7 @@ export default {
 	methods: {
 		...mapMutations({
 			setShowCloseBtn: "setShowCloseBtn",
-			setCloseBtn: "setCloseBtn",
+			setCountDown: "setCountDown",
 			setShowExitBtn: "setShowExitBtn",
 			setCountdownSwitch: "setCountdownSwitch",
 			addAdCount: "addAdCount",
@@ -113,7 +115,7 @@ export default {
 				// 添加广告统计次数
 				this.addAdCount();
 				// 隐藏按钮
-				this.setCloseBtn(false);
+				this.setCountDown(false);
 			});
 		}, 800, {
 			'leading': true,
@@ -124,7 +126,7 @@ export default {
 		onCountdownEnd() {
 			console.log("============倒计时结束=============")
 			// 隐藏按钮
-			this.setCloseBtn(false);
+			this.setCountDown(false);
 		}
 	}
 }
@@ -132,8 +134,8 @@ export default {
 <style lang="less" scoped>
 .app-close-wrap {
 	position: fixed;
-	right: 10px;
-	top: 10px;
+	right: 3px;
+	top: 3px;
 	border-radius: 20px;
 	box-sizing: border-box;
 

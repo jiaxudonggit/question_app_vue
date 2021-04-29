@@ -19,7 +19,6 @@ import close_btn from "@/components/common/close_btn";
 import YueYouUtils from "@/utils/YueYouUtils";
 import {Request, Utils} from "@/utils/Utils";
 import ChannelUtils from "@/utils/ChannelUtils";
-import AdUtils from "@/utils/AdUtils";
 import {mapState, mapGetters, mapMutations} from "vuex";
 
 export default {
@@ -28,8 +27,6 @@ export default {
 		return {
 			reload: this.reload,
 			autoLogin: this.autoLogin,
-			showExitBtn: this.showExitBtn,
-			hideExitBtn: this.hideExitBtn,
 		}
 	},
 	components: {
@@ -43,8 +40,8 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["isAppending", "isGameBack", "debugUserId", "debug", "isRunBrowser", "indexData", "appId", "channelId", "isRecordAccess" ,
-			"isNewAccount", "adCount", "IndexPageName"]),
+		...mapState(["isAppending", "isGameBack", "debugUserId", "debug", "isRunBrowser", "indexData",
+			"appId", "channelId", "isRecordAccess", "isNewAccount", "adCount", "IndexPageName"]),
 		...mapGetters(["appApiUrl", "isLogin"]),
 	},
 	watch: {
@@ -81,7 +78,7 @@ export default {
 			setShowResultPopup: "setShowResultPopup",
 			setAppStatus: "setAppStatus",
 			doRecordAccess: "doRecordAccess",
-			setCloseBtn: "setCloseBtn",
+			setCountDown: "setCountDown",
 			setShowExitBtn: "setShowExitBtn",
 		}),
 
@@ -150,7 +147,7 @@ export default {
 					// 记录用户进入应用
 					this.createAccessRecord();
 					// 打开倒计时关闭按钮
-					if (this.adCount <= 0) this.isNewAccount ? this.setCloseBtn(true) : this.setShowExitBtn(this.IndexPageName.indexOf(this.$route.name) !== -1);
+					this.setCloseBtnStatus();
 					if (typeof callback === "function") callback();
 				} else {
 					console.log("========用户开始登录=========");
@@ -162,7 +159,7 @@ export default {
 							// 记录用户进入应用
 							this.createAccessRecord()
 							// 打开倒计时关闭按钮
-							if (this.adCount <= 0) this.isNewAccount ? this.setCloseBtn(true) : this.setShowExitBtn(this.IndexPageName.indexOf(this.$route.name) !== -1);
+							this.setCloseBtnStatus();
 							if (typeof callback === "function") callback();
 						});
 					});
@@ -189,6 +186,21 @@ export default {
 			}
 		},
 
+		// 根据新/老用户设置退出按钮
+		setCloseBtnStatus() {
+			if (this.adCount <= 0) {
+				if(this.isNewAccount) {
+					// 打开倒计时功能
+					this.setCountDown(true);
+				} else {
+					// 关闭倒计时功能
+					this.setCountDown(false);
+					// 打开webview关闭按钮
+					this.setShowExitBtn(this.IndexPageName.indexOf(this.$route.name) !== -1);
+				}
+			}
+		},
+
 		// 刷新路由
 		reload(callback) {
 			console.log("========app.reloaded=========");
@@ -198,25 +210,6 @@ export default {
 				if (typeof callback == "function") callback();
 			})
 		},
-
-		// 显示关闭webview按钮
-		showExitBtn() {
-			if (this.channelId === "YueYou" && !this.isShowExitBtn && !this.showCloseBtn && window.nativeObj !== undefined) {
-				console.log("============显示关闭按钮===============");
-				window.nativeObj.showExitIcon();
-				this.setShowExitBtn(true);
-			}
-		},
-
-		// 隐藏关闭webview按钮
-		hideExitBtn() {
-			if (this.channelId === "YueYou" && this.isShowExitBtn && window.nativeObj !== undefined) {
-				console.log("============隐藏关闭按钮===============");
-				window.nativeObj.closeExitIcon();
-				this.setShowExitBtn(false);
-			}
-		},
-
 	}
 }
 </script>

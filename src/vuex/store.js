@@ -43,8 +43,8 @@ const state = {
     availHeight: window.screen.availHeight,
     loadingTime: 300,
     // 倒计时按钮
-    isShowCloseBtn: false, // 是否显示倒计时按钮
-    isCloseBtn: false, // 是否删除倒计时按钮dom
+    isShowCloseBtn: true, // 是否显示倒计时按钮
+    isCountDown: false, // 是否开启倒计时
     countdownTimer: 120, // 倒计时退出时间,单位：秒  3分钟
     countdownSwitch: false, // 倒计时状态
     // webview关闭按钮
