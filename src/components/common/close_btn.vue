@@ -49,7 +49,6 @@ export default {
 		},
 		// 是否显示webview关闭按钮
 		isShowExitBtn(val) {
-			console.log("ShowExitBtn: " + val)
 			// 阅友渠道/app环境中
 			if (this.channelId === "YueYou" && window.nativeObj !== undefined) {
 				if (val) {
