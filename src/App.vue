@@ -79,7 +79,7 @@ export default {
 			setShowResultPopup: "setShowResultPopup",
 			setAppStatus: "setAppStatus",
 			doRecordAccess: "doRecordAccess",
-			setCloseBtn: "setCloseBtn",
+			setCountDown: "setCountDown",
 			setShowExitBtn: "setShowExitBtn",
 		}),
 
@@ -148,7 +148,7 @@ export default {
 					// 记录用户进入应用
 					this.createAccessRecord();
 					// 打开倒计时关闭按钮
-					if (this.adCount <= 0) this.isNewAccount ? this.setCloseBtn(true) : this.setShowExitBtn(this.IndexPageName.indexOf(this.$route.name) !== -1);
+					if (this.adCount <= 0) this.isNewAccount ? this.setCountDown(true) : this.setCountDown(false);
 					if (typeof callback === "function") callback();
 				} else {
 					console.log("========用户开始登录=========");
@@ -160,7 +160,7 @@ export default {
 							this.createAccessRecord()
 							console.log("========用户登录成功=========");
 							// 打开倒计时关闭按钮
-							if (this.adCount <= 0) this.isNewAccount ? this.setCloseBtn(true) : this.setShowExitBtn(this.IndexPageName.indexOf(this.$route.name) !== -1);
+							if (this.adCount <= 0) this.isNewAccount ? this.setCountDown(true) : this.setCountDown(false);
 							if (typeof callback === "function") callback();
 						});
 					});

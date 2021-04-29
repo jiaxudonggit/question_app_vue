@@ -59,12 +59,11 @@ const mutations = {
 
     // 设置倒计时关闭按钮显示/隐藏状态
     setShowCloseBtn(state, status) {
-        if (!state.isCloseBtn) state.isShowCloseBtn = false;
-        if (state.isCloseBtn) state.isShowCloseBtn = status;
+        state.isShowCloseBtn = status;
     },
     // 设置倒计时关闭按钮显示/隐藏状态
-    setCloseBtn(state, status) {
-        state.isCloseBtn = status;
+    setCountDown(state, status) {
+        state.isCountDown = status;
     },
 
     // 设置结果弹窗显示状态

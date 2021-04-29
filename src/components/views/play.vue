@@ -116,7 +116,7 @@ export default {
 		// 关闭banner广告
 		AdUtils.closeBannerAd();
 		// 清除弹幕
-		this.$refs["barrage"].stop();
+		if (this.$refs.barrage) this.$refs.barrage.stop();
 		this.showBarrage = false;
 		this.barrageList = [];
 		// 关闭定时器
@@ -140,7 +140,7 @@ export default {
 			setGameBack: "setGameBack",
 			setShowResultPopup: "setShowResultPopup",
 			addAdCount: "addAdCount",
-			setCloseBtn: "setCloseBtn",
+			setCountDown: "setCountDown",
 		}),
 
 		// 初始化
@@ -272,7 +272,7 @@ export default {
 				// 添加广告统计次数
 				this.addAdCount();
 				// 隐藏倒计时关闭按钮
-				this.setCloseBtn(false);
+				this.setCountDown(false);
 				// 跳转结果页
 				this.$router.replace({
 					path: "/result",
