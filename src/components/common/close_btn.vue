@@ -68,10 +68,9 @@ export default {
 		},
 		// 监听router
 		$route(to) {
-			if (this.isLogin) {
-				// 如果倒计时关闭按钮不存在, 只在index页显示webview关闭按钮
-				this.setShowExitBtn(!this.isCountDown && this.IndexPageName.indexOf(to.name) !== -1);
-			}
+			// 如果倒计时关闭按钮不存在, 只在index页显示webview关闭按钮
+			this.setShowExitBtn(this.isLogin && !this.isCountDown && this.IndexPageName.indexOf(to.name) !== -1);
+
 			// 如果倒计时关闭按钮存在，则只在index页显示
 			this.setShowCloseBtn(this.IndexPageName.indexOf(to.name) !== -1);
 		},

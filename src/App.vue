@@ -53,6 +53,9 @@ export default {
 				})
 				: this.$toast.clear();
 		},
+		$route(to) {
+			if (String(this.appId) !== String(to.query.YzAppId)) this.setRecordAccess(false);
+		},
 	},
 	mounted() {
 		// 绑定window.onresize事件， 获得屏幕可视高度
@@ -77,7 +80,7 @@ export default {
 			setGameBack: "setGameBack",
 			setShowResultPopup: "setShowResultPopup",
 			setAppStatus: "setAppStatus",
-			doRecordAccess: "doRecordAccess",
+			setRecordAccess: "setRecordAccess",
 			setCountDown: "setCountDown",
 			setShowExitBtn: "setShowExitBtn",
 		}),
@@ -179,7 +182,7 @@ export default {
 						app_id: this.appId,
 					},
 					callback: (res) => {
-						if (res && res.code === 0) this.doRecordAccess();
+						if (res && res.code === 0) this.setRecordAccess(true);
 						if (typeof callback == "function") callback();
 					}
 				});
@@ -189,7 +192,7 @@ export default {
 		// 根据新/老用户设置退出按钮
 		setCloseBtnStatus() {
 			if (this.adCount <= 0) {
-				if(this.isNewAccount) {
+				if (this.isNewAccount) {
 					// 打开倒计时功能
 					this.setCountDown(true);
 				} else {
