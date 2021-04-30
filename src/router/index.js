@@ -18,6 +18,8 @@ const routes = [
         meta: {
             keepAlive: true,
             showTabbar: false,
+            showCloseBtn: true,
+            accessRecord: false,
         }
     },
     {
@@ -27,6 +29,8 @@ const routes = [
         meta: {
             keepAlive: true,
             showTabbar: false,
+            showCloseBtn: true,
+            accessRecord: false,
         }
     },
     {
@@ -36,6 +40,8 @@ const routes = [
         meta: {
             keepAlive: true,
             showTabbar: false,
+            showCloseBtn: false,
+            accessRecord: false,
         }
     },
     {
@@ -45,6 +51,8 @@ const routes = [
         meta: {
             keepAlive: true,
             showTabbar: false,
+            showCloseBtn: false,
+            accessRecord: false,
         }
     },
     {
@@ -54,6 +62,8 @@ const routes = [
         meta: {
             keepAlive: true,
             showTabbar: false,
+            showCloseBtn: false,
+            accessRecord: false,
         }
     },
     {
@@ -63,6 +73,8 @@ const routes = [
         meta: {
             keepAlive: true,
             showTabbar: false,
+            showCloseBtn: true,
+            accessRecord: true,
         }
     },
     {
@@ -72,6 +84,8 @@ const routes = [
         meta: {
             keepAlive: true,
             showTabbar: false,
+            showCloseBtn: false,
+            accessRecord: true,
         }
     },
     {
@@ -81,6 +95,8 @@ const routes = [
         meta: {
             keepAlive: true,
             showTabbar: false,
+            showCloseBtn: false,
+            accessRecord: true,
         }
     },
 ]

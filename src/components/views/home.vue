@@ -84,6 +84,11 @@ export default {
 		}),
 
 		initData(callback) {
+			if (this.isLogin && (this.homeData.type_list.length > 0 || this.homeData.banner_list.length > 0 ||
+				this.homeData.module_list.length > 0 || this.homeData.like_list.length > 0)) {
+				if (typeof callback === "function") callback();
+				return
+			}
 			// 开启加载提示框
 			!this.isAppending && this.changeAppending(true);
 			// 用户登录
@@ -150,6 +155,7 @@ export default {
 
 		// 点击大家爱玩
 		onLikeClick(item) {
+			console.log(item)
 			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
 		},
 
@@ -169,6 +175,7 @@ export default {
 			this.timer.forEach((item) => {
 				if (item) clearTimeout(item);
 			});
+			this.timer = [];
 		},
 
 	},

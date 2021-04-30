@@ -89,7 +89,7 @@ export default {
 	watch: {
 		isGameBack(val) {
 			val ? this.getPopupData(() => {
-				let timer = setTimeout(()=>{
+				let timer = setTimeout(() => {
 					this.showPopup = true;
 				}, this.loadingTime)
 				this.timer.push(timer);
@@ -106,7 +106,7 @@ export default {
 		this.initData(() => {
 			this.isGameBack ? this.getPopupData(() => {
 				// 显示推荐弹窗
-				let timer = setTimeout(()=>{
+				let timer = setTimeout(() => {
 					this.showPopup = true;
 				}, this.loadingTime)
 				// 加入定时器数组
@@ -257,6 +257,7 @@ export default {
 			this.timer.forEach((item) => {
 				if (item) clearTimeout(item);
 			});
+			this.timer = [];
 		}
 	},
 }

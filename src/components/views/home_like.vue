@@ -4,7 +4,7 @@
 		<van-nav-bar class="van-nav-bar-customer fixed-fix" title="大家爱玩" left-text="返回" left-arrow @click-left="onClickLeft"/>
 		<div class="like-content app-content">
 			<van-list class="like-content-app-list" v-model="loading" :finished="page === total_page" finished-text="--我是有底线的--" :error.sync="error" error-text="请求失败，点击重新加载" @load="onLoad">
-				<question_list_horizontal :question-list="likeList" :user-bg-color="'background-color: #6e88ff;'" :bg-color="true" @listenerQuestionListClick="onTypeClick"></question_list_horizontal>
+				<question_list_horizontal :question-list="likeList" :user-bg-color="'background-color: #6e88ff;'" :bg-color="true" @listenerQuestionListClick="onLikeClick"></question_list_horizontal>
 			</van-list>
 		</div>
 	</div>
@@ -41,23 +41,25 @@ export default {
 			loading: false,
 			total_page: 0,
 			page: 0,
+			timer: null,
 		}
-	},
-	created() {
-		// 设置channelId到vuex
-		this.setChannelId(this.$route.query.YzChannelId);
-		// 获取分类下的应用数据
-		this.getLikeData();
 	},
 	activated() {
 		// 设置channelId到vuex
 		this.setChannelId(this.$route.query.YzChannelId);
+		// 获取分类下的应用数据
+		this.initData();
+	},
+	beforeRouteLeave(to, from, next) {
 		// 初始化数据
 		this.page = 0;
 		this.total_page = 0;
 		this.likeList = [];
-		// 获取分类下的应用数据
-		this.getLikeData();
+		this.error = false;
+		// 删除定时器
+		if (this.timer) clearTimeout(this.timer);
+		this.timer = null;
+		next();
 	},
 	methods: {
 		...mapMutations({
@@ -65,30 +67,46 @@ export default {
 			changeAppending: "changeAppending",
 		}),
 
-		onTypeClick(item) {
-			console.log(item)
+		// 初始化
+		initData(callback) {
+			// 开启加载提示框
+			!this.isAppending && this.changeAppending(true);
+			// 用户登录
+			this.autoLogin(() => {
+				// 获得[大家爱玩]应用列表
+				this.getLikeData(() => {
+					// 关闭加载提示框
+					this.timer = setTimeout(() => {
+						this.changeAppending(false);
+					}, this.loadingTime)
+					if (typeof callback === "function") callback();
+				});
+			});
 		},
 
+		onLikeClick(item) {
+			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
+		},
+
+		// 返回点击事件
 		onClickLeft() {
 			this.$router.replace({path: "/home", query: {YzChannelId: this.channelId, t: new Date().getTime()}});
 		},
 
-		// 获得测一测推荐配置
+		// 获得[大家爱玩]应用列表
 		getLikeData(callback = null) {
 			Request.request({
-				url: this.appApiUrl + "/test_app/get_recommend_data_load",
+				url: this.appApiUrl + "/test_app/get_app_with_like",
 				data: {
-					app_id: 0,
 					page: this.page + 1,
-					page_name: "home",
 				},
 				callback: (res, err) => {
 					if (err || res.code !== 0) return this.error = true;
 					// 更新推荐列表
 					this.total_page = res.body.total_page;
 					this.page = res.body.page;
-					for (let i = 0; i < res.body.recommend_list.length; i++) res.body.recommend_list[i].app_icon = this.appIconUrl(res.body.recommend_list[i].app_icon);
-					this.likeList = this.likeList.concat(res.body.recommend_list);
+					for (let i = 0; i < res.body.app_list.length; i++) res.body.app_list[i].app_icon = this.appIconUrl(res.body.app_list[i].app_icon);
+					this.likeList = this.likeList.concat(res.body.app_list);
 					if (typeof callback === "function") callback();
 				},
 			})

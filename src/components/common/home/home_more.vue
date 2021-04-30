@@ -51,9 +51,11 @@ export default {
 		this.page = 0;
 		this.total_page = 0;
 		this.moreList = []
+		this.error = false;
 		this.getMoreData();
 	},
 	methods: {
+
 		onMoreClick(item, index) {
 			this.$emit("listenerMoreClick", item, index);
 		},

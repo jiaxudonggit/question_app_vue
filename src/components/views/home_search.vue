@@ -4,9 +4,10 @@
 		<van-nav-bar class="van-nav-bar-customer fixed-fix" title="搜索" left-text="返回" left-arrow @click-left="onClickLeft"/>
 		<div class="search-content app-content">
 			<div class="search-content-input-wrap">
-				<van-search v-model="value" show-action shape="round" :background="'transparent'" placeholder="搜你想搜的，这里会有你所爱~">
+				<van-search v-model="value" show-action shape="round" :background="'transparent'" placeholder="搜你想搜的，这里会有你所爱~" @input="onInput" @search="searchAppByName" @clear="onCancel">
 					<template #action>
-						<div @click="onSearch">搜索</div>
+						<div v-if="!result || valueChange" @click="onSearch">搜索</div>
+						<div v-else @click="onCancel">取消</div>
 					</template>
 				</van-search>
 			</div>
@@ -17,8 +18,8 @@
 						<img src="../../assets/images/home/home-search-cai.png" alt="">
 					</div>
 					<div class="search-content-hot-block">
-						<div v-for="item in hotList" :key="item.app_id" class="search-content-hot-row">
-							<span>{{ item.app_name }}}</span>
+						<div v-for="item in hotList" :key="item.app_id" class="search-content-hot-row" @click="onHotClick(item)">
+							<span>{{ item.app_name }}</span>
 							<img v-if="item.is_hot" src="../../assets/images/home/home-search-hot.png" alt="">
 						</div>
 					</div>
@@ -29,10 +30,10 @@
 						<div class="search-content-type-title"><img src="../../assets/images/home/more.png" alt=""><span>更多好玩</span></div>
 					</div>
 					<div class="search-content-type-tab-wrap">
-						<van-tabs v-model="active" color="#e94005" line-width="5px" line-height="5px" title-active-color="#e94005" title-inactive-color="#000" swipeable animated ellipsis lazy-render>
-							<van-tab v-for="item in typeList" :key="item.type_id" :title="item.type_title" :name="item.type_id">
+						<van-tabs v-model="active" color="#e94005" line-width="5px" line-height="5px" title-active-color="#e94005" title-inactive-color="#000" swipeable animated ellipsis lazy-render @change="onTabsChange">
+							<van-tab v-for="item in typeList" :key="item.type_id" :title="item.type_name" :name="item.type_id">
 								<van-list class="search-content-type-app-list" v-model="loading" :finished="page === total_page" finished-text="--我是有底线的--" :error.sync="error" error-text="请求失败，点击重新加载" @load="onLoad">
-									<question_list_horizontal :question-list="appList" :user-bg-color="'background-color: #6e88ff;'" bg-color></question_list_horizontal>
+									<question_list_horizontal :question-list="appList" :user-bg-color="'background-color: #6e88ff;'" bg-color @listenerQuestionListClick="onTypeClick"></question_list_horizontal>
 								</van-list>
 							</van-tab>
 						</van-tabs>
@@ -41,8 +42,9 @@
 			</div>
 
 			<div v-show="result" class="search-content-result-wrap" :style="{minHeight: (availHeight - 125) + 'px'}">
-				<question_list_horizontal :question-list="resultList" :user-bg-color="'background-color: #6e88ff;'" bg-color></question_list_horizontal>
-				<div class="search-content-result-tip">--我是有底线的--</div>
+				<van-list class="search-content-type-app-list" v-model="res_loading" :finished="res_page === res_total_page" finished-text="--我是有底线的--" :error.sync="res_error" error-text="请求失败，点击重新加载" @load="onResLoad">
+					<question_list_horizontal :question-list="resultList" :user-bg-color="'background-color: #6e88ff;'" bg-color @listenerQuestionListClick="onResClick"></question_list_horizontal>
+				</van-list>
 			</div>
 
 		</div>
@@ -82,82 +84,55 @@ export default {
 			total_page: 0,
 			page: 0,
 			appList: [],
+			type_id: 0,
 			value: "",
 			active: 0,
-			result: false,
-			hotList: [
-				{
-					app_id: 234,
-					app_name: "你体内隐藏着哪只上古坐骑？",
-					is_hot: true,
-				},
-				{
-					app_id: 222,
-					app_name: "你体内隐藏着哪只上古坐骑？",
-					is_hot: false,
-				},
-				{
-					app_id: 219,
-					app_name: "你体内隐藏着哪只上古坐骑？",
-					is_hot: false,
-				},
-				{
-					app_id: 345,
-					app_name: "你体内隐藏着哪只上古坐骑？",
-					is_hot: true,
-				},
-				{
-					app_id: 123,
-					app_name: "你体内隐藏着哪只上古坐骑？",
-					is_hot: false,
-				},
-				{
-					app_id: 122,
-					app_name: "你体内隐藏着哪只上古坐骑？",
-					is_hot: false,
-				},
-
-			],
+			model: "search",
+			hotList: [],
 			typeList: [
 				{
-					type_title: "全部",
+					type_name: "全部测试",
 					type_id: 0,
 				},
-				{
-					type_title: "推荐排行",
-					type_id: 10001,
-				},
-				{
-					type_title: "推荐排行",
-					type_id: 10002,
-				},
-				{
-					type_title: "推荐排行",
-					type_id: 10003,
-				},
-				{
-					type_title: "推荐排行",
-					type_id: 10004,
-				},
 			],
+			timer: null,
+			// 以下是结果
+			valueChange: false,
+			result: false,
+			res_error: false,
+			res_loading: false,
+			res_total_page: 0,
+			res_page: 0,
 			resultList: [],
 		}
-	},
-	created() {
-		// 设置channelId到vuex
-		this.setChannelId(this.$route.query.YzChannelId);
-		// 获取分类下的应用数据
-		this.getTypeData();
 	},
 	activated() {
 		// 设置channelId到vuex
 		this.setChannelId(this.$route.query.YzChannelId);
-		// 初始化数据
+		// 初始化
+		this.initData();
+	},
+	beforeRouteLeave(to, from, next) {
+		// 重置数据
 		this.page = 0;
 		this.total_page = 0;
+		this.type_id = 0;
+		this.active = 0;
 		this.appList = [];
-		// 获取分类下的应用数据
-		this.getTypeData();
+		this.error = false;
+
+		// 重置结果
+		this.value = "";
+		this.result = false;
+		this.valueChange = false;
+		this.res_page = 0;
+		this.res_total_page = 0;
+		this.res_error = false;
+		this.resultList = [];
+
+		// 删除定时器
+		if (this.timer) clearTimeout(this.timer);
+		next();
 	},
 	methods: {
 		...mapMutations({
@@ -165,34 +140,199 @@ export default {
 			changeAppending: "changeAppending",
 		}),
 
+		// 初始化
+		initData(callback) {
+			// 开启加载提示框
+			!this.isAppending && this.changeAppending(true);
+			// 用户登录
+			this.autoLogin(() => {
+				// 获得最热应用列表
+				this.getHotAppList();
+				// 获得分类列表
+				this.getTypeList();
+				// 获得分类下的应用列表
+				this.getTypeAppData(this.type_id, () => {
+					// 关闭加载提示框
+					this.timer = setTimeout(() => {
+						this.changeAppending(false);
+					}, this.loadingTime)
+					if (typeof callback === "function") callback();
+				});
+			});
+		},
+
+		// 搜索点击事件
 		onSearch() {
-			console.log("点击了搜索")
+			this.searchAppByName();
+		},
+		// 搜索点击事件
+		onInput() {
+			this.valueChange = true;
 		},
 
+		// 取消点击事件
+		onCancel() {
+			// 重置结果
+			this.result = false;
+			this.valueChange = false;
+			this.value = "";
+			this.res_page = 0;
+			this.res_total_page = 0;
+			this.res_error = false;
+			this.resultList = [];
+		},
+
+		// 最热应用点击事件
+		onHotClick(item) {
+			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
+		},
+
+		// 分类应用点击事件
 		onTypeClick(item) {
-			console.log(item)
+			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
 		},
 
+		// 搜索结果点击事件
+		onResClick(item) {
+			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
+		},
+
+		// 返回点击事件
 		onClickLeft() {
 			this.$router.replace({path: "/home", query: {YzChannelId: this.channelId, t: new Date().getTime()}});
 		},
 
-		// 获得测一测推荐配置
-		getTypeData(callback = null) {
+		// tab 切换事件
+		onTabsChange(name) {
+			this.getTypeAppData(name, () => {
+				this.type_id = name;
+			})
+		},
+
+		// 获得[大家爱玩]应用列表
+		getHotAppList(callback = null) {
 			Request.request({
-				url: this.appApiUrl + "/test_app/get_recommend_data_load",
+				url: this.appApiUrl + "/test_app/get_hot_app",
+				callback: (res, err) => {
+					if (err || res.code !== 0) return false;
+					this.hotList = res.body.app_list;
+					if (typeof callback === "function") callback();
+				},
+			})
+		},
+
+		// 获得[大家爱玩]应用列表
+		getTypeList(callback = null) {
+			Request.request({
+				url: this.appApiUrl + "/test_app/get_type_list",
+				callback: (res, err) => {
+					if (err || res.code !== 0) return false;
+					res.body.type_list.unshift({
+						tye_id: 0,
+						type_name: "全部测试",
+					});
+					this.typeList = res.body.type_list;
+					if (typeof callback === "function") callback();
+				},
+			})
+		},
+
+		// 获得分类下的应用列表
+		getTypeAppData(type_id, callback = null) {
+			// 不是同一个type_id时，初始化数据
+			if (type_id !== this.type_id) {
+				// 初始化数据
+				this.page = 0;
+				this.total_page = 0;
+				this.error = false;
+			}
+			// 开启加载提示框
+			!this.isAppending && this.changeAppending(true);
+			// type_id为0时获取全部
+			if (type_id === 0) {
+				Request.request({
+					url: this.appApiUrl + "/test_app/get_app_with_more",
+					data: {
+						page: this.page + 1,
+						page_name: this.model,
+					},
+					callback: (res, err) => {
+						if (err || res.code !== 0) return this.error = true;
+						// 更新推荐列表
+						this.total_page = res.body.total_page;
+						this.page = res.body.page;
+						for (let i = 0; i < res.body.app_list.length; i++) res.body.app_list[i].app_icon = this.appIconUrl(res.body.app_list[i].app_icon);
+						if (type_id !== this.type_id) this.appList = [];
+						this.appList = this.appList.concat(res.body.app_list);
+						this.changeAppending(false);
+						if (typeof callback === "function") callback();
+					},
+				})
+			} else {
+				Request.request({
+					url: this.appApiUrl + "/test_app/get_app_with_type",
+					data: {
+						type_id: type_id,
+						page: this.page + 1,
+						page_name: this.model,
+					},
+					callback: (res, err) => {
+						if (err || res.code !== 0) return this.error = true;
+						// 更新推荐列表
+						this.total_page = res.body.total_page;
+						this.page = res.body.page;
+						for (let i = 0; i < res.body.app_list.length; i++) res.body.app_list[i].app_icon = this.appIconUrl(res.body.app_list[i].app_icon);
+						if (type_id !== this.type_id) this.appList = [];
+						this.appList = this.appList.concat(res.body.app_list);
+						this.changeAppending(false);
+						if (typeof callback === "function") callback();
+					},
+				})
+			}
+		},
+
+		// 搜索应用
+		searchAppByName(callback = null) {
+			if (!this.value) return this.$toast("请输入搜索内容")
+			// 开启加载提示框
+			!this.isAppending && this.changeAppending(true);
+			Request.request({
+				url: this.appApiUrl + "/test_app/search_app_with_name",
 				data: {
-					app_id: 0,
-					page: this.page + 1,
-					page_name: "home",
+					search_content: this.value,
+					page: 1,
 				},
 				callback: (res, err) => {
-					if (err || res.code !== 0) return this.error = true;
+					if (err || res.code !== 0) return this.res_error = true;
 					// 更新推荐列表
-					this.total_page = res.body.total_page;
-					this.page = res.body.page;
-					for (let i = 0; i < res.body.recommend_list.length; i++) res.body.recommend_list[i].app_icon = this.appIconUrl(res.body.recommend_list[i].app_icon);
-					this.appList = this.appList.concat(res.body.recommend_list);
+					this.res_total_page = res.body.total_page;
+					this.res_page = res.body.page;
+					for (let i = 0; i < res.body.app_list.length; i++) res.body.app_list[i].app_icon = this.appIconUrl(res.body.app_list[i].app_icon);
+					this.resultList = [];
+					this.resultList = res.body.app_list;
+					this.result = true;
+					this.valueChange = false;
+					this.changeAppending(false);
+					if (typeof callback === "function") callback();
+				},
+			})
+		},
+
+		// 搜索应用
+		searchAppByNameLoad(callback = null) {
+			Request.request({
+				url: this.appApiUrl + "/test_app/search_app_with_name",
+				data: {
+					search_content: this.value,
+					page: this.res_page + 1,
+				},
+				callback: (res, err) => {
+					if (err || res.code !== 0) return this.res_error = true;
+					// 更新推荐列表
+					this.res_total_page = res.body.total_page;
+					this.res_page = res.body.page;
+					for (let i = 0; i < res.body.app_list.length; i++) res.body.app_list[i].app_icon = this.appIconUrl(res.body.app_list[i].app_icon);
+					this.resultList = this.resultList.concat(res.body.app_list);
 					if (typeof callback === "function") callback();
 				},
 			})
@@ -201,9 +341,19 @@ export default {
 		onLoad() {
 			// 异步更新数据
 			setTimeout(() => {
-				this.getTypeData(() => {
+				this.getTypeAppData(this.type_id, () => {
 					// 加载状态结束
 					this.loading = false;
+				});
+			}, 1000);
+		},
+
+		onResLoad() {
+			// 异步更新数据
+			setTimeout(() => {
+				this.searchAppByNameLoad(() => {
+					// 加载状态结束
+					this.res_loading = false;
 				});
 			}, 1000);
 		},

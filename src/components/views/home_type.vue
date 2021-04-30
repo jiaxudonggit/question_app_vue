@@ -3,10 +3,12 @@
 	<div id="type" class="type app-model" :style="{minHeight: (availHeight - 46) + 'px'}">
 		<van-nav-bar class="van-nav-bar-customer fixed-fix" :title="$route.query.YzTypeTitle" left-text="返回" left-arrow @click-left="onClickLeft"/>
 		<div class="type-content app-content">
-			<img :src="type.type_image" class="type-content-bg-image" alt="">
+			<img :src="type_image" class="type-content-bg-image" alt="">
 			<div class="type-content-app-list-wrap">
 				<div class="type-content-app-list-title">
-					{{ $route.query.YzTypeTitle }}
+					<img src="../../assets/images/home/title_icon_left.png" alt="">
+					<span>{{ type_name }}</span>
+					<img src="../../assets/images/home/title_icon_right.png" alt="">
 				</div>
 				<van-list class="type-content-app-list" v-model="loading" :finished="page === total_page" finished-text="--我是有底线的--" :error.sync="error" error-text="请求失败，点击重新加载" @load="onLoad">
 					<question_list_horizontal :question-list="typeList" :user-bg-color="'background-color: #6e88ff;'" :bg-color="true" @listenerQuestionListClick="onTypeClick"></question_list_horizontal>
@@ -27,7 +29,6 @@ import {Request} from "@/utils/Utils";
 Vue.use(NavBar);
 Vue.use(List);
 
-
 export default {
 	inject: ['reload', "autoLogin"],
 	components: {
@@ -35,7 +36,7 @@ export default {
 	},
 	computed: {
 		...mapState(["isAppending", "loadingTime", "channelId", "homeData", "availHeight"]),
-		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl", "isLogin"]),
+		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl", "isLogin", "appTypeUrl"]),
 		typeId() {
 			return this.$route.query.YzTypeId;
 		}
@@ -43,25 +44,33 @@ export default {
 	data() {
 		return {
 			type_image: require("@/assets/images/home/type_10001_big.png"),
+			type_name: "推荐排行",
 			typeList: [],
 			error: false,
 			loading: false,
 			total_page: 0,
 			page: 0,
-			type: {},
 			model: "type",
+			timer: [],
 		}
 	},
 	activated() {
 		// 设置channelId到vuex
 		this.setChannelId(this.$route.query.YzChannelId);
+		// 初始化接口
+		this.initData();
+	},
+	beforeRouteLeave(to, from, next) {
 		// 初始化数据
 		this.page = 0;
 		this.total_page = 0;
 		this.typeList = [];
-		this.type = {};
-		// 初始化接口
-		this.initData();
+		this.error = false;
+
+		// 删除定时器
+		if (this.timer) clearTimeout(this.timer);
+		this.timer = null;
+		next();
 	},
 	methods: {
 		...mapMutations({
@@ -75,30 +84,28 @@ export default {
 			!this.isAppending && this.changeAppending(true);
 			// 用户登录
 			this.autoLogin(() => {
-				// 通过type_id获取类型
-				this.getTypeById(() => {
-					// 获取分类下的应用数据
-					this.getTypeData(()=>{
-						// 关闭加载提示框
-						let timer = setTimeout(() => {
-							this.changeAppending(false);
-						}, this.loadingTime)
-						this.timer.push(timer);
-						if (typeof callback === "function") callback();
-					});
-				})
+				// 获取分类下的应用数据
+				this.getTypeData(() => {
+					// 关闭加载提示框
+					this.timer = setTimeout(() => {
+						this.changeAppending(false);
+					}, this.loadingTime)
+					if (typeof callback === "function") callback();
+				});
 			});
 		},
 
+		// 分类应用点击事件
 		onTypeClick(item) {
 			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
 		},
 
+		// 返回点击事件
 		onClickLeft() {
 			this.$router.replace({path: "/home", query: {YzChannelId: this.channelId, t: new Date().getTime()}});
 		},
 
-		// 获得测一测推荐配置
+		// 获得分类下的应用列表
 		getTypeData(callback = null) {
 			Request.request({
 				url: this.appApiUrl + "/test_app/get_app_with_type",
@@ -112,6 +119,8 @@ export default {
 					// 更新推荐列表
 					this.total_page = res.body.total_page;
 					this.page = res.body.page;
+					this.type_name = res.body.type_name;
+					this.type_image = this.appTypeUrl(res.body.type_image);
 					for (let i = 0; i < res.body.app_list.length; i++) res.body.app_list[i].app_icon = this.appIconUrl(res.body.app_list[i].app_icon);
 					this.typeList = this.typeList.concat(res.body.app_list);
 					if (typeof callback === "function") callback();
@@ -129,11 +138,6 @@ export default {
 			}, 1000);
 		},
 
-		// 通过type_id获取类型
-		getTypeById(callback) {
-			for (let i = 0; i < this.homeData.type_list.length; i++) if (this.homeData.type_list[i].type_id + "" === this.typeId + "") this.type = this.homeData.type_list[i];
-			if (typeof callback === "function") callback();
-		},
 	},
 }
 </script>

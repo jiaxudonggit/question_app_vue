@@ -8,7 +8,7 @@
 		<div class="home-like-center">
 			<swiper ref="moduleSwiper" class="swiper home-like-item-wrap" :options="swiperOption">
 				<swiper-slide v-for="(item, index) in likeList" :key="index" class="home-like-item" :style="{backgroundColor: index % 2 === 0 ? '#ffeeca' : '#c7eafe'}">
-					<div class="home-like-item-block">
+					<div class="home-like-item-block"  @click="onClick(item, index)">
 						<img class="home-like-item-banner" :src="item.image_name" alt="">
 						<div class="home-like-item-text">
 							<span class="home-like-item-title">{{ item.app_name }}</span>
@@ -81,11 +81,6 @@ export default {
 				watchOverflow: true, // 当没有足够的slide切换时，例如只有1个slide，swiper会失效且隐藏导航等
 				observer: true,//修改swiper自己或子元素时，自动初始化swiper
 				observeParents: true,//修改swiper的父元素时，自动初始化swiper
-				on: {
-					click: (swiper) => {
-						this.$emit("listenerLikeClick", this.likeList[swiper.realIndex], swiper.realIndex);
-					},
-				},
 			},
 		}
 	},
@@ -94,6 +89,10 @@ export default {
 		onMoreClick(){
 			this.$emit("listenerMoreClick");
 		},
+
+		onClick(item, index) {
+			this.$emit("listenerLikeClick", item, index);
+		}
 	}
 }
 </script>

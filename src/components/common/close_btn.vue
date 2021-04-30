@@ -3,7 +3,7 @@
 	<div v-show="isShowCloseBtn" class="app-close-wrap">
 		<div class="app-close-block" @click="onBtnClick">
 			<div class="app-close-timer">
-				<Countdown v-show="isCountDown" ref="countdown"  :time="countdownTimer" format="ss" :switch="countdownSwitch" @on-end="onCountdownEnd">
+				<Countdown v-show="isCountDown" ref="countdown" :time="countdownTimer" format="ss" :switch="countdownSwitch" @on-end="onCountdownEnd">
 					<template slot-scope="{ time }">{{ time }}</template>
 				</Countdown>
 				<span v-show="!isCountDown">0</span>
@@ -24,7 +24,7 @@ export default {
 	name: "close-btn",
 	computed: {
 		...mapState(["appId", "channelId", "channelVersion", "countdownTimer", "countdownSwitch", "isNewAccount",
-			"isShowCloseBtn", "isCountDown", "isShowExitBtn", "IndexPageName"]),
+			"isShowCloseBtn", "isCountDown", "isShowExitBtn"]),
 		...mapGetters(["isLogin"])
 	},
 	components: {
@@ -35,16 +35,18 @@ export default {
 			// 倒计时按钮
 			if (val) {
 				// 显示/隐藏倒计时按钮
-				this.IndexPageName.indexOf(this.$route.name) !== -1 ? this.setShowCloseBtn(true) : this.setShowCloseBtn(false);
+				this.setShowCloseBtn(this.$route.meta.showCloseBtn);
 				// 开启倒计时
 				this.setCountdownSwitch(true);
+				// 隐藏webview关闭按钮
+				if (this.$route.meta.showCloseBtn) this.setShowExitBtn(false);
 			} else {
 				// 关闭倒计时
 				this.setCountdownSwitch(false);
 				// 重置倒计时
 				if (this.$refs.countdown) this.$refs.countdown.reCountdown();
 				// 打开webview关闭按钮
-				if (this.IndexPageName.indexOf(this.$route.name) !== -1) this.setShowExitBtn(true);
+				if (this.$route.meta.showCloseBtn) this.setShowExitBtn(true);
 			}
 		},
 		// 是否显示webview关闭按钮
@@ -70,9 +72,9 @@ export default {
 		// 监听router
 		$route(to) {
 			// 如果倒计时关闭按钮不存在, 只在index页显示webview关闭按钮
-			this.setShowExitBtn(this.isLogin && !this.isCountDown && this.IndexPageName.indexOf(to.name) !== -1);
+			this.setShowExitBtn(this.isLogin && !this.isCountDown && to.meta.showCloseBtn);
 			// 如果倒计时关闭按钮存在，则只在index页显示
-			this.setShowCloseBtn(this.IndexPageName.indexOf(to.name) !== -1);
+			this.setShowCloseBtn(to.meta.showCloseBtn);
 		},
 	},
 
@@ -136,6 +138,7 @@ export default {
 	top: 3px;
 	border-radius: 20px;
 	box-sizing: border-box;
+	z-index: 9999999;
 
 	.app-close-block {
 		width: 45px;

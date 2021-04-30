@@ -21,7 +21,6 @@ const state = {
     resultId: null, // 答题结果ID
     fraction: 0, // 答题结果分数
     adCount: 0, // 播放激励视频广告次数
-    IndexPageName: ["index", "home"], // 显示关闭按钮的页面名称
     // 用户数据
     isLogin: false, // 是否已登陆
     isRecordAccess: false, // 是否已记录访问

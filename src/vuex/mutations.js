@@ -11,8 +11,8 @@ const mutations = {
     },
 
     // 改变登录记录状态
-    doRecordAccess(state) {
-        state.isRecordAccess = true;
+    setRecordAccess(state, status) {
+        state.isRecordAccess = status;
     },
 
     // 设置应用ID

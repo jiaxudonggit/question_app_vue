@@ -41,7 +41,7 @@ export default {
 	},
 	computed: {
 		...mapState(["isAppending", "isGameBack", "debugUserId", "debug", "isRunBrowser", "indexData",
-			"appId", "channelId", "isRecordAccess", "isNewAccount", "adCount", "IndexPageName"]),
+			"appId", "channelId", "isRecordAccess", "isNewAccount", "adCount"]),
 		...mapGetters(["appApiUrl", "isLogin"]),
 	},
 	watch: {
@@ -52,6 +52,10 @@ export default {
 					forbidClick: true
 				})
 				: this.$toast.clear();
+		},
+		$route(to) {
+			// 更换应用时重置访问记录状态
+			if (String(to.query.YzAppId) !== String(this.appId) && to.meta.accessRecord) this.setRecordAccess(false);
 		},
 	},
 	mounted() {
@@ -77,7 +81,7 @@ export default {
 			setGameBack: "setGameBack",
 			setShowResultPopup: "setShowResultPopup",
 			setAppStatus: "setAppStatus",
-			doRecordAccess: "doRecordAccess",
+			setRecordAccess: "setRecordAccess",
 			setCountDown: "setCountDown",
 			setShowExitBtn: "setShowExitBtn",
 		}),
@@ -169,6 +173,7 @@ export default {
 
 		// 记录用户进入应用
 		createAccessRecord(callback) {
+			if (!this.$route.meta.accessRecord) return false;
 			if (this.isRecordAccess) {
 				if (typeof callback == "function") callback();
 			} else {
@@ -179,7 +184,7 @@ export default {
 						app_id: this.appId,
 					},
 					callback: (res) => {
-						if (res && res.code === 0) this.doRecordAccess();
+						if (res && res.code === 0 && this.$route.meta.accessRecord) this.setRecordAccess(true);
 						if (typeof callback == "function") callback();
 					}
 				});
@@ -189,14 +194,16 @@ export default {
 		// 根据新/老用户设置退出按钮
 		setCloseBtnStatus() {
 			if (this.adCount <= 0) {
-				if(this.isNewAccount) {
+				if (this.isNewAccount) {
 					// 打开倒计时功能
 					this.setCountDown(true);
+					// 隐藏webview关闭按钮
+					if (this.$route.meta.showCloseBtn) this.setShowExitBtn(false);
 				} else {
 					// 关闭倒计时功能
 					this.setCountDown(false);
 					// 打开webview关闭按钮
-					this.setShowExitBtn(this.IndexPageName.indexOf(this.$route.name) !== -1);
+					if (this.$route.meta.showCloseBtn) this.setShowExitBtn(true);
 				}
 			}
 		},
