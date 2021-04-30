@@ -65,7 +65,6 @@ const mutations = {
         state.isShowResultPopup = status;
     },
 
-
     // 阅友设置签名串
     setSignStr(state, sign) {
         state.signStr = sign;
@@ -137,7 +136,6 @@ const mutations = {
         state.resultData = payload.data;
     },
 
-
     // 设置弹幕数据
     setBarrageData(state, barrageData) {
         state.barrageData.barrage_number = barrageData.barrage_number;
@@ -155,6 +153,22 @@ const mutations = {
         for (let i = 0; i < payload.data.recommend_list.length; i++) payload.data.recommend_list[i].app_icon = payload.appIconUrl(payload.data.recommend_list[i].app_icon);
         state.popupData = payload.data;
     },
+
+    // 设置主页数据
+    setHomeData(state, payload) {
+        // 处理banner图片
+        for (let i = 0; i < payload.data.banner_list.length; i++) payload.data.banner_list[i].image_name = payload.appBannerUrl(payload.data.banner_list[i].image_name);
+        // 处理type图片
+        for (let i = 0; i < payload.data.type_list.length; i++) {
+            payload.data.type_list[i].type_icon = payload.appTypeUrl(payload.data.type_list[i].type_icon);
+            payload.data.type_list[i].type_image = payload.appTypeUrl(payload.data.type_list[i].type_image);
+        }
+        // 处理module图片
+        for (let i = 0; i < payload.data.module_list.length; i++) payload.data.module_list[i].app_icon = payload.appIconUrl(payload.data.module_list[i].app_icon);
+        // 处理like图片
+        for (let i = 0; i < payload.data.like_list.length; i++) payload.data.like_list[i].image_name = payload.appLikeUrl(payload.data.like_list[i].image_name);
+        state.homeData = payload.data;
+    }
 
 }
 export default mutations

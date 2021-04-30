@@ -9,7 +9,7 @@
 			<swiper ref="moduleSwiper" class="swiper home-like-item-wrap" :options="swiperOption">
 				<swiper-slide v-for="(item, index) in likeList" :key="index" class="home-like-item" :style="{backgroundColor: index % 2 === 0 ? '#ffeeca' : '#c7eafe'}">
 					<div class="home-like-item-block">
-						<img class="home-like-item-banner" :src="item.app_banner" alt="">
+						<img class="home-like-item-banner" :src="item.image_name" alt="">
 						<div class="home-like-item-text">
 							<span class="home-like-item-title">{{ item.app_name }}</span>
 							<span class="home-like-item-desc">{{ item.app_desc }}</span>

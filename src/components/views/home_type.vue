@@ -3,7 +3,7 @@
 	<div id="type" class="type app-model" :style="{minHeight: (availHeight - 46) + 'px'}">
 		<van-nav-bar class="van-nav-bar-customer fixed-fix" :title="$route.query.YzTypeTitle" left-text="返回" left-arrow @click-left="onClickLeft"/>
 		<div class="type-content app-content">
-			<img :src="type_image" class="type-content-bg-image" alt="">
+			<img :src="type.type_image" class="type-content-bg-image" alt="">
 			<div class="type-content-app-list-wrap">
 				<div class="type-content-app-list-title">
 					{{ $route.query.YzTypeTitle }}
@@ -48,13 +48,9 @@ export default {
 			loading: false,
 			total_page: 0,
 			page: 0,
+			type: {},
+			model: "type",
 		}
-	},
-	created() {
-		// 设置channelId到vuex
-		this.setChannelId(this.$route.query.YzChannelId);
-		// 获取分类下的应用数据
-		this.getTypeData();
 	},
 	activated() {
 		// 设置channelId到vuex
@@ -63,8 +59,9 @@ export default {
 		this.page = 0;
 		this.total_page = 0;
 		this.typeList = [];
-		// 获取分类下的应用数据
-		this.getTypeData();
+		this.type = {};
+		// 初始化接口
+		this.initData();
 	},
 	methods: {
 		...mapMutations({
@@ -72,8 +69,29 @@ export default {
 			changeAppending: "changeAppending",
 		}),
 
+		// 初始化
+		initData(callback) {
+			// 开启加载提示框
+			!this.isAppending && this.changeAppending(true);
+			// 用户登录
+			this.autoLogin(() => {
+				// 通过type_id获取类型
+				this.getTypeById(() => {
+					// 获取分类下的应用数据
+					this.getTypeData(()=>{
+						// 关闭加载提示框
+						let timer = setTimeout(() => {
+							this.changeAppending(false);
+						}, this.loadingTime)
+						this.timer.push(timer);
+						if (typeof callback === "function") callback();
+					});
+				})
+			});
+		},
+
 		onTypeClick(item) {
-			console.log(item)
+			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
 		},
 
 		onClickLeft() {
@@ -83,19 +101,19 @@ export default {
 		// 获得测一测推荐配置
 		getTypeData(callback = null) {
 			Request.request({
-				url: this.appApiUrl + "/test_app/get_recommend_data_load",
+				url: this.appApiUrl + "/test_app/get_app_with_type",
 				data: {
-					app_id: 0,
+					type_id: this.typeId,
 					page: this.page + 1,
-					page_name: "home",
+					page_name: this.model,
 				},
 				callback: (res, err) => {
 					if (err || res.code !== 0) return this.error = true;
 					// 更新推荐列表
 					this.total_page = res.body.total_page;
 					this.page = res.body.page;
-					for (let i = 0; i < res.body.recommend_list.length; i++) res.body.recommend_list[i].app_icon = this.appIconUrl(res.body.recommend_list[i].app_icon);
-					this.typeList = this.typeList.concat(res.body.recommend_list);
+					for (let i = 0; i < res.body.app_list.length; i++) res.body.app_list[i].app_icon = this.appIconUrl(res.body.app_list[i].app_icon);
+					this.typeList = this.typeList.concat(res.body.app_list);
 					if (typeof callback === "function") callback();
 				},
 			})
@@ -111,6 +129,11 @@ export default {
 			}, 1000);
 		},
 
+		// 通过type_id获取类型
+		getTypeById(callback) {
+			for (let i = 0; i < this.homeData.type_list.length; i++) if (this.homeData.type_list[i].type_id + "" === this.typeId + "") this.type = this.homeData.type_list[i];
+			if (typeof callback === "function") callback();
+		},
 	},
 }
 </script>

@@ -22,6 +22,21 @@ export default {
         if (file_name === "default.png") return `${state.debug ? state.testAppApiUrl : state.appApiUrl}/resources/default/icon/${file_name}`;
         return `${state.debug ? state.testAppApiUrl : state.appApiUrl}/resources/icon/${file_name}`;
     },
+    // 返回应用banner地址
+    appBannerUrl: (state) => (file_name) => {
+        if (file_name === "default.png") return `${state.debug ? state.testAppApiUrl : state.appApiUrl}/resources/default/banner/${file_name}`;
+        return `${state.debug ? state.testAppApiUrl : state.appApiUrl}/resources/banner/${file_name}`;
+    },
+    // 返回应用banner地址
+    appTypeUrl: (state) => (file_name) => {
+        if (file_name === "default.png") return `${state.debug ? state.testAppApiUrl : state.appApiUrl}/resources/default/type/${file_name}`;
+        return `${state.debug ? state.testAppApiUrl : state.appApiUrl}/resources/type/${file_name}`;
+    },
+    // 返回应用like地址
+    appLikeUrl: (state) => (file_name) => {
+        if (file_name === "default.png") return `${state.debug ? state.testAppApiUrl : state.appApiUrl}/resources/default/like/${file_name}`;
+        return `${state.debug ? state.testAppApiUrl : state.appApiUrl}/resources/like/${file_name}`;
+    },
     // 返回弹幕头像地址
     appBarrageAvatarUrl: (state) => (file_name) => {
         return `${state.debug ? state.testAppApiUrl : state.appApiUrl}/resources/barrage/${file_name}`;

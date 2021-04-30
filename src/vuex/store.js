@@ -51,94 +51,16 @@ const state = {
     isShowExitBtn: false, // 是否显示webview退出悬浮按钮
     // 业务数据
     homeData: {
-        banner_list: [
-            {
-                app_id: 234,
-                app_banner: require("@/assets/images/home/234_banner.png"),
-            },
-            {
-                app_id: 222,
-                app_banner: require("@/assets/images/home/222_banner.png"),
-            },
-
-        ],
-        type_list: [
-            {
-                type_title: "推荐排行",
-                type_icon: require("@/assets/images/home/type_10001.png"),
-                type_id: 10001,
-            },
-            {
-                type_title: "推荐排行",
-                type_icon: require("@/assets/images/home/type_10002.png"),
-                type_id: 10002,
-            },
-            {
-                type_title: "推荐排行",
-                type_icon: require("@/assets/images/home/type_10003.png"),
-                type_id: 10003,
-            },
-            {
-                type_title: "推荐排行",
-                type_icon: require("@/assets/images/home/type_10004.png"),
-                type_id: 10004,
-            },
-        ],
-        module_list: [
-            {
-
-                module_title: "左右脑",
-                app_id: 234,
-                app_name: "左右脑哪个更灵活",
-                app_icon: "http://interest.test.ezhigame.com/resources/icon/118.png",
-                btn_text: "测试",
-                bg_color: "linear-gradient(#f1c666, #fc9c04)",
-            },
-            {
-
-                module_title: "左右脑",
-                app_id: 234,
-                app_name: "左右脑哪个更灵活",
-                app_icon: "http://interest.test.ezhigame.com/resources/icon/875.jpg",
-                btn_text: "测试",
-                bg_color: "linear-gradient(#ff8900, #fb5d03)",
-            },
-            {
-
-                module_title: "左右脑",
-                app_id: 234,
-                app_name: "左右脑哪个更灵活",
-                app_icon: "http://interest.test.ezhigame.com/resources/icon/835.png",
-                btn_text: "测试",
-                bg_color: "linear-gradient(#01cfff, #157dfc)",
-            },
-        ],
-        like_list: [
-            {
-                app_id: 234,
-                app_name: "看表情猜成语大挑战",
-                app_desc: "看表情猜成语大挑战看表情猜成语大挑战看表情猜成语大挑战看表情猜成语大挑战",
-                app_banner: require("@/assets/images/home/1.jpg"),
-            },
-            {
-                app_id: 234,
-                app_name: "看表情猜成语大挑战",
-                app_desc: "看表情猜成语大挑战看表情猜成语大挑战看表情猜成语大挑战看表情猜成语大挑战",
-                app_banner: require("@/assets/images/home/2.jpg"),
-            },
-            {
-                app_id: 234,
-                app_name: "看表情猜成语大挑战",
-                app_desc: "看表情猜成语大挑战看表情猜成语大挑战看表情猜成语大挑战看表情猜成语大挑战",
-                app_banner: require("@/assets/images/home/3.jpg"),
-            },
-            {
-                app_id: 234,
-                app_name: "看表情猜成语大挑战",
-                app_desc: "看表情猜成语大挑战看表情猜成语大挑战看表情猜成语大挑战看表情猜成语大挑战",
-                app_banner: require("@/assets/images/home/4.jpg"),
-            },
-        ],
+        show_search: true,
+        show_banner: true,
+        show_type: true,
+        show_module: true,
+        show_like: true,
+        show_more: true,
+        banner_list: [],
+        type_list: [],
+        module_list: [],
+        like_list: [],
     },
     indexData: {
         "app_id": null,

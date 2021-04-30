@@ -22,7 +22,12 @@ Vue.use(List);
 
 export default {
 	name: "home-more",
-
+	props: {
+		model: {
+			type: String,
+			default: "home",
+		},
+	},
 	components: {
 		question_list_horizontal,
 	},
@@ -56,19 +61,18 @@ export default {
 		// 获得测一测推荐配置
 		getMoreData(callback = null) {
 			Request.request({
-				url: this.appApiUrl + "/test_app/get_recommend_data_load",
+				url: this.appApiUrl + "/test_app/get_app_with_more",
 				data: {
-					app_id: 0,
 					page: this.page + 1,
-					page_name: "home",
+					page_name: this.model,
 				},
 				callback: (res, err) => {
 					if (err || res.code !== 0) return this.error = true;
 					// 更新推荐列表
 					this.total_page = res.body.total_page;
 					this.page = res.body.page;
-					for (let i = 0; i < res.body.recommend_list.length; i++) res.body.recommend_list[i].app_icon = this.appIconUrl(res.body.recommend_list[i].app_icon);
-					this.moreList = this.moreList.concat(res.body.recommend_list);
+					for (let i = 0; i < res.body.app_list.length; i++) res.body.app_list[i].app_icon = this.appIconUrl(res.body.app_list[i].app_icon);
+					this.moreList = this.moreList.concat(res.body.app_list);
 					if (typeof callback === "function") callback();
 				},
 			})

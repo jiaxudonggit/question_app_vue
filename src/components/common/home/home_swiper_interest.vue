@@ -181,7 +181,7 @@ export default {
 
 					.home-module-item-name {
 						width: 95%;
-						margin: 15px auto 0;
+						margin: 10px auto 0;
 						font-size: 14px;
 						text-align: center;
 						line-height: 20px;
@@ -189,10 +189,16 @@ export default {
 
 					.home-module-item-title {
 						width: 95%;
+						height: 32px;
 						margin: 0 auto;
 						font-size: 12px;
 						text-align: center;
-						line-height: 20px;
+						line-height: 16px;
+						overflow: hidden;
+						text-overflow: ellipsis;
+						display:-webkit-box; //作为弹性伸缩盒子模型显示。
+						-webkit-box-orient:vertical; //设置伸缩盒子的子元素排列方式--从上到下垂直排列
+						-webkit-line-clamp:2; //显示的行
 					}
 
 					.home-module-item-btn {
@@ -201,7 +207,7 @@ export default {
 						box-sizing: border-box;
 						border-radius: 12px;
 						border: 1px solid #ffffff;
-						margin: 10px auto;
+						margin: 5px auto;
 						font-size: 12px;
 						line-height: 20px;
 						text-align: center;

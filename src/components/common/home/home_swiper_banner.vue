@@ -2,7 +2,7 @@
 <template>
 	<swiper ref="renderSwiper" class="home-swiper" :options="swiperOption">
 		<swiper-slide v-for="item in bannerList" :key="item.app_id">
-			<img :src="item.app_banner" alt="" :data-key="item.app_id"/>
+			<img :src="item.image_name" alt="" :data-key="item.app_id"/>
 		</swiper-slide>
 		<div class="swiper-pagination" slot="pagination"></div>
 	</swiper>
