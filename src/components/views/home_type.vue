@@ -1,6 +1,6 @@
 <!--主页商店分类页组件-->
 <template>
-	<div id="type" class="type app-model" :style="{minHeight: (availHeight - 46) + 'px'}">
+	<div id="type" class="type app-model">
 		<van-nav-bar class="van-nav-bar-customer fixed-fix" :title="$route.query.YzTypeTitle" left-text="返回" left-arrow @click-left="onClickLeft"/>
 		<div class="type-content app-content">
 			<img :src="type_image" class="type-content-bg-image" alt="">

@@ -1,6 +1,6 @@
 <!--主页商店搜索组件-->
 <template>
-	<div id="search" class="search app-model" :style="{minHeight: (availHeight - 46) + 'px'}">
+	<div id="search" class="search app-model">
 		<van-nav-bar class="van-nav-bar-customer fixed-fix" title="搜索" left-text="返回" left-arrow @click-left="onClickLeft"/>
 		<div class="search-content app-content">
 			<div class="search-content-input-wrap">
@@ -247,7 +247,7 @@ export default {
 				this.error = false;
 			}
 			// 开启加载提示框
-			!this.isAppending && this.changeAppending(true);
+			if (!this.loading) !this.isAppending && this.changeAppending(true);
 			// type_id为0时获取全部
 			if (type_id === 0) {
 				Request.request({
@@ -264,7 +264,7 @@ export default {
 						for (let i = 0; i < res.body.app_list.length; i++) res.body.app_list[i].app_icon = this.appIconUrl(res.body.app_list[i].app_icon);
 						if (type_id !== this.type_id) this.appList = [];
 						this.appList = this.appList.concat(res.body.app_list);
-						this.changeAppending(false);
+						if (!this.loading) this.changeAppending(false);
 						if (typeof callback === "function") callback();
 					},
 				})
@@ -284,7 +284,7 @@ export default {
 						for (let i = 0; i < res.body.app_list.length; i++) res.body.app_list[i].app_icon = this.appIconUrl(res.body.app_list[i].app_icon);
 						if (type_id !== this.type_id) this.appList = [];
 						this.appList = this.appList.concat(res.body.app_list);
-						this.changeAppending(false);
+						if (!this.loading) this.changeAppending(false);
 						if (typeof callback === "function") callback();
 					},
 				})

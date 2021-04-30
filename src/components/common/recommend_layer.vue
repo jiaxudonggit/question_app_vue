@@ -92,7 +92,7 @@ export default {
 		width: 100%;
 		position: absolute;
 		box-sizing: border-box;
-		top: 19%;
+		top: 17.5%;
 		z-index: 99;
 	}
 
