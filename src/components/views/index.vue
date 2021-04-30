@@ -45,7 +45,7 @@
 			</div>
 		</div>
 		<!-- 推荐列表 -->
-		<recommend_list v-if="isLogin && indexData.show_recommend_list" :model="model" :padding-bottom="'130px'" v-on:listenerRecommendClick="onClickRecommend"></recommend_list>
+		<recommend_list v-if="isLogin && indexData.show_recommend_list && showAppList" :model="model" :padding-bottom="'130px'" v-on:listenerRecommendClick="onClickRecommend"></recommend_list>
 		<!-- 按钮 -->
 		<div class="index-btn-wrap fixed-fix" @click="$router.push({path: '/play', query: {YzAppId: appId, YzChannelId: channelId, t: new Date().getTime()}})">
 			<img v-if="indexData.button_image" class="index-btn" :src="indexData.button_image" alt="">
@@ -80,6 +80,7 @@ export default {
 			model: "index",
 			timer: [],
 			showPopup: false,
+			showAppList: true,
 		}
 	},
 	computed: {
@@ -211,7 +212,12 @@ export default {
 		// 点击更多推荐事件
 		onClickRecommend(item) {
 			this.reload(() => {
-				this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
+				this.showAppList = false;
+				this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}}).then(() => {
+					this.$nextTick(() => {
+						this.showAppList = true;
+					});
+				});
 			});
 		},
 

@@ -56,7 +56,6 @@ export default {
 		this.page = 0;
 		this.total_page = 0;
 		this.recommend_list = [];
-		this.error = false;
 		this.getRecommendData();
 	},
 	methods: {
