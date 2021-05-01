@@ -45,7 +45,7 @@
 			</div>
 		</div>
 		<!-- 推荐列表 -->
-		<recommend_list v-if="indexData.show_recommend_list" :model="model" :padding-bottom="'130px'" v-on:listenerRecommendClick="onClickRecommend"></recommend_list>
+		<recommend_list v-if="indexData.show_recommend_list" :model="model" padding-bottom="130px" min-height="930px" v-on:listenerRecommendClick="onClickRecommend"></recommend_list>
 		<!-- 按钮 -->
 		<div class="index-btn-wrap fixed-fix" @click="$router.push({path: '/play', query: {YzAppId: appId, YzChannelId: channelId, t: new Date().getTime()}})">
 			<img v-if="indexData.button_image" class="index-btn" :src="indexData.button_image" alt="">
