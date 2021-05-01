@@ -41,13 +41,14 @@
 </template>
 <script>
 
-import lodash from "lodash";
+import debounce from "lodash.debounce";
 import {mapGetters, mapState} from "vuex";
 import {Request} from "@/utils/Utils";
 import AudioPlayer from '@liripeng/vue-audio-player'
 import {videoPlayer} from 'vue-video-player'
 import '@liripeng/vue-audio-player/lib/vue-audio-player.css'
 import 'video.js/dist/video-js.css'
+import Vue from "vue";
 
 export default {
 	name: "answer",
@@ -157,7 +158,7 @@ export default {
 	},
 	methods: {
 
-		onAnswerClick: lodash.debounce(function (item, index) {
+		onAnswerClick: debounce(function (item, index) {
 			// 创建用户答题记录
 			this.createAnswerRecord(item);
 			this.$emit("listenerAnswerClick", item, index);

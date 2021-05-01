@@ -76,11 +76,6 @@ export default {
 	},
 
 	created() {
-		// 如果倒计时关闭按钮不存在, 只在index页显示webview关闭按钮
-		this.setShowExitBtn(this.isLogin && !this.isCountDown && this.$route.meta.showCloseBtn);
-		// 如果倒计时关闭按钮存在，则只在index页显示
-		this.setShowCloseBtn(this.$route.meta.showCloseBtn);
-
 		// 设置安卓生命周期
 		if (AdUtils.getAppVersion() >= this.channelVersion && this.channelId === "YueYou") {
 			// 系统状态监听
@@ -88,11 +83,11 @@ export default {
 				switch (callback) {
 					case "onPause":
 						console.log("androidLifeCycleCallBack onPause --> " + from);
-						this.setCountdownSwitch(false);
+						if (this.countdownSwitch) this.setCountdownSwitch(false);
 						break;
 					case "onResume":
 						console.log("androidLifeCycleCallBack onResume --> " + from);
-						this.setCountdownSwitch(true);
+						if (!this.countdownSwitch) this.setCountdownSwitch(true);
 						break;
 					case "onStop":
 						console.log("androidLifeCycleCallBack onStop --> " + from);

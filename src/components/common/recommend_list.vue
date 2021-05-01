@@ -22,7 +22,7 @@
 </template>
 <script>
 
-import lodash from "lodash";
+import debounce from "lodash.debounce";
 import {Request} from "@/utils/Utils";
 import {mapGetters, mapMutations, mapState} from "vuex";
 import question_list_horizontal from "@/components/common/question_list_horizontal";
@@ -70,7 +70,7 @@ export default {
 		},
 
 		// 换一换
-		onRefreshClick: lodash.debounce(function () {
+		onRefreshClick: debounce(function () {
 			if (!this.loading) this.getRecommendData();
 		}, 800, {'leading': true, 'trailing': false}),
 
@@ -183,7 +183,6 @@ export default {
 
 	.recommend-rows-wrap {
 		width: 100%;
-		min-height: 1030px;
 		box-sizing: border-box;
 		position: relative;
 

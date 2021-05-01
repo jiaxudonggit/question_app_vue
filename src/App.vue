@@ -9,7 +9,7 @@
 			<router-view v-if="!$route.meta.keepAlive && isRouterAlive"></router-view>
 		</transition>
 		<app_bottom></app_bottom>
-		<close_btn v-if="isLogin"></close_btn>
+		<close_btn></close_btn>
 	</div>
 </template>
 
@@ -190,24 +190,19 @@ export default {
 
 		// 根据新/老用户设置退出按钮
 		setCloseBtnStatus() {
-			if (this.adCount <= 0) {
-				if (this.isNewAccount) {
-					// 打开倒计时功能
-					this.setCountDown(true);
-					// 隐藏webview关闭按钮
-					if (this.$route.meta.showCloseBtn) this.setShowExitBtn(false);
-				} else {
-					// 关闭倒计时功能
-					this.setCountDown(false);
-					// 打开webview关闭按钮
-					if (this.$route.meta.showCloseBtn) this.setShowExitBtn(true);
-				}
+
+			if (this.isNewAccount) {
+				// 打开倒计时功能
+				this.setCountDown(true);
+				// 隐藏webview关闭按钮
+				if (this.$route.meta.showCloseBtn) this.setShowExitBtn(false);
 			} else {
 				// 关闭倒计时功能
 				this.setCountDown(false);
 				// 打开webview关闭按钮
 				if (this.$route.meta.showCloseBtn) this.setShowExitBtn(true);
 			}
+
 		},
 
 		// 刷新路由
@@ -235,7 +230,7 @@ export default {
 		},
 
 		// 跳转到商店也
-		goToHome(){
+		goToHome() {
 			this.$router.replace({path: "/home", query: {YzChannelId: this.channelId, t: new Date().getTime()}});
 		}
 	}

@@ -141,6 +141,8 @@ export default {
 		// 搜索点击事件
 		onInput() {
 			this.valueChange = true;
+			this.res_page = 0;
+			this.res_total_page = 0;
 		},
 
 		// 取消点击事件
@@ -264,7 +266,7 @@ export default {
 		searchAppByName(callback = null) {
 			if (!this.value) return this.$toast("请输入搜索内容")
 			// 开启加载提示框
-			if (this.res_loading) !this.isAppending && this.changeAppending(true);
+			if (!this.res_loading) !this.isAppending && this.changeAppending(true);
 			Request.request({
 				url: this.appApiUrl + "/test_app/search_app_with_name",
 				data: {
@@ -281,7 +283,7 @@ export default {
 					this.resultList = this.resultList.concat(res.body.app_list);
 					if (!this.result) this.result = true;
 					if (this.valueChange) this.valueChange = false;
-					if (this.res_loading) this.changeAppending(false);
+					if (!this.res_loading) this.changeAppending(false);
 					if (typeof callback === "function") callback();
 				},
 			})
