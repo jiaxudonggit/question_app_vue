@@ -2,12 +2,12 @@ const mutations = {
 
     // 设置渠道ID
     setChannelId(state, channelId) {
-        state.channelId = channelId;
+        if (channelId) state.channelId = String(channelId);
     },
 
     // 设置应用ID
     setAppId(state, appId) {
-        state.appId = appId;
+        if (appId) state.appId = String(appId);
     },
 
     // 改变登录记录状态
@@ -95,10 +95,8 @@ const mutations = {
         state.nickname = String(userInfo.nickname);
         state.headImage = String(userInfo.head_img_url);
         state.sex = userInfo.sex;
-        state.accessToken = userInfo.access_token;
         state.isNewAccount = userInfo.is_new_account;
-        state.isLogin = true;
-        window.sessionStorage.setItem("accessToken", userInfo.access_token)
+        state.accessToken = userInfo.access_token;
     },
 
     // 设置主页数据

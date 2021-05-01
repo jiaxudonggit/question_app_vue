@@ -1,12 +1,12 @@
 <!--主页商店搜索组件-->
 <template>
 	<div id="search" class="search app-model">
-		<van-nav-bar class="van-nav-bar-customer fixed-fix" title="搜索" left-text="返回" left-arrow @click-left="onClickLeft"/>
+		<van-nav-bar class="van-nav-bar-customer fixed-fix" title="搜索" left-text="返回" left-arrow @click-left="goToHome"/>
 		<div class="search-content app-content">
 			<div class="search-content-input-wrap">
 				<van-search v-model="value" show-action shape="round" :background="'transparent'" placeholder="搜你想搜的，这里会有你所爱~" @input="onInput" @search="searchAppByName" @clear="onCancel">
 					<template #action>
-						<div v-if="!result || valueChange" @click="onSearch">搜索</div>
+						<div v-if="!result || valueChange" @click="searchAppByName">搜索</div>
 						<div v-else @click="onCancel">取消</div>
 					</template>
 				</van-search>
@@ -66,77 +66,57 @@ Vue.use(List);
 
 
 export default {
-	inject: ['reload', "autoLogin"],
+	inject: ["openNewApp", "goToHome"],
 	components: {
 		question_list_horizontal,
 	},
 	computed: {
 		...mapState(["isAppending", "loadingTime", "channelId", "homeData", "availHeight"]),
-		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl", "isLogin"]),
-		typeId() {
-			return this.$route.query.YzTypeId;
-		}
+		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl"]),
 	},
 	data() {
 		return {
+			// 搜索数据
+			value: "",
+			valueChange: false, // 搜索框值是否更新
+			// 猜你想玩
+			hotList: [], // 热门应用列表
+			// 分类数据
 			error: false,
 			loading: false,
-			total_page: 0,
-			page: 0,
-			appList: [],
-			type_id: 0,
-			value: "",
+			total_page: 0, // 分类应用总页数
+			page: 0, // 分类应用当前页码
+			appList: [], // 分类应用列表
+			type_id: 0, // 当前所选分类ID
 			active: 0,
-			model: "search",
-			hotList: [],
 			typeList: [
 				{
 					type_name: "全部测试",
 					type_id: 0,
 				},
-			],
+			], // 分类列表
 			timer: null,
-			// 以下是结果
-			valueChange: false,
+			// 结果数据
 			result: false,
 			res_error: false,
 			res_loading: false,
-			res_total_page: 0,
-			res_page: 0,
-			resultList: [],
+			res_total_page: 0, // 结果应用总页数
+			res_page: 0, // 结果类应用当前页码
+			resultList: [], // 结果应用列表
+			// 其他
+			model: "search",
 		}
 	},
-	activated() {
-		// 设置channelId到vuex
-		this.setChannelId(this.$route.query.YzChannelId);
+	created() {
 		// 初始化
 		this.initData();
 	},
-	beforeRouteLeave(to, from, next) {
-		// 重置数据
-		this.page = 0;
-		this.total_page = 0;
-		this.type_id = 0;
-		this.active = 0;
-		this.appList = [];
-		this.error = false;
-
-		// 重置结果
-		this.value = "";
-		this.result = false;
-		this.valueChange = false;
-		this.res_page = 0;
-		this.res_total_page = 0;
-		this.res_error = false;
-		this.resultList = [];
-
+	destroyed() {
 		// 删除定时器
 		if (this.timer) clearTimeout(this.timer);
-		next();
 	},
 	methods: {
 		...mapMutations({
-			setChannelId: "setChannelId",
 			changeAppending: "changeAppending",
 		}),
 
@@ -144,27 +124,20 @@ export default {
 		initData(callback) {
 			// 开启加载提示框
 			!this.isAppending && this.changeAppending(true);
-			// 用户登录
-			this.autoLogin(() => {
-				// 获得最热应用列表
-				this.getHotAppList();
-				// 获得分类列表
-				this.getTypeList();
-				// 获得分类下的应用列表
-				this.getTypeAppData(this.type_id, () => {
-					// 关闭加载提示框
-					this.timer = setTimeout(() => {
-						this.changeAppending(false);
-					}, this.loadingTime)
-					if (typeof callback === "function") callback();
-				});
+			// 获得最热应用列表
+			this.getHotAppList();
+			// 获得分类列表
+			this.getTypeList();
+			// 获得分类下的应用列表
+			this.getTypeAppData(this.type_id, () => {
+				// 关闭加载提示框
+				this.timer = setTimeout(() => {
+					this.changeAppending(false);
+				}, this.loadingTime)
+				if (typeof callback === "function") callback();
 			});
 		},
 
-		// 搜索点击事件
-		onSearch() {
-			this.searchAppByName();
-		},
 		// 搜索点击事件
 		onInput() {
 			this.valueChange = true;
@@ -184,29 +157,25 @@ export default {
 
 		// 最热应用点击事件
 		onHotClick(item) {
-			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
+			this.openNewApp(item.app_id, false);
 		},
 
 		// 分类应用点击事件
 		onTypeClick(item) {
-			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
+			this.openNewApp(item.app_id, false);
 		},
 
 		// 搜索结果点击事件
 		onResClick(item) {
-			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
-		},
-
-		// 返回点击事件
-		onClickLeft() {
-			this.$router.replace({path: "/home", query: {YzChannelId: this.channelId, t: new Date().getTime()}});
+			this.openNewApp(item.app_id, false);
 		},
 
 		// tab 切换事件
 		onTabsChange(name) {
+			// 获得新的分类数据
 			this.getTypeAppData(name, () => {
 				this.type_id = name;
-			})
+			});
 		},
 
 		// 获得[大家爱玩]应用列表
@@ -295,31 +264,7 @@ export default {
 		searchAppByName(callback = null) {
 			if (!this.value) return this.$toast("请输入搜索内容")
 			// 开启加载提示框
-			!this.isAppending && this.changeAppending(true);
-			Request.request({
-				url: this.appApiUrl + "/test_app/search_app_with_name",
-				data: {
-					search_content: this.value,
-					page: 1,
-				},
-				callback: (res, err) => {
-					if (err || res.code !== 0) return this.res_error = true;
-					// 更新推荐列表
-					this.res_total_page = res.body.total_page;
-					this.res_page = res.body.page;
-					for (let i = 0; i < res.body.app_list.length; i++) res.body.app_list[i].app_icon = this.appIconUrl(res.body.app_list[i].app_icon);
-					this.resultList = [];
-					this.resultList = res.body.app_list;
-					this.result = true;
-					this.valueChange = false;
-					this.changeAppending(false);
-					if (typeof callback === "function") callback();
-				},
-			})
-		},
-
-		// 搜索应用
-		searchAppByNameLoad(callback = null) {
+			if (this.res_loading) !this.isAppending && this.changeAppending(true);
 			Request.request({
 				url: this.appApiUrl + "/test_app/search_app_with_name",
 				data: {
@@ -332,7 +277,11 @@ export default {
 					this.res_total_page = res.body.total_page;
 					this.res_page = res.body.page;
 					for (let i = 0; i < res.body.app_list.length; i++) res.body.app_list[i].app_icon = this.appIconUrl(res.body.app_list[i].app_icon);
+					if (this.valueChange) this.resultList = [];
 					this.resultList = this.resultList.concat(res.body.app_list);
+					if (!this.result) this.result = true;
+					if (this.valueChange) this.valueChange = false;
+					if (this.res_loading) this.changeAppending(false);
 					if (typeof callback === "function") callback();
 				},
 			})
@@ -351,7 +300,7 @@ export default {
 		onResLoad() {
 			// 异步更新数据
 			setTimeout(() => {
-				this.searchAppByNameLoad(() => {
+				this.searchAppByName(() => {
 					// 加载状态结束
 					this.res_loading = false;
 				});

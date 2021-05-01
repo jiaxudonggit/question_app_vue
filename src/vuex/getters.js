@@ -5,7 +5,7 @@ export default {
 
     // 是否已登录
     isLogin: (state) => {
-        return state.accessToken !== null && state.appId;
+        return state.accessToken !== null && state.appId !== null;
     },
 
     // 返回后端接口地址

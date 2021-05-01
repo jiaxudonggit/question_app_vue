@@ -4,7 +4,7 @@
 		<div class="result-header fixed-fix">
 			<div class="result-header-back" @click="onClickBack"><img src="../../assets/images/play/back.png" alt=""></div>
 		</div>
-		<div class="result-content app-content" :style="{minHeight: availHeight + 'px'}">
+		<div class="result-content app-content" :style="{minHeight: '20%'}">
 			<div class="result-content-img">
 				<img v-for="(item, index) in resultData.bg_images" :src="item" alt="" :key="index">
 			</div>
@@ -12,17 +12,17 @@
 				<img v-if="resultData.button_image" :src="resultData.button_image" alt="" class="result-content-btn" @click="onClickBack">
 			</div>
 		</div>
-		<recommend_list v-if="isLogin && resultData.show_recommend_list" :model="model" v-on:listenerRecommendClick="onClickRecommend"></recommend_list>
+		<recommend_list v-if="resultData.show_recommend_list" :model="model" v-on:listenerRecommendClick="onClickRecommend"></recommend_list>
 	</div>
 </template>
 <script>
 import recommend_list from '@/components/common/recommend_list';
-import {Request, Utils} from "@/utils/Utils";
+import {Request} from "@/utils/Utils";
 import AdUtils from "@/utils/AdUtils";
 import {mapGetters, mapMutations, mapState} from "vuex";
 
 export default {
-	inject: ['reload', "autoLogin"],
+	inject: ["createAccessRecord", "openNewApp"],
 	components: {
 		recommend_list,
 	},
@@ -33,14 +33,9 @@ export default {
 	},
 	computed: {
 		...mapState(["isAppending", "appId", "channelId", "resultId", "fraction", "resultData", "indexData", "loadingTime", "availHeight"]),
-		...mapGetters(["appApiUrl", "appResourcesUrl", "appIconUrl", "isLogin"]),
+		...mapGetters(["appApiUrl", "appResourcesUrl", "appIconUrl"]),
 	},
 	activated() {
-		// 页面滚到顶部
-		Utils.scrollToTop();
-		// 设置appId和channelId到vuex
-		this.setAppId(this.$route.query.YzAppId);
-		this.setChannelId(this.$route.query.YzChannelId);
 		// 初始化
 		this.initData(() => {
 			// 打开插屏广告
@@ -55,7 +50,7 @@ export default {
 		// 关闭定时器
 		if (this.timer) clearTimeout(this.timer);
 		// 打开推荐弹窗
-		if (to.name === "index" && this.isLogin && this.indexData.show_recommend_layer) this.setGameBack(true);
+		if (to.name === "index" && this.indexData.show_recommend_layer) this.setGameBack(true);
 		next();
 	},
 	methods: {
@@ -98,24 +93,24 @@ export default {
 
 		// 初始化
 		initData(callback) {
-			if (this.isLogin && this.resultData.app_id && this.resultData.result_id && parseInt(this.resultData.app_id) === parseInt(this.appId) &&
-				parseInt(this.resultData.result_id) === parseInt(this.resultId)) {
+			if (this.resultData.app_id && this.resultData.result_id &&
+				String(this.resultData.app_id) === String(this.appId) &&
+				String(this.resultData.result_id) === String(this.resultId)) {
 				if (typeof callback === "function") callback();
-				return false;
-			}
-			// 开启加载提示框
-			!this.isAppending && this.changeAppending(true);
-			// 用户登录
-			this.autoLogin(() => {
+			} else {
+				// 开启加载提示框
+				!this.isAppending && this.changeAppending(true);
 				// 获取主页数据
 				this.getResultData(() => {
+					// 记录用户进入应用
+					this.createAccessRecord()
 					// 关闭加载提示框
 					this.timer = setTimeout(() => {
 						this.changeAppending(false);
 					}, this.loadingTime);
 					if (typeof callback === "function") callback();
 				});
-			});
+			}
 		},
 
 		// 创建用户查看结果记录
@@ -134,13 +129,13 @@ export default {
 		// 返回按钮事件
 		onClickBack() {
 			AdUtils.closeScreenAd(() => {
-				this.$router.replace({path: "/", query: {YzAppId: this.appId, YzChannelId: this.channelId, t: new Date().getTime()}});
+				this.$router.back();
 			});
 		},
 
 		// 点击更多推荐事件
 		onClickRecommend(item) {
-			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
+			this.openNewApp(item.app_id, false);
 		},
 	},
 }

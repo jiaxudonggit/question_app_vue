@@ -15,15 +15,15 @@
 
 </template>
 <script>
-import lodash from "lodash";
 import {mapGetters, mapMutations, mapState} from "vuex";
 import Countdown from '@choujiaojiao/vue2-countdown'
 import AdUtils from "@/utils/AdUtils";
+import debounce from "lodash.debounce";
 
 export default {
 	name: "close-btn",
 	computed: {
-		...mapState(["appId", "channelId", "channelVersion", "countdownTimer", "countdownSwitch", "isNewAccount",
+		...mapState(["commonAdAppId", "channelId", "channelVersion", "countdownTimer", "countdownSwitch", "isNewAccount",
 			"isShowCloseBtn", "isCountDown", "isShowExitBtn"]),
 		...mapGetters(["isLogin"])
 	},
@@ -51,16 +51,13 @@ export default {
 		},
 		// 是否显示webview关闭按钮
 		isShowExitBtn(val) {
-			console.log("ShowExitBtn: " + val)
 			// 阅友渠道/app环境中
 			if (this.channelId === "YueYou" && window.nativeObj !== undefined) {
 				if (val) {
 					if (!this.isCountDown) {
-						console.log("============显示webview关闭按钮==============");
 						window.nativeObj.showExitIcon();
 					}
 				} else {
-					console.log("============隐藏webview关闭按钮==============");
 					window.nativeObj.closeExitIcon();
 				}
 			}
@@ -79,6 +76,11 @@ export default {
 	},
 
 	created() {
+		// 如果倒计时关闭按钮不存在, 只在index页显示webview关闭按钮
+		this.setShowExitBtn(this.isLogin && !this.isCountDown && this.$route.meta.showCloseBtn);
+		// 如果倒计时关闭按钮存在，则只在index页显示
+		this.setShowCloseBtn(this.$route.meta.showCloseBtn);
+
 		// 设置安卓生命周期
 		if (AdUtils.getAppVersion() >= this.channelVersion && this.channelId === "YueYou") {
 			// 系统状态监听
@@ -109,9 +111,9 @@ export default {
 		}),
 
 		// 点击关闭按钮事件
-		onBtnClick: lodash.debounce(function () {
+		onBtnClick: debounce(function () {
 			// 播放广告
-			AdUtils.openVideoAd(this.appId, this.channelId, () => {
+			AdUtils.openVideoAd(this.commonAdAppId, this.channelId, () => {
 				// 添加广告统计次数
 				this.addAdCount();
 				// 隐藏按钮
@@ -124,7 +126,6 @@ export default {
 
 		// 倒计时结束
 		onCountdownEnd() {
-			console.log("============倒计时结束=============")
 			// 隐藏按钮
 			this.setCountDown(false);
 		}

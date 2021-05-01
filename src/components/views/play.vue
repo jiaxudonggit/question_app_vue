@@ -45,19 +45,19 @@
 </template>
 <script>
 
-import lodash from 'lodash';
+import debounce from 'lodash.debounce';
 import Vue from 'vue';
 import vueDanmaku from 'vue-danmaku'
 import answer from '@/components/common/answer';
 import AdUtils from "@/utils/AdUtils";
 import {mapGetters, mapMutations, mapState} from "vuex";
-import {Request, Utils} from "@/utils/Utils";
+import {Request} from "@/utils/Utils";
 import {Popup} from 'vant';
 
 Vue.use(Popup);
 
 export default {
-	inject: ['reload', 'autoLogin'],
+	inject: ["createAccessRecord"],
 	components: {
 		answer,
 		vueDanmaku,
@@ -90,11 +90,6 @@ export default {
 		}
 	},
 	activated() {
-		// 页面滚到顶部
-		Utils.scrollToTop();
-		// 设置appId和channelId到vuex
-		this.setAppId(this.$route.query.YzAppId);
-		this.setChannelId(this.$route.query.YzChannelId);
 		this.initData(() => {
 			// 获得弹幕数据
 			this.getBarrageData(() => {
@@ -125,7 +120,7 @@ export default {
 		// 关闭结果提示框
 		this.setShowResultPopup(false);
 		// 打开推荐弹窗
-		if (to.name === "index" && this.isLogin && this.indexData.show_recommend_layer) this.setGameBack(true);
+		if (to.name === "index" && this.indexData.show_recommend_layer) this.setGameBack(true);
 		next();
 	},
 	methods: {
@@ -147,23 +142,22 @@ export default {
 
 		// 初始化
 		initData(callback) {
-			if (this.isLogin && this.playData.app_id && parseInt(this.playData.app_id) === parseInt(this.appId)) {
+			if (this.playData.app_id && String(this.playData.app_id) === String(this.appId)) {
 				if (typeof callback === "function") callback();
-				return false;
-			}
-			// 开启加载提示框
-			!this.isAppending && this.changeAppending(true);
-			// 用户登录
-			this.autoLogin(() => {
+			} else {
+				// 开启加载提示框
+				!this.isAppending && this.changeAppending(true);
 				// 获取主页数据
 				this.getPlayData(() => {
+					// 记录用户进入应用
+					this.createAccessRecord();
 					// 关闭加载提示框
 					this.timer = setTimeout(() => {
 						this.changeAppending(false);
 					}, this.loadingTime);
 					if (typeof callback === "function") callback();
 				});
-			});
+			}
 		},
 
 		// 获得首页数据
@@ -219,7 +213,6 @@ export default {
 			});
 		},
 
-
 		// 获得指定题目
 		getQuestion(questionIndex = 0) {
 			if (this.playData.question_list.length <= questionIndex) return;
@@ -235,7 +228,7 @@ export default {
 		onClickBack() {
 			// 关闭banner广告
 			AdUtils.closeBannerAd(() => {
-				this.$router.replace({path: "/", query: {YzAppId: this.appId, YzChannelId: this.channelId, t: new Date().getTime()}});
+				this.$router.back();
 			});
 		},
 
@@ -266,7 +259,7 @@ export default {
 		},
 
 		// 结果弹窗确认事件 防抖
-		onClickPopup: lodash.debounce(function () {
+		onClickPopup: debounce(function () {
 			// 关闭结果弹窗
 			this.setShowResultPopup(false);
 			// 播放广告

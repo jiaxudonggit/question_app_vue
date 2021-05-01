@@ -25,7 +25,7 @@
 				<home_swiper_like :like-list="homeData.like_list" @listenerLikeClick="onLikeClick" @listenerMoreClick="onLikeMoreClick"></home_swiper_like>
 			</div>
 
-			<div v-if="isLogin && homeData.show_more" class="home-more-wrap">
+			<div v-if="homeData.show_more" class="home-more-wrap">
 				<home_more :model="this.model" @listenerMoreClick="onMoreClick"></home_more>
 			</div>
 		</div>
@@ -45,7 +45,7 @@ Vue.use(Grid);
 Vue.use(GridItem);
 
 export default {
-	inject: ['reload', "autoLogin"],
+	inject: ["openNewApp"],
 	components: {
 		home_swiper_banner,
 		home_swiper_interest,
@@ -54,25 +54,23 @@ export default {
 	},
 	computed: {
 		...mapState(["isAppending", "loadingTime", "channelId", "homeData", "availHeight", "indexData"]),
-		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl", "appBannerUrl", "appTypeUrl", "appLikeUrl", "isLogin"]),
+		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl", "appBannerUrl", "appTypeUrl", "appLikeUrl"]),
 	},
 	data() {
 		return {
 			model: "home",
-			timer: [],
+			timer: null,
 		}
 	},
 	activated() {
-		// 设置channelId到vuex
-		this.setChannelId(this.$route.query.YzChannelId);
 		// 初始化
 		this.initData();
 	},
 	beforeRouteLeave(to, from, next) {
 		// 删除定时器
-		this.cancelTimeOut();
+		if (this.timer) clearTimeout(this.timer);
 		// 打开推荐弹窗
-		if (to.name === "index" && this.isLogin) this.setGameBack(true);
+		if (to.name === "index") this.setGameBack(true);
 		next();
 	},
 	methods: {
@@ -84,25 +82,21 @@ export default {
 		}),
 
 		initData(callback) {
-			if (this.isLogin && (this.homeData.type_list.length > 0 || this.homeData.banner_list.length > 0 ||
-				this.homeData.module_list.length > 0 || this.homeData.like_list.length > 0)) {
+			if (this.homeData.type_list.length > 0 || this.homeData.banner_list.length > 0 ||
+				this.homeData.module_list.length > 0 || this.homeData.like_list.length > 0) {
 				if (typeof callback === "function") callback();
-				return
-			}
-			// 开启加载提示框
-			!this.isAppending && this.changeAppending(true);
-			// 用户登录
-			this.autoLogin(() => {
+			} else {
+				// 开启加载提示框
+				!this.isAppending && this.changeAppending(true);
 				// 获取主页数据
 				this.getHomeData(() => {
 					// 关闭加载提示框
-					let timer = setTimeout(() => {
+					this.timer = setTimeout(() => {
 						this.changeAppending(false);
-					}, this.loadingTime)
-					this.timer.push(timer);
+					}, this.loadingTime);
 					if (typeof callback === "function") callback();
 				});
-			});
+			}
 		},
 
 		// 获得首页数据
@@ -127,14 +121,14 @@ export default {
 			})
 		},
 
-		// 点击banner
+		// 点击搜索
 		onSearchClick() {
 			this.$router.replace({path: "/search", query: {YzChannelId: this.channelId, t: new Date().getTime()}});
 		},
 
 		// 点击banner
 		onBannerClick(item) {
-			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
+			this.openNewApp(item.app_id, false);
 		},
 
 		// 点击类型图标
@@ -150,34 +144,23 @@ export default {
 
 		// 点击趣味精选
 		onModuleClick(item) {
-			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
+			this.openNewApp(item.app_id, false);
 		},
 
 		// 点击大家爱玩
 		onLikeClick(item) {
-			console.log(item)
-			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
+			this.openNewApp(item.app_id, false);
 		},
 
 		// 点击大家爱玩 更多
 		onLikeMoreClick() {
-			console.log("========点击了更多按钮======")
 			this.$router.replace({path: "/like", query: {YzChannelId: this.channelId, t: new Date().getTime()}});
 		},
 
 		// 点击更多好玩列表
 		onMoreClick(item) {
-			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
+			this.openNewApp(item.app_id, false);
 		},
-
-		// 取消定时器
-		cancelTimeOut() {
-			this.timer.forEach((item) => {
-				if (item) clearTimeout(item);
-			});
-			this.timer = [];
-		},
-
 	},
 }
 </script>

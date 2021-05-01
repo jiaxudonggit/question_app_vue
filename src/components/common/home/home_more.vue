@@ -41,11 +41,9 @@ export default {
 		}
 	},
 	computed: {
-		...mapGetters(["appApiUrl", "appResourcesUrl", "appIconUrl", "isLogin"]),
+		...mapGetters(["appApiUrl", "appResourcesUrl", "appIconUrl"]),
 	},
-	created() {
-		this.getMoreData();
-	},
+
 	activated() {
 		// 初始化数据
 		this.page = 0;

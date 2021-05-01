@@ -1,15 +1,15 @@
 <template>
 	<div id="app">
-		<transition name="custom-classes-transition" :enter-active-class="enterAnimate">
+		<transition v-if="isLogin" name="custom-classes-transition" :enter-active-class="enterAnimate">
 			<keep-alive>
 				<router-view v-if="$route.meta.keepAlive && isRouterAlive" class=""></router-view>
 			</keep-alive>
 		</transition>
-		<transition name="custom-classes-transition" :enter-active-class="enterAnimate">
+		<transition v-if="isLogin" name="custom-classes-transition" :enter-active-class="enterAnimate">
 			<router-view v-if="!$route.meta.keepAlive && isRouterAlive"></router-view>
 		</transition>
 		<app_bottom></app_bottom>
-		<close_btn></close_btn>
+		<close_btn v-if="isLogin"></close_btn>
 	</div>
 </template>
 
@@ -27,6 +27,9 @@ export default {
 		return {
 			reload: this.reload,
 			autoLogin: this.autoLogin,
+			openNewApp: this.openNewApp,
+			goToHome: this.goToHome,
+			createAccessRecord: this.createAccessRecord,
 		}
 	},
 	components: {
@@ -46,30 +49,35 @@ export default {
 	},
 	watch: {
 		isAppending(val) {
+			// 控制loading显示/隐藏
 			val ? this.$toast.loading({
-					message: "加载中...",
-					duration: 0,
-					forbidClick: true
-				})
-				: this.$toast.clear();
+				message: "加载中...",
+				duration: 0,
+				forbidClick: true
+			}) : this.$toast.clear();
 		},
 		$route(to) {
-			// 更换应用时重置访问记录状态
-			if (String(to.query.YzAppId) !== String(this.appId) && to.meta.accessRecord) this.setRecordAccess(false);
+			// 页面滚到顶部
+			Utils.scrollToTop();
+			// 切换应用时重置访问记录状态
+			if (to.meta.accessRecord && to.query.YzAppId !== this.appId) this.setRecordAccess(false);
+			// 路由参数变化时重新设置appId和channelId到vuex
+			if (to.query.YzAppId && this.appId !== to.query.YzAppId) this.setAppId(to.query.YzAppId);
+			if (to.query.YzChannelId && this.channelId !== to.query.YzChannelId) this.setChannelId(to.query.YzChannelId);
 		},
+		channelId() {
+			// channelId变化时执行用户登录
+			this.autoLogin();
+		},
+
 	},
 	mounted() {
 		// 绑定window.onresize事件， 获得屏幕可视高度
 		window.onresize = () => {
 			return (() => {
 				this.setAvailHeight(window.screen.availHeight);
-			})()
+			})();
 		};
-	},
-	created() {
-		// 设置appId和channelId到vuex
-		this.setAppId(Utils.getQueryParams("YzAppId"));
-		this.setChannelId(Utils.getQueryParams("YzChannelId"));
 	},
 	methods: {
 		...mapMutations({
@@ -134,7 +142,7 @@ export default {
 					callback: (res, err) => {
 						if (err || res.code !== 0) return this.$toast("初始化失败，" + err);
 						this.setAppStatus({
-							appId: res.body.app_id,
+							appId: String(res.body.app_id),
 							channelVersion: res.body.channel_version,
 						});
 						if (typeof callback === "function") callback();
@@ -144,36 +152,25 @@ export default {
 		},
 
 		// 初始化页面
-		autoLogin(callback) {
+		autoLogin(callback = null) {
 			this.getAppStatus(() => {
-				if (this.isLogin) {
-					console.log("========用户已经登录=========");
-					// 记录用户进入应用
-					this.createAccessRecord();
-					// 打开倒计时关闭按钮
-					this.setCloseBtnStatus();
-					if (typeof callback === "function") callback();
-				} else {
-					console.log("========用户开始登录=========");
-					// 获得渠道用户信息
-					this.getChannelUserInfo((userInfo) => {
-						// 请求登录
-						this.userLogin(userInfo, () => {
-							console.log("========用户登录成功=========");
-							// 记录用户进入应用
-							this.createAccessRecord()
-							// 打开倒计时关闭按钮
-							this.setCloseBtnStatus();
-							if (typeof callback === "function") callback();
-						});
+				console.log("========用户开始登录=========");
+				// 获得渠道用户信息
+				this.getChannelUserInfo((userInfo) => {
+					// 请求登录
+					this.userLogin(userInfo, () => {
+						console.log("========用户登录成功=========");
+						// 打开倒计时关闭按钮
+						this.setCloseBtnStatus();
+						if (typeof callback === "function") callback();
 					});
-				}
+				});
 			});
 		},
 
 		// 记录用户进入应用
 		createAccessRecord(callback) {
-			if (!this.$route.meta.accessRecord) return false;
+			if (!this.$route.meta.accessRecord) return;
 			if (this.isRecordAccess) {
 				if (typeof callback == "function") callback();
 			} else {
@@ -184,7 +181,7 @@ export default {
 						app_id: this.appId,
 					},
 					callback: (res) => {
-						if (res && res.code === 0 && this.$route.meta.accessRecord) this.setRecordAccess(true);
+						if (res && res.code === 0) this.setRecordAccess(true);
 						if (typeof callback == "function") callback();
 					}
 				});
@@ -205,6 +202,11 @@ export default {
 					// 打开webview关闭按钮
 					if (this.$route.meta.showCloseBtn) this.setShowExitBtn(true);
 				}
+			} else {
+				// 关闭倒计时功能
+				this.setCountDown(false);
+				// 打开webview关闭按钮
+				if (this.$route.meta.showCloseBtn) this.setShowExitBtn(true);
 			}
 		},
 
@@ -217,6 +219,25 @@ export default {
 				if (typeof callback == "function") callback();
 			})
 		},
+
+		// 切换新应用
+		openNewApp(appId, reload = true) {
+			return this.$router.replace({
+				path: "/",
+				query: {
+					YzAppId: String(appId),
+					YzChannelId: this.channelId,
+					t: new Date().getTime()
+				}
+			}).then(() => {
+				if (reload) this.reload()
+			});
+		},
+
+		// 跳转到商店也
+		goToHome(){
+			this.$router.replace({path: "/home", query: {YzChannelId: this.channelId, t: new Date().getTime()}});
+		}
 	}
 }
 </script>

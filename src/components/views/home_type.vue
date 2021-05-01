@@ -1,7 +1,7 @@
 <!--主页商店分类页组件-->
 <template>
 	<div id="type" class="type app-model">
-		<van-nav-bar class="van-nav-bar-customer fixed-fix" :title="$route.query.YzTypeTitle" left-text="返回" left-arrow @click-left="onClickLeft"/>
+		<van-nav-bar class="van-nav-bar-customer fixed-fix" :title="type_name" left-text="返回" left-arrow @click-left="goToHome"/>
 		<div class="type-content app-content">
 			<img :src="type_image" class="type-content-bg-image" alt="">
 			<div class="type-content-app-list-wrap">
@@ -30,13 +30,13 @@ Vue.use(NavBar);
 Vue.use(List);
 
 export default {
-	inject: ['reload', "autoLogin"],
+	inject: ["openNewApp", "goToHome"],
 	components: {
 		question_list_horizontal,
 	},
 	computed: {
 		...mapState(["isAppending", "loadingTime", "channelId", "homeData", "availHeight"]),
-		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl", "isLogin", "appTypeUrl"]),
+		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl", "appTypeUrl"]),
 		typeId() {
 			return this.$route.query.YzTypeId;
 		}
@@ -51,30 +51,19 @@ export default {
 			total_page: 0,
 			page: 0,
 			model: "type",
-			timer: [],
+			timer: null,
 		}
 	},
-	activated() {
-		// 设置channelId到vuex
-		this.setChannelId(this.$route.query.YzChannelId);
-		// 初始化接口
+	created() {
+		// 初始化
 		this.initData();
 	},
-	beforeRouteLeave(to, from, next) {
-		// 初始化数据
-		this.page = 0;
-		this.total_page = 0;
-		this.typeList = [];
-		this.error = false;
-
+	destroyed() {
 		// 删除定时器
 		if (this.timer) clearTimeout(this.timer);
-		this.timer = null;
-		next();
 	},
 	methods: {
 		...mapMutations({
-			setChannelId: "setChannelId",
 			changeAppending: "changeAppending",
 		}),
 
@@ -82,27 +71,19 @@ export default {
 		initData(callback) {
 			// 开启加载提示框
 			!this.isAppending && this.changeAppending(true);
-			// 用户登录
-			this.autoLogin(() => {
-				// 获取分类下的应用数据
-				this.getTypeData(() => {
-					// 关闭加载提示框
-					this.timer = setTimeout(() => {
-						this.changeAppending(false);
-					}, this.loadingTime)
-					if (typeof callback === "function") callback();
-				});
+			// 获取分类下的应用数据
+			this.getTypeData(() => {
+				// 关闭加载提示框
+				this.timer = setTimeout(() => {
+					this.changeAppending(false);
+				}, this.loadingTime)
+				if (typeof callback === "function") callback();
 			});
 		},
 
 		// 分类应用点击事件
 		onTypeClick(item) {
-			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
-		},
-
-		// 返回点击事件
-		onClickLeft() {
-			this.$router.replace({path: "/home", query: {YzChannelId: this.channelId, t: new Date().getTime()}});
+			this.openNewApp(item.app_id, false);
 		},
 
 		// 获得分类下的应用列表

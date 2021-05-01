@@ -49,7 +49,7 @@ export default {
 	},
 	computed: {
 		...mapState(["appId", "recommendData"]),
-		...mapGetters(["appApiUrl", "appResourcesUrl", "appIconUrl", "isLogin"]),
+		...mapGetters(["appApiUrl", "appResourcesUrl", "appIconUrl"]),
 	},
 	created() {
 		this.getRecommendData();

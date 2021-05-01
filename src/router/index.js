@@ -38,7 +38,7 @@ const routes = [
         name: "type",
         component: resolve => require(["../components/views/home_type"], resolve),
         meta: {
-            keepAlive: true,
+            keepAlive: false,
             showTabbar: false,
             showCloseBtn: false,
             accessRecord: false,
@@ -49,7 +49,7 @@ const routes = [
         name: "search",
         component: resolve => require(["../components/views/home_search"], resolve),
         meta: {
-            keepAlive: true,
+            keepAlive: false,
             showTabbar: false,
             showCloseBtn: false,
             accessRecord: false,
@@ -60,7 +60,7 @@ const routes = [
         name: "like",
         component: resolve => require(["../components/views/home_like"], resolve),
         meta: {
-            keepAlive: true,
+            keepAlive: false,
             showTabbar: false,
             showCloseBtn: false,
             accessRecord: false,

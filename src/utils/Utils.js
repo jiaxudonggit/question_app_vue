@@ -1,5 +1,6 @@
 import axios from "axios";
 import qs from 'qs';
+import debounce from "lodash.debounce";
 
 // 封装一个工具类
 const Utils = class Utils {
@@ -26,6 +27,17 @@ const Utils = class Utils {
         element.scrollTop = 0;
         document.getElementById('app').scrollTop = 0;
     }
+
+    static debounce(callback = null, wait = 800) {
+        return debounce(function () {
+            if (typeof callback === "function") callback();
+        }, wait, {
+            'leading': true,
+            'trailing': false
+        });
+    }
+
+
 }
 
 // 封装一个支持过期时间的localstorage类

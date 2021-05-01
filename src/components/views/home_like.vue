@@ -1,7 +1,7 @@
 <!--主页商店喜欢页组件-->
 <template>
 	<div id="like" class="like app-model" :style="{minHeight: (availHeight - 46) + 'px'}">
-		<van-nav-bar class="van-nav-bar-customer fixed-fix" title="大家爱玩" left-text="返回" left-arrow @click-left="onClickLeft"/>
+		<van-nav-bar class="van-nav-bar-customer fixed-fix" title="大家爱玩" left-text="返回" left-arrow @click-left="goToHome"/>
 		<div class="like-content app-content">
 			<van-list class="like-content-app-list" v-model="loading" :finished="page === total_page" finished-text="--我是有底线的--" :error.sync="error" error-text="请求失败，点击重新加载" @load="onLoad">
 				<question_list_horizontal :question-list="likeList" :user-bg-color="'background-color: #6e88ff;'" :bg-color="true" @listenerQuestionListClick="onLikeClick"></question_list_horizontal>
@@ -22,20 +22,16 @@ Vue.use(List);
 
 
 export default {
-	inject: ['reload', "autoLogin"],
+	inject: ["openNewApp", "goToHome"],
 	components: {
 		question_list_horizontal,
 	},
 	computed: {
 		...mapState(["isAppending", "loadingTime", "channelId", "homeData", "availHeight"]),
-		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl", "isLogin"]),
-		typeId() {
-			return this.$route.query.YzTypeId;
-		}
+		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl"]),
 	},
 	data() {
 		return {
-			type_image: require("@/assets/images/home/222_banner.png"),
 			likeList: [],
 			error: false,
 			loading: false,
@@ -44,26 +40,16 @@ export default {
 			timer: null,
 		}
 	},
-	activated() {
-		// 设置channelId到vuex
-		this.setChannelId(this.$route.query.YzChannelId);
-		// 获取分类下的应用数据
+	created() {
+		// 初始化
 		this.initData();
 	},
-	beforeRouteLeave(to, from, next) {
-		// 初始化数据
-		this.page = 0;
-		this.total_page = 0;
-		this.likeList = [];
-		this.error = false;
+	destroyed() {
 		// 删除定时器
 		if (this.timer) clearTimeout(this.timer);
-		this.timer = null;
-		next();
 	},
 	methods: {
 		...mapMutations({
-			setChannelId: "setChannelId",
 			changeAppending: "changeAppending",
 		}),
 
@@ -71,26 +57,18 @@ export default {
 		initData(callback) {
 			// 开启加载提示框
 			!this.isAppending && this.changeAppending(true);
-			// 用户登录
-			this.autoLogin(() => {
-				// 获得[大家爱玩]应用列表
-				this.getLikeData(() => {
-					// 关闭加载提示框
-					this.timer = setTimeout(() => {
-						this.changeAppending(false);
-					}, this.loadingTime)
-					if (typeof callback === "function") callback();
-				});
+			// 获得[大家爱玩]应用列表
+			this.getLikeData(() => {
+				// 关闭加载提示框
+				this.timer = setTimeout(() => {
+					this.changeAppending(false);
+				}, this.loadingTime)
+				if (typeof callback === "function") callback();
 			});
 		},
 
 		onLikeClick(item) {
-			this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}});
-		},
-
-		// 返回点击事件
-		onClickLeft() {
-			this.$router.replace({path: "/home", query: {YzChannelId: this.channelId, t: new Date().getTime()}});
+			this.openNewApp(item.app_id, false);
 		},
 
 		// 获得[大家爱玩]应用列表

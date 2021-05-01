@@ -26,16 +26,16 @@ export default class AdUtils {
             // 创建广告订单
             this.requestCreateAdOrder(appId, (res) => {
                 // 拼接广告订单号
-                let outOrderId = appId + "_" + Utils.currentTimeMillis(true); // 广告订单号
+                let outOrderId = `${channelId}_${appId || store.state.commonAdAppId}_${Utils.currentTimeMillis(true)}`; // 广告订单号
                 // 如果接口返回了订单号就用接口返回的订单号
                 if (res && res.code === 0) outOrderId = res.body.orderId;
                 console.log("创建激励视频广告订单成功：=========> " + outOrderId)
                 // 创建观看激励视频广告记录
                 this.requestCreateAdRecord(outOrderId, 1);
-                console.log("创建激励视频广告记录成功：=========>")
+                console.log("创建激励视频广告记录成功：=========>" + outOrderId)
                 // 设置广告播放回调
                 window.playAdCallback = () => {
-                    console.log("激励视频广告回调开始===========>");
+                    console.log("激励视频广告回调开始===========>" + outOrderId);
                     if (channelId === "YueYou") {
                         this.loopRequestAdResult(outOrderId, appId, () => {
                             if (typeof callback === "function") callback();
@@ -235,7 +235,7 @@ export default class AdUtils {
                 console.error(err);
             }
         }
-        console.log("app版本号：" + appVersion);
+        console.log(`=======app版本号：${appVersion}========`);
         return appVersion;
     }
 

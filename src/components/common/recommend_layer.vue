@@ -24,9 +24,10 @@
 	</van-popup>
 </template>
 <script>
-import {mapState} from "vuex";
+import {mapGetters, mapState} from "vuex";
 import Vue from 'vue';
 import {Popup} from 'vant';
+import {Request} from "@/utils/Utils";
 
 Vue.use(Popup);
 
@@ -44,7 +45,8 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["indexData", "popupData"]),
+		...mapState(["indexData", "popupData", "appId"]),
+		...mapGetters(["appApiUrl"]),
 	},
 	watch: {
 		show(val) {
@@ -55,8 +57,21 @@ export default {
 		this.showSelf = this.show;
 	},
 	methods: {
+		// 记录用户点击推荐应用
+		createRecommendRecord(from_app_id, to_app_id, callback) {
+			Request.request({
+				url: this.appApiUrl + "/test_app/create_recommend_record",
+				data: {
+					from_app_id: from_app_id,
+					to_app_id: to_app_id,
+				},
+				callback: callback,
+			})
+		},
+
 		// 点击弹窗推荐事件
 		onPopupClick(item, index) {
+			this.createRecommendRecord(this.appId, item.app_id);
 			this.$emit("listenerPopupClick", item, index);
 		},
 

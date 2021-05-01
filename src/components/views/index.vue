@@ -2,9 +2,9 @@
 <template>
 	<div id="index" class="index app-model" :style="{backgroundColor: indexData.bg_color}">
 		<div class="index-header fixed-fix">
-			<div class="index-header-home" @click="onClickHome"><img src="../../assets/images/index/home.png" alt=""></div>
+			<div class="index-header-home" @click="goToHome"><img src="../../assets/images/index/home.png" alt=""></div>
 		</div>
-		<div class="index-content app-content" :style="{minHeight: availHeight + 'px'}">
+		<div class="index-content app-content" :style="{minHeight: '20%'}">
 			<!-- 背景图片 -->
 			<div class="index-bg-images">
 				<img v-for="(item, index) in indexData.bg_images" :src="item" alt="" :key="index">
@@ -45,7 +45,7 @@
 			</div>
 		</div>
 		<!-- 推荐列表 -->
-		<recommend_list v-if="isLogin && indexData.show_recommend_list && showAppList" :model="model" :padding-bottom="'130px'" v-on:listenerRecommendClick="onClickRecommend"></recommend_list>
+		<recommend_list v-if="indexData.show_recommend_list" :model="model" :padding-bottom="'130px'" v-on:listenerRecommendClick="onClickRecommend"></recommend_list>
 		<!-- 按钮 -->
 		<div class="index-btn-wrap fixed-fix" @click="$router.push({path: '/play', query: {YzAppId: appId, YzChannelId: channelId, t: new Date().getTime()}})">
 			<img v-if="indexData.button_image" class="index-btn" :src="indexData.button_image" alt="">
@@ -63,14 +63,14 @@
 import Vue from 'vue';
 import recommend_list from "@/components/common/recommend_list";
 import recommend_layer from "@/components/common/recommend_layer";
-import {Request, Utils} from "@/utils/Utils";
+import {Request} from "@/utils/Utils";
 import {mapGetters, mapMutations, mapState} from "vuex";
 import {Popup} from 'vant';
 
 Vue.use(Popup);
 
 export default {
-	inject: ['reload', "autoLogin"],
+	inject: ["createAccessRecord", "openNewApp", "goToHome"],
 	components: {
 		recommend_list,
 		recommend_layer,
@@ -80,45 +80,28 @@ export default {
 			model: "index",
 			timer: [],
 			showPopup: false,
-			showAppList: true,
 		}
 	},
 	computed: {
 		...mapState(["isAppending", "appId", "channelId", "indexData", "isGameBack", "loadingTime", "availHeight"]),
-		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl", "isLogin"]),
+		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl"]),
 	},
 	watch: {
 		isGameBack(val) {
 			val ? this.getPopupData(() => {
-				let timer = setTimeout(() => {
+				this.timer.push(setTimeout(() => {
 					this.showPopup = true;
-				}, this.loadingTime)
-				this.timer.push(timer);
+				}, this.loadingTime));
 			}) : this.showPopup = false;
 		},
 	},
 	activated() {
-		// 页面滚到顶部
-		Utils.scrollToTop();
-		// 设置appId和channelId到vuex
-		this.setAppId(this.$route.query.YzAppId);
-		this.setChannelId(this.$route.query.YzChannelId);
 		// 初始化
-		this.initData(() => {
-			this.isGameBack ? this.getPopupData(() => {
-				// 显示推荐弹窗
-				let timer = setTimeout(() => {
-					this.showPopup = true;
-				}, this.loadingTime)
-				// 加入定时器数组
-				this.timer.push(timer);
-			}) : this.showPopup = false;
-		});
+		this.initData();
 	},
-	beforeRouteLeave(to, from, next) {
+	deactivated() {
 		// 删除定时器
 		this.cancelTimeOut();
-		next();
 	},
 	methods: {
 		...mapMutations({
@@ -132,24 +115,22 @@ export default {
 
 		// 初始化
 		initData(callback) {
-			if (this.isLogin && this.indexData.app_id && parseInt(this.indexData.app_id) === parseInt(this.appId)) {
+			if (this.indexData.app_id && String(this.indexData.app_id) === String(this.appId)) {
 				if (typeof callback === "function") callback();
-				return false;
-			}
-			// 开启加载提示框
-			!this.isAppending && this.changeAppending(true);
-			// 用户登录
-			this.autoLogin(() => {
+			} else {
+				// 开启加载提示框
+				!this.isAppending && this.changeAppending(true);
 				// 获取主页数据
 				this.getIndexData(() => {
+					// 记录用户进入应用
+					this.createAccessRecord();
 					// 关闭加载提示框
-					let timer = setTimeout(() => {
+					this.timer.push(setTimeout(() => {
 						this.changeAppending(false);
-					}, this.loadingTime)
-					this.timer.push(timer);
+					}, this.loadingTime));
 					if (typeof callback === "function") callback();
 				});
-			});
+			}
 		},
 
 		// 获得首页数据
@@ -176,18 +157,6 @@ export default {
 			})
 		},
 
-		// 记录用户点击推荐应用
-		createRecommendRecord(from_app_id, to_app_id, callback) {
-			Request.request({
-				url: this.appApiUrl + "/test_app/create_recommend_record",
-				data: {
-					from_app_id: from_app_id,
-					to_app_id: to_app_id,
-				},
-				callback: callback,
-			})
-		},
-
 		// 推荐弹窗数据 setPopupData
 		getPopupData(callback) {
 			Request.request({
@@ -211,14 +180,7 @@ export default {
 
 		// 点击更多推荐事件
 		onClickRecommend(item) {
-			this.reload(() => {
-				this.showAppList = false;
-				this.$router.replace({path: "/", query: {YzAppId: item.app_id, YzChannelId: this.channelId, t: new Date().getTime()}}).then(() => {
-					this.$nextTick(() => {
-						this.showAppList = true;
-					});
-				});
-			});
+			this.openNewApp(item.app_id);
 		},
 
 		// 点击更多精彩滚动到推荐
@@ -232,30 +194,19 @@ export default {
 
 		// 点击弹窗推荐事件
 		onPopupClick(item) {
-			this.createRecommendRecord(this.appId, item.app_id, () => {
-				this.setGameBack(false);
-				this.onClickRecommend(item);
-			})
+			this.setGameBack(false);
+			this.openNewApp(item.app_id);
 		},
 
 		// 点击弹窗更多按钮
 		onPopupMoreClick() {
 			this.setGameBack(false);
-			this.$el.querySelector(".recommend-content").scrollIntoView({
-				behavior: "smooth",
-				block: "nearest",
-				inline: "nearest"
-			});
+			this.onClickMoreRecommend();
 		},
 
 		// 点击弹窗关闭按钮
 		onPopupCloseClick() {
 			this.setGameBack(false);
-		},
-
-		// 点击返回商店主页按钮
-		onClickHome() {
-			this.$router.replace({path: "/home", query: {YzChannelId: this.channelId, t: new Date().getTime()}})
 		},
 
 		// 取消定时器

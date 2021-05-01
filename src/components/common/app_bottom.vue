@@ -17,6 +17,11 @@ Vue.use(TabbarItem);
 
 export default {
 	name: "app-bottom",
+	computed: {
+		showTabbar() {
+			return this.$route.meta.showTabbar;
+		}
+	},
 	data() {
 		return {
 			active: 0,
@@ -36,12 +41,6 @@ export default {
 					"title": '我的',
 				},
 			],
-			showTabbar: true,
-		}
-	},
-	watch: {
-		$route(to) {
-			this.showTabbar = to.meta.showTabbar;
 		}
 	},
 }
