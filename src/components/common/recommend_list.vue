@@ -11,7 +11,7 @@
 				<span>换一换</span>
 			</div>
 		</div>
-		<div class="recommend-rows-wrap" :style="{paddingBottom: paddingBottom, minHeight: minHeight}">
+		<div class="recommend-rows-wrap" :style="{paddingBottom: paddingBottom, minHeight: (90 * recommendNumber + parseFloat(paddingBottom)) + 'px'}">
 			<question_list_horizontal v-if="!loading" :question-list="recommend_list" @listenerQuestionListClick="onRecommendClick"></question_list_horizontal>
 			<div v-show="loading" class="recommend-content-loading">
 				<div class="recommend-content-loading-inner"></div>
@@ -37,9 +37,9 @@ export default {
 			type: String,
 			default: '30px',
 		},
-		minHeight: {
-			type: String,
-			default: '930px',
+		recommendNumber:{
+			type: Number,
+			default: 10,
 		}
 	},
 	components: {

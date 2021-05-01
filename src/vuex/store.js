@@ -84,6 +84,7 @@ const state = {
         "button_image": "",
         "show_recommend_layer": false,
         "show_recommend_list": false,
+        "recommend_number": 10,
         "show_more_btn": false,
     },
     playData: {
@@ -110,6 +111,7 @@ const state = {
         "bg_color": "#4758fb",
         "button_image": "",
         "show_recommend_list": false,
+        "recommend_number": 10,
         "result_id": null,
         "title": "",
         "describes": "",
