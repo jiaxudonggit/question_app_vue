@@ -1,6 +1,7 @@
 import axios from "axios";
 import qs from 'qs';
 import debounce from "lodash.debounce";
+import store from "@/vuex/store";
 
 // 封装一个工具类
 const Utils = class Utils {
@@ -137,12 +138,20 @@ class EasyStorage {
 
 // 封装一个request请求类
 class Request {
+
+    static getAccessToken() {
+        // 有token就加上token
+        return window.sessionStorage.getItem("accessToken") || store.state.accessToken;
+    }
+
     //post请求
     static request(option) {
+        // 有token就加上token
+        const accessToken = this.getAccessToken();
         axios({
             method: option.method || 'post',
             url: option.url || "",
-            data: qs.stringify(option.data || {}),
+            data: qs.stringify(accessToken ? Object.assign(option.data || {}, {Authorization: accessToken}) : option.data || {}),
         }).then((res) => {
             if (res.status === 200) {
                 // 网络请求成功
