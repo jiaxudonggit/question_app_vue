@@ -97,6 +97,7 @@ const mutations = {
         state.sex = userInfo.sex;
         state.isNewAccount = userInfo.is_new_account;
         state.accessToken = userInfo.access_token;
+        window.sessionStorage.setItem("accessToken", userInfo.access_token);
     },
 
     // 设置主页数据
