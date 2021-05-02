@@ -46,7 +46,6 @@ Array.prototype.randomElement = function () {
 // axios全局配置
 axios.defaults.crossDomain = true;
 axios.defaults.withCredentials = true;  //设置cross跨域 并设置访问权限 允许跨域携带cookie信息
-axios.defaults.headers.common['Authorization'] = ''; // token
 axios.defaults.headers.common['content-type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
 
 // 拦截请求
