@@ -7,7 +7,7 @@ Vue.use(Vuex)
 
 const state = {
     // 工程配置相关
-    debug: false,
+    debug: true,
     isRunBrowser: window.nativeObj === undefined,
     appApiUrl: "http://interest.ezhigame.com", // 后端接口地址（正式服）
     testAppApiUrl: "http://interest.test.ezhigame.com", // 后端接口地址(测试服)
@@ -33,7 +33,7 @@ const state = {
     debugUserId: "0123456789",
     // 阅友单独使用的数据
     signStr: "bi6tUL8Tf31I+DHx9KRJkVP1M7S0jqQ9vTnUjDARxI6APhslppch7qofwgz8ikdJ2xzY4t8dsH2mhto4s1bHk7+X196BWZ+Iut7dby1dqECTMK17xOAOOb8ABT1AmHuaSIMIrsWicJ43f4TNzC+WF4jTUksL9FiqLYstgS0auAY=", // 验签串
-    centerAppId: "700085",
+    centerAppId: "700086",
     // UI相关
     isAppending: false,
     isGameBack: false,
