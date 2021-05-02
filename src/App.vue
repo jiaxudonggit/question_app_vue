@@ -79,6 +79,11 @@ export default {
 			})();
 		};
 	},
+	created() {
+		// 设置appId和channelId到vuex
+		this.setAppId(Utils.getQueryParams("YzAppId"));
+		this.setChannelId(Utils.getQueryParams("YzChannelId"));
+	},
 	methods: {
 		...mapMutations({
 			setAppId: "setAppId",

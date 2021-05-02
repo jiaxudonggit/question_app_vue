@@ -12,6 +12,7 @@ export default class AdUtils {
 
     // 打开激励视频广告
     static openVideoAd(appId, channelId, callback) {
+        console.log(store.state.accessToken)
         if (window.nativeObj === undefined) {
             if (store.state.debug && typeof callback === "function") callback();
             return false;
@@ -36,7 +37,7 @@ export default class AdUtils {
                 // 设置广告播放回调
                 window.playAdCallback = () => {
                     console.log("激励视频广告回调开始===========>" + outOrderId);
-                    if (channelId === "YueYou") {
+                    if (String(channelId) === "YueYou") {
                         this.loopRequestAdResult(outOrderId, appId, () => {
                             if (typeof callback === "function") callback();
                         });
@@ -50,7 +51,7 @@ export default class AdUtils {
                     }
                 }
                 // 根据渠道打开广告
-                if (channelId === "YueYou") {
+                if (String(channelId) === "YueYou") {
                     if (this.getAppVersion() >= channelVersion) window.nativeObj.openGameRewardVideo(store.state.centerAppId, openTs, signStr, outOrderId, "999999", "playAdCallback()");
                 } else {
                     if (this.getAppVersion() >= channelVersion) window.nativeObj.openGameRewardVideo(appId, "playAdCallback");
@@ -75,7 +76,7 @@ export default class AdUtils {
             let channelVersion = store.state.channelVersion; // 渠道初始版本号
 
             try {
-                if (channelId === "YueYou") {
+                if (String(channelId) === "YueYou") {
                     if (this.getAppVersion() >= channelVersion) window.nativeObj.showGameBannerAd("", orientation, location);
                 } else {
                     if (this.getAppVersion() >= channelVersion) window.nativeObj.showGameBannerAd(orientation, location);
@@ -122,10 +123,13 @@ export default class AdUtils {
             }
 
             try {
-                if (channelId === "YueYou") {
+                if (String(channelId) === "YueYou") {
                     if (this.getAppVersion() >= channelVersion) {
-                        if (this.getAppVersion() >= 347) window.nativeObj.showGameInsertScreenAd("", orientation, "screenAdCallback");
-                        if (this.getAppVersion() < 347) window.nativeObj.showGameInsertScreenAd("", orientation);
+                        if (this.getAppVersion() >= 347) {
+                            window.nativeObj.showGameInsertScreenAd("", orientation, "screenAdCallback");
+                        } else {
+                            window.nativeObj.showGameInsertScreenAd("", orientation);
+                        }
                     }
                 } else {
                     if (this.getAppVersion() >= channelVersion) window.nativeObj.showGameInsertScreenAd(orientation, "showGameInsertScreenAdCallback");

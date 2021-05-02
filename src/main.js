@@ -43,6 +43,10 @@ Array.prototype.randomElement = function () {
     return this[Math.floor(Math.random() * this.length)]
 }
 
+// axios全局配置
+axios.defaults.crossDomain = true;
+axios.defaults.withCredentials = true;  //设置cross跨域 并设置访问权限 允许跨域携带cookie信息
+
 // 拦截请求
 axios.interceptors.request.use(
     config => {
