@@ -166,7 +166,7 @@ export default class AdUtils {
                     count++;
                     setTimeout(() => {
                         func(orderId, appId);
-                    }, 200)
+                    }, 300)
                 } else {
                     // 轮询成功 播放完成
                     if (res.body.status === 1) if (typeof callback === "function") callback();
