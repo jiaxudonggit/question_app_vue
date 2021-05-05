@@ -34,9 +34,6 @@
 				{{ item.answer_title }}
 			</div>
 		</div>
-		<div class="game-answer">
-
-		</div>
 	</div>
 </template>
 <script>

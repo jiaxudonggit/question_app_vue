@@ -1,6 +1,6 @@
 <!--红包弹窗-->
 <template>
-	<van-popup v-model="showSelf" class="red-packet-popup" :lock-scroll="true" :close-on-click-overlay="false">
+	<van-popup v-model="showSelf" class="red-packet-popup" :lock-scroll="true" :close-on-click-overlay="false" @opened="onOpenPopup">
 		<img class="red-packet-close" @click="onCloseClick" src="../../../assets/images/red_packet/red-packet-close.png" alt="">
 		<img class="red-packet-line" src="../../../assets/images/red_packet/red-packet-line.png" alt="">
 		<div class="red-packet-content">
@@ -18,6 +18,7 @@
 </template>
 <script>
 import {mapGetters, mapMutations, mapState} from "vuex";
+import AudioPlayer from '@liripeng/vue-audio-player'
 import Vue from 'vue';
 import {Popup} from 'vant';
 // import {Request} from "@/utils/Utils";
@@ -31,9 +32,12 @@ export default {
 			showSelf: true,
 		}
 	},
+	components: {
+		AudioPlayer,
+	},
 	computed: {
 		...mapState(["isShowRedPacketPopup", "channelId"]),
-		...mapGetters(["appApiUrl"]),
+		...mapGetters(["appApiUrl", "appAudioUrl"]),
 	},
 	watch: {
 		isShowRedPacketPopup(val) {
@@ -68,6 +72,17 @@ export default {
 		onCloseClick() {
 			this.setRedPacketPopup(false);
 			this.$emit("listenerRedPacketPopupCloseClick");
+		},
+		//
+		onOpenPopup() {
+			console.log(this.$refs.redPacketAudioBtn)
+			if (this.$refs.redPacketAudioBtn) this.$refs.redPacketAudioBtn.click();
+		},
+		// 点击弹窗关闭按钮
+		onAudioClick() {
+			// 播放红包音频
+			console.log(this.$refs.redPacketAudio)
+			if (this.$refs.redPacketAudio) this.$refs.redPacketAudio.play();
 		},
 	}
 }

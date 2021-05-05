@@ -42,6 +42,11 @@ export default {
         return `${state.debug ? state.testAppApiUrl : state.appApiUrl}/resources/barrage/${file_name}`;
     },
 
+    // 返回音频地址
+    appAudioUrl: (state) => (file_name) => {
+        return `${state.debug ? state.testAppApiUrl : state.appApiUrl}/resources/audio/${file_name}`;
+    },
+
     isGameBack: (state) => {
         return state.isGameBack;
     }

@@ -12,7 +12,6 @@ export default class AdUtils {
 
     // 打开激励视频广告
     static openVideoAd(appId, channelId, callback) {
-        console.log(store.state.accessToken)
         if (window.nativeObj === undefined) {
             if (store.state.debug && typeof callback === "function") callback();
             return false;

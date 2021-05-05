@@ -42,6 +42,8 @@ export default {
 			if (this.appId) AdUtils.openScreenAd(this.appId);
 			// 创建查看结果记录
 			this.createResultRecord();
+			// 显示红包弹窗
+			this.setRedPacketPopup(true);
 		})
 	},
 	beforeRouteLeave(to, from, next) {
@@ -62,6 +64,7 @@ export default {
 			setResultData: "setResultData",
 			setGameBack: "setGameBack",
 			setResultId: "setResultId",
+			setRedPacketPopup: "setRedPacketPopup",
 		}),
 
 		// 获得首页数据
