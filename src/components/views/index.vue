@@ -55,7 +55,7 @@
 			<img src="../../assets/images/index/more.png" alt="">
 		</div>
 		<!-- 推荐弹窗 -->
-		<recommend_layer :show="showPopup" @listenerPopupClick="onPopupClick" @listenerPopupMoreClick="onPopupMoreClick" @listenerPopupCloseClick="onPopupCloseClick"></recommend_layer>
+		<recommend_layer :show="showPopup" @listenerPopupClick="onPopupClick" @listenerPopupMoreClick="onPopupMoreClick" ></recommend_layer>
 	</div>
 </template>
 <script>
@@ -194,19 +194,12 @@ export default {
 
 		// 点击弹窗推荐事件
 		onPopupClick(item) {
-			this.setGameBack(false);
 			this.openNewApp(item.app_id);
 		},
 
 		// 点击弹窗更多按钮
 		onPopupMoreClick() {
-			this.setGameBack(false);
 			this.onClickMoreRecommend();
-		},
-
-		// 点击弹窗关闭按钮
-		onPopupCloseClick() {
-			this.setGameBack(false);
 		},
 
 		// 取消定时器

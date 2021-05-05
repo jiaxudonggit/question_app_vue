@@ -24,7 +24,7 @@
 	</van-popup>
 </template>
 <script>
-import {mapGetters, mapState} from "vuex";
+import {mapGetters, mapMutations, mapState} from "vuex";
 import Vue from 'vue';
 import {Popup} from 'vant';
 import {Request} from "@/utils/Utils";
@@ -57,6 +57,10 @@ export default {
 		this.showSelf = this.show;
 	},
 	methods: {
+		...mapMutations({
+			setGameBack: "setGameBack",
+		}),
+
 		// 记录用户点击推荐应用
 		createRecommendRecord(from_app_id, to_app_id, callback) {
 			Request.request({
@@ -72,16 +76,19 @@ export default {
 		// 点击弹窗推荐事件
 		onPopupClick(item, index) {
 			this.createRecommendRecord(this.appId, item.app_id);
+			this.setGameBack(false);
 			this.$emit("listenerPopupClick", item, index);
 		},
 
 		// 点击弹窗更多按钮
 		onPopupMoreClick() {
+			this.setGameBack(false);
 			this.$emit("listenerPopupMoreClick");
 		},
 
 		// 点击弹窗关闭按钮
 		onPopupCloseClick() {
+			this.setGameBack(false);
 			this.$emit("listenerPopupCloseClick");
 		},
 	}

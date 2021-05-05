@@ -10,12 +10,16 @@
 		</transition>
 		<app_bottom></app_bottom>
 		<close_btn></close_btn>
+		<red_packet_popup></red_packet_popup>
+		<red_packet_tip></red_packet_tip>
 	</div>
 </template>
 
 <script>
 import app_bottom from "@/components/common/app_bottom";
 import close_btn from "@/components/common/close_btn";
+import red_packet_popup from "@/components/common/red_packet/red_packet_popup";
+import red_packet_tip from "@/components/common/red_packet/red_packet_tip";
 import YueYouUtils from "@/utils/YueYouUtils";
 import {Request, Utils} from "@/utils/Utils";
 import ChannelUtils from "@/utils/ChannelUtils";
@@ -35,6 +39,8 @@ export default {
 	components: {
 		app_bottom,
 		close_btn,
+		red_packet_popup,
+		red_packet_tip,
 	},
 	data() {
 		return {

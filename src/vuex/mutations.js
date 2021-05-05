@@ -41,6 +41,16 @@ const mutations = {
         state.isGameBack = status;
     },
 
+    // 设置红包弹窗显示状态
+    setRedPacketPopup(state, status) {
+        state.isShowRedPacketPopup = status;
+    },
+
+    // 设置提现弹窗显示状态
+    setRedPacketTip(state, status) {
+        state.isShowRedPacketTip = status;
+    },
+
     // 设置webview关闭按钮状态
     setShowExitBtn(state, status) {
         state.isShowExitBtn = status;
@@ -93,7 +103,7 @@ const mutations = {
     // 设置用户信息
     setUserInfo(state, userInfo) {
         state.nickname = String(userInfo.nickname);
-        state.headImage = String(userInfo.head_img_url);
+        state.headImage = userInfo.head_img_url;
         state.sex = userInfo.sex;
         state.isNewAccount = userInfo.is_new_account;
         state.accessToken = userInfo.access_token;

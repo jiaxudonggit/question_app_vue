@@ -3,6 +3,9 @@
 	<div id="home" class="home app-model">
 		<div class="home-content app-content" :style="{minHeight: (availHeight - 50) + 'px'}">
 			<img class="home-content-bg" src="../../assets/images/home/home-top-bg.png" alt="">
+			<div class="home-user-wrap">
+				<red_packet_container></red_packet_container>
+			</div>
 			<div v-if="homeData.show_search" class="home-search-wrap">
 				<div class="home-search" @click="onSearchClick">
 					<img src="../../assets/images/home/home-search.png" alt="">
@@ -34,6 +37,7 @@
 <script>
 import Vue from 'vue';
 import home_more from "@/components/common/home/home_more";
+import red_packet_container from "@/components/common/red_packet/red_packet_container";
 import home_swiper_banner from "@/components/common/home/home_swiper_banner";
 import home_swiper_interest from "@/components/common/home/home_swiper_interest";
 import home_swiper_like from "@/components/common/home/home_swiper_like";
@@ -51,6 +55,7 @@ export default {
 		home_swiper_interest,
 		home_swiper_like,
 		home_more,
+		red_packet_container,
 	},
 	computed: {
 		...mapState(["isAppending", "loadingTime", "channelId", "homeData", "availHeight", "indexData"]),

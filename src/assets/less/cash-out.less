@@ -1,0 +1,243 @@
+#cash-out {
+  width: 100%;
+  height: calc(100% - 46px) !important;
+  margin-top: 46px !important;
+  position: relative;
+  box-sizing: border-box;
+  background-color: #ffffff;
+
+  .cash-out-content {
+    width: 100%;
+    color: #ffffff;
+    padding-bottom: 30px;
+    box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
+
+    .cash-out-content-top {
+      width: 100%;
+      position: relative;
+      box-sizing: border-box;
+      overflow: hidden;
+
+      .cash-out-content-top-bg {
+        width: 30%;
+        display: block;
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+      }
+
+      .cash-out-info {
+        width: 100%;
+        background-color: #fb4e37;
+        position: relative;
+        box-sizing: border-box;
+        overflow: hidden;
+
+        .cash-out-amount {
+          width: 100%;
+          position: relative;
+          box-sizing: border-box;
+          line-height: 120px;
+          font-size: 18px;
+          color: #ffffff;
+          text-align: center;
+
+          span {
+            color: #ffd501;
+            font-size: 28px !important;
+          }
+        }
+
+        .cash-out-account {
+          width: 100%;
+          position: relative;
+          box-sizing: border-box;
+          line-height: 30px;
+          font-size: 12px;
+          color: #ffffff;
+          text-align: center;
+
+          span {
+            color: #ffd501;
+            font-size: 14px !important;
+          }
+        }
+
+        .cash-out-line {
+          width: 100%;
+          position: relative;
+          box-sizing: border-box;
+          border-top: dashed 1px rgba(255, 255, 255, .6);
+        }
+
+        .cash-out-tip {
+          width: 100%;
+          position: relative;
+          box-sizing: border-box;
+          line-height: 35px;
+          font-size: 16px;
+          color: #ffffff;
+          text-align: center;
+        }
+      }
+
+      .cash-out-notice {
+        width: 100%;
+        position: relative;
+        box-sizing: border-box;
+        overflow: hidden;
+      }
+
+    }
+
+    .cash-out-content-center {
+      width: 90%;
+      margin: 30px auto 0;
+      position: relative;
+      box-sizing: border-box;
+      overflow: hidden;
+
+      .cash-out-title {
+        width: 100%;
+        position: relative;
+        box-sizing: border-box;
+        line-height: 40px;
+        font-size: 18px;
+        font-weight: 600;
+        color: #000000;
+        text-align: left;
+      }
+
+      .cash-out-block {
+        width: 100%;
+        position: relative;
+        box-sizing: border-box;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+
+        .cash-out-row {
+          width: 100px;
+          height: 55px;
+          overflow: hidden;
+          position: relative;
+          border: 1px solid #000000;
+          border-radius: 8px;
+          margin: 10px auto;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+
+          .cash-out-row-amount {
+            display: block;
+            width: 100%;
+            position: relative;
+            box-sizing: border-box;
+            font-size: 16px;
+            color: #000000;
+            text-align: center;
+          }
+
+          .cash-out-row-desc {
+            display: block;
+            width: 100%;
+            position: relative;
+            box-sizing: border-box;
+            font-size: 10px;
+            color: #000000;
+            text-align: center;
+          }
+
+          .cash-out-row-selected {
+            display: block;
+            width: 18px;
+            height: 18px;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+          }
+        }
+
+        .cash-out-row-prohibit {
+          background-color: rgba(0, 0, 0, .5);
+          pointer-events: none !important;
+        }
+      }
+
+      .cash-out-btn {
+        width: 150px;
+        height: 45px;
+        line-height: 45px;
+        box-sizing: border-box;
+        position: relative;
+        overflow: hidden;
+        border-radius: 8px;
+        font-size: 16px;
+        color: #ffffff;
+        background-color: #008b03;
+        text-align: center;
+        letter-spacing: 2px;
+        margin: 30px auto 0;
+      }
+
+    }
+
+    .cash-out-content-bottom {
+      width: 90%;
+      margin: 30px auto 0;
+      position: relative;
+      box-sizing: border-box;
+      overflow: hidden;
+
+      .cash-out-message {
+        width: 100%;
+        position: relative;
+        box-sizing: border-box;
+        overflow: hidden;
+
+        .cash-out-message-title {
+          width: 100%;
+          position: relative;
+          box-sizing: border-box;
+          line-height: 40px;
+          font-size: 18px;
+          font-weight: 600;
+          color: #000000;
+          text-align: left;
+        }
+
+        .cash-out-message-text {
+          width: 100%;
+          position: relative;
+          box-sizing: border-box;
+          line-height: 25px;
+          font-size: 14px;
+          color: #535252;
+          text-align: left;
+
+          p {
+            font-size: 14px;
+          }
+
+          span {
+            line-height: 23px;
+            font-size: 13px;
+            display: block;
+            text-indent: 26px
+          }
+        }
+
+      }
+
+      .cash-out-message:nth-child(2) {
+        margin-top: 15px;
+      }
+
+    }
+
+  }
+}
+

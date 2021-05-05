@@ -7,13 +7,13 @@ Vue.use(Vuex)
 
 const state = {
     // 工程配置相关
-    debug: false,
-    isRunBrowser: window.nativeObj === undefined,
+    debug: true,  // 调试模式
+    isRunBrowser: window.nativeObj === undefined, // 是否在普通浏览器运行
     appApiUrl: "http://interest.ezhigame.com", // 后端接口地址（正式服）
     testAppApiUrl: "http://interest.test.ezhigame.com", // 后端接口地址(测试服)
     // 基础配置
     appId: null,
-    commonAdAppId: "999999",
+    commonAdAppId: "999999", // 公共广告应用ID
     appTypeId: null,  // 应用类型ID
     appTemplateId: null,  // 应用主题ID
     channelId: null, // 渠道ID
@@ -24,23 +24,25 @@ const state = {
     // 用户数据
     isLogin: false, // 是否已登陆
     isRecordAccess: false, // 是否已记录访问
-    nickname: "",     // 昵称
-    headImage: "",      // 头像
+    nickname: "游客",     // 昵称
+    headImage: null,      // 头像
     sex: 0,           // 性别
     accessToken: null, // 身份令牌
+    account: "123456789012345", // 支付宝账户
+    noticeContent: "该属性定义了在文本字符框之间插入多少空间。由于字符字形通常比其字符框要窄，指定长度值时，会调整字母之间通常的间隔。因此，normal 就相当于值为 0。该属性定义了在文本字符框之间插入多少空间。由于字符字形通常比其字符框要窄，指定长度值时，会调整字母之间通常的间隔。因此，normal 就相当于值为 0。该属性定义了在文本字符框之间插入多少空间。由于字符字形通常比其字符框要窄，指定长度值时，会调整字母之间通常的间隔。因此，normal 就相当于值为 0。", // 提现公告
     isNewAccount: true, // 是否是新用户
     // 浏览器调试时用户ID
-    debugUserId: "01234567890",
+    debugUserId: "01234567890", // 调试userid
     // 阅友单独使用的数据
     signStr: "bi6tUL8Tf31I+DHx9KRJkVP1M7S0jqQ9vTnUjDARxI6APhslppch7qofwgz8ikdJ2xzY4t8dsH2mhto4s1bHk7+X196BWZ+Iut7dby1dqECTMK17xOAOOb8ABT1AmHuaSIMIrsWicJ43f4TNzC+WF4jTUksL9FiqLYstgS0auAY=", // 验签串
-    centerAppId: "700085",
+    centerAppId: "700086", // 阅友游戏中心APP ID
     // UI相关
-    isAppending: false,
-    isGameBack: false,
-    isShowResultPopup: false,
-    timer: null,
-    availHeight: window.screen.availHeight,
-    loadingTime: 300,
+    isAppending: false, // 是否显示加载动画
+    isGameBack: false, // 是否显示推荐弹窗
+    isShowResultPopup: false, // 是否显示结果答题弹窗
+    timer: null, // 定时器
+    availHeight: window.screen.availHeight, // 当前屏幕可视区域高度
+    loadingTime: 300, // 延时定时器时间，毫秒
     // 倒计时按钮
     isShowCloseBtn: true, // 是否显示倒计时按钮
     isCountDown: false, // 是否开启倒计时
@@ -48,6 +50,9 @@ const state = {
     countdownSwitch: false, // 倒计时状态
     // webview关闭按钮
     isShowExitBtn: false, // 是否显示webview退出悬浮按钮
+    // 红包相关
+    isShowRedPacketPopup: false, // 是否显示红包弹窗
+    isShowRedPacketTip: false, // 是否显示红包提示
     // 业务数据
     homeData: {
         show_search: true,
@@ -138,6 +143,47 @@ const state = {
     },
     popupData: {
         "recommend_list": [],
+    },
+    cashOutData: {
+        cash_out_list: [
+            {
+                cash_out_id: 10001, // 提现配置ID
+                cash_out_amount: 1, // 提现金额，单位：元
+                cash_out_desc: "仅可领取一次", // 提现配置说明
+                cash_out_status: true, // 提现配置状态，禁用/可用
+            },
+            {
+                cash_out_id: 10002,
+                cash_out_amount: 1,
+                cash_out_desc: "仅可领取一次",
+                cash_out_status: true,
+            },
+            {
+                cash_out_id: 10003,
+                cash_out_amount: 5,
+                cash_out_desc: "仅可领取一次",
+                cash_out_status: true,
+            },
+            {
+                cash_out_id: 10004,
+                cash_out_amount: 10,
+                cash_out_desc: null,
+                cash_out_status: false,
+            },
+            {
+                cash_out_id: 10005,
+                cash_out_amount: 20,
+                cash_out_desc: null,
+                cash_out_status: false,
+            },
+            {
+                cash_out_id: 10006,
+                cash_out_amount: 50,
+                cash_out_desc: null,
+                cash_out_status: false,
+            },
+
+        ]
     },
 }
 export default new Vuex.Store({

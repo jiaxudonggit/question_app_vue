@@ -14,9 +14,10 @@
         right: calc(((100% - 640px) / 2) + 20px) !important;
     }
 
-    #app .app-close-wrap{
+    #app .app-close-wrap {
         right: calc(((100% - 640px) / 2) + 3px) !important;
     }
+
 }
 
 #app {
@@ -24,21 +25,22 @@
     height: 100%;
     position: relative;
     background: #4758fb;
+    font-family: "PingFang SC", "Helvetica Neue", "Hiragino Sans GB", "Segoe UI", "Microsoft YaHei", "微软雅黑", sans-serif;
 }
 
-.app-content{
+.app-content {
     width: 100%;
     min-height: 100%;
 }
 
-.app-model{
+.app-model {
     width: 100%;
     height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
 }
 
-.van-nav-bar-customer{
+.van-nav-bar-customer {
     position: fixed !important;
     width: 100%;
     top: 0;
