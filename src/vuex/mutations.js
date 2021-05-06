@@ -195,10 +195,17 @@ const mutations = {
         state.cashOutData.noticeContent = content;
     },
 
+    // 设置用户支付宝账户
     setCashOutAccount(state, accountData) {
         // 支付宝账户
         state.alipayAccount = accountData.alipay_account;
         state.alipayPhone = accountData.alipay_phone;
+    },
+
+    // 设置用户余额
+    setBalance(state, amountData) {
+        state.balance = amountData.balance;
+        state.minCashOutAmount = amountData.min_cash_out_amount;
     }
 
 }
