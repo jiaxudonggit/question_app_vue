@@ -7,14 +7,14 @@
 				<img class="cash-out-content-top-bg" src="../../assets/images/cash-out/cash-out-top-bg.png" alt="">
 				<div class="cash-out-info">
 					<div class="cash-out-amount">
-						余额 <span>3.24</span> 元
+						余额 <span>{{ balance }}</span> 元
 					</div>
-					<div class="cash-out-account">您的红包将提现到支付宝账号：<span>{{ account }}</span></div>
+					<div class="cash-out-account">您的红包将提现到支付宝账号：<span>{{ alipayAccount }}</span></div>
 					<div class="cash-out-line"></div>
 					<div class="cash-out-tip">天天答题，天天领红包！</div>
 				</div>
 				<div class="cash-out-notice">
-					<van-notice-bar v-if="noticeContent" :text="noticeContent"/>
+					<van-notice-bar v-if="cashOutData.noticeContent" left-icon="volume-o" :text="cashOutData.noticeContent"/>
 				</div>
 			</div>
 			<div class="cash-out-content-center">
@@ -22,7 +22,7 @@
 				<div class="cash-out-block">
 					<div v-for="(item, index) in cashOutData.cash_out_list" :key="index" class="cash-out-row" :class="cashOutStatus(item.cash_out_status)" @click="onSelectRowClick(item, index)">
 						<span class="cash-out-row-amount">{{ item.cash_out_amount }}元</span>
-						<span v-if="item.cash_out_desc" class="cash-out-row-desc">{{ item.cash_out_desc }}</span>
+						<span v-if="item.cash_out_desc && item.cash_out_number !== 0" class="cash-out-row-desc">{{ item.cash_out_desc }}({{ item.user_cash_out_number }}/{{ item.cash_out_number }})</span>
 						<img v-if="selectedIndex === index" class="cash-out-row-selected" src="../../assets/images/cash-out/cash-out-row-selected.png" alt=""/>
 					</div>
 				</div>
@@ -52,53 +52,47 @@
 				</div>
 			</div>
 		</div>
+		<cash_out_account_popup :show="showUserAccount"></cash_out_account_popup>
 	</div>
 </template>
 <script>
 
-import question_list_horizontal from "@/components/common/question_list_horizontal";
 import {mapGetters, mapMutations, mapState} from "vuex";
 import Vue from 'vue';
-import {NoticeBar, NavBar} from 'vant';
+import {NoticeBar, NavBar, Dialog} from 'vant';
 import {Request} from "@/utils/Utils";
 import debounce from "lodash.debounce";
-import AdUtils from "@/utils/AdUtils";
+import cash_out_account_popup from "@/components/common/cash_out/cash_out_account_popup";
 
 Vue.use(NavBar);
 Vue.use(NoticeBar);
+Vue.use(Dialog);
 
 export default {
 	inject: ["openNewApp", "goToHome"],
 	components: {
-		question_list_horizontal,
+		cash_out_account_popup,
 	},
 	computed: {
-		...mapState(["isAppending", "loadingTime", "channelId", "homeData", "cashOutData", "availHeight", "account", "noticeContent"]),
+		...mapState(["isAppending", "loadingTime", "channelId", "cashOutData", "availHeight", "alipayAccount", "noticeContent", "balance"]),
 		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl", "appTypeUrl"]),
 		cashOutStatus() {
 			return function (status) {
-				return !status ? 'cash-out-row-prohibit' : '';
+				return !status ? 'cash_out-row-prohibit' : '';
 			}
 		}
 	},
 	data() {
 		return {
-			type_image: require("@/assets/images/home/type_10001_big.png"),
-			type_name: "推荐排行",
-			typeList: [],
-			error: false,
-			loading: false,
-			total_page: 0,
-			page: 0,
-			model: "type",
 			timer: null,
 			selectedIndex: -1,
 			selectedItem: {},
+			showUserAccount: false,
 		}
 	},
 	created() {
 		// 初始化
-		// this.initData();
+		this.initData();
 	},
 	destroyed() {
 		// 删除定时器
@@ -107,7 +101,67 @@ export default {
 	methods: {
 		...mapMutations({
 			changeAppending: "changeAppending",
+			setCashOutData: "setCashOutData",
 		}),
+
+		// 初始化
+		initData(callback) {
+			// 开启加载提示框
+			!this.isAppending && this.changeAppending(true);
+			// 获取提现配置
+			this.getCashOutData(() => {
+				// 关闭加载提示框
+				this.timer = setTimeout(() => {
+					this.changeAppending(false);
+				}, this.loadingTime)
+				if (typeof callback === "function") callback();
+			});
+		},
+
+		// 获取提现配置
+		getCashOutData(callback = null) {
+			Request.request({
+				url: this.appApiUrl + "/red_packet/get_cash_out_config",
+				callback: (res, err) => {
+					if (err || res.code !== 0) return this.$toast(err);
+					// 设置提现配置数据
+					this.setCashOutData(res.body);
+					if (typeof callback === "function") callback();
+				},
+			})
+		},
+
+		// 检测用户提现账户
+		checkUserAccount(callback = null) {
+			Request.request({
+				url: this.appApiUrl + "/red_packet/check_user_account",
+				callback: (res, err) => {
+					if (err || res.code !== 0) return this.$toast(err);
+					if (typeof callback === "function") callback(res.body.status);
+				},
+			})
+		},
+
+		// 提交提现申请
+		submitCashOut(callback = null) {
+			Request.request({
+				url: this.appApiUrl + "/red_packet/submit_cash_out",
+				data: {
+					cash_out_id: this.selectedItem.cash_out_id,
+				},
+				callback: (res) => {
+					if (res) Dialog.alert({
+						message: res.body.message,
+					}).then(() => {
+						this.selectedIndex = -1;
+						this.selectedItem = {};
+						if (res.code === 0) this.initData();
+						if (typeof callback === "function") callback();
+					});
+				},
+			})
+		},
+
 
 		// 选择提现选项点击事件
 		onSelectRowClick: debounce(function (item, index) {
@@ -123,27 +177,23 @@ export default {
 
 		// 点击提现按钮事件
 		onCashOutClick: debounce(function () {
-			console.log("========提现=======")
+			// 判断是否选择了金额
+			if (this.selectedIndex === -1) return Dialog.alert({message: "请先选择一个提现金额！"});
+			// 先检测是否设置支付宝账户
+			this.checkUserAccount((status) => {
+				if (status) {
+					// 已经设置过支付宝账户
+					this.submitCashOut();
+				} else {
+					// 没有设置过支付宝账户
+					this.showUserAccount = true;
+				}
+			})
 
 		}, 800, {
 			'leading': true,
 			'trailing': false
 		}),
-
-
-		// 初始化
-		initData(callback) {
-			// 开启加载提示框
-			!this.isAppending && this.changeAppending(true);
-			// 获取分类下的应用数据
-			this.getTypeData(() => {
-				// 关闭加载提示框
-				this.timer = setTimeout(() => {
-					this.changeAppending(false);
-				}, this.loadingTime)
-				if (typeof callback === "function") callback();
-			});
-		},
 
 		// 返回事件
 		onBackClick() {
@@ -152,45 +202,6 @@ export default {
 				query: this.$route.query.sourceQuery,
 			}) : this.goToHome();
 		},
-
-		// 分类应用点击事件
-		onTypeClick(item) {
-			this.openNewApp(item.app_id, false);
-		},
-
-		// 获得分类下的应用列表
-		getTypeData(callback = null) {
-			Request.request({
-				url: this.appApiUrl + "/test_app/get_app_with_type",
-				data: {
-					type_id: this.typeId,
-					page: this.page + 1,
-					page_name: this.model,
-				},
-				callback: (res, err) => {
-					if (err || res.code !== 0) return this.error = true;
-					// 更新推荐列表
-					this.total_page = res.body.total_page;
-					this.page = res.body.page;
-					this.type_name = res.body.type_name;
-					this.type_image = this.appTypeUrl(res.body.type_image);
-					for (let i = 0; i < res.body.app_list.length; i++) res.body.app_list[i].app_icon = this.appIconUrl(res.body.app_list[i].app_icon);
-					this.typeList = this.typeList.concat(res.body.app_list);
-					if (typeof callback === "function") callback();
-				},
-			})
-		},
-
-		onLoad() {
-			// 异步更新数据
-			setTimeout(() => {
-				this.getTypeData(() => {
-					// 加载状态结束
-					this.loading = false;
-				});
-			}, 1000);
-		},
-
 	},
 }
 </script>

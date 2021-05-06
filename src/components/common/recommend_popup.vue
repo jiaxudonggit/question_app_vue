@@ -32,7 +32,7 @@ import {Request} from "@/utils/Utils";
 Vue.use(Popup);
 
 export default {
-	name: "recommend-layer",
+	name: "recommend-popup",
 	props: {
 		show: {
 			type: Boolean,

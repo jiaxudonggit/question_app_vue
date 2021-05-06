@@ -7,7 +7,7 @@
 		<div class="user-red-packet">
 			<div class="user-amount">
 				<img src="../../../assets/images/red_packet/red-packet-small-icon.png" alt="">
-				<span>余额 <span>1.69</span> 元</span>
+				<span>余额 <span>{{ balance }}</span> 元</span>
 			</div>
 			<div class="user-cash-out-btn" @click="onCashOutClick">提现</div>
 		</div>
@@ -29,7 +29,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["headImage", "nickname", "channelId"]),
+		...mapState(["headImage", "nickname", "channelId", "balance"]),
 	},
 
 	methods: {

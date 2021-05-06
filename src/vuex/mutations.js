@@ -105,6 +105,7 @@ const mutations = {
         state.nickname = String(userInfo.nickname);
         state.headImage = userInfo.head_img_url;
         state.sex = userInfo.sex;
+        state.balance = userInfo.balance;
         state.isNewAccount = userInfo.is_new_account;
         state.accessToken = userInfo.access_token;
         window.sessionStorage.setItem("accessToken", userInfo.access_token);
@@ -177,6 +178,27 @@ const mutations = {
         // 处理like图片
         for (let i = 0; i < payload.data.like_list.length; i++) payload.data.like_list[i].image_name = payload.appLikeUrl(payload.data.like_list[i].image_name);
         state.homeData = payload.data;
+    },
+
+    setCashOutData(state, cashOutData) {
+        // 提现配置
+        state.cashOutData.cash_out_list = cashOutData.cash_out_list;
+        // 公共列表
+        state.cashOutData.notice_list = cashOutData.notice_list;
+        // 支付宝账户
+        state.alipayAccount = cashOutData.alipay_account;
+        state.alipayPhone = cashOutData.alipay_phone;
+        // 处理公告
+        let content = "";
+        for (let i = 0; i < cashOutData.notice_list.length; i++) content += `${cashOutData.notice_list[i].nickname}已累计
+        提现${cashOutData.notice_list[i].total_amount}元！${i > 0 ? ' ... ... ' : ''}`;
+        state.cashOutData.noticeContent = content;
+    },
+
+    setCashOutAccount(state, accountData) {
+        // 支付宝账户
+        state.alipayAccount = accountData.alipay_account;
+        state.alipayPhone = accountData.alipay_phone;
     }
 
 }

@@ -28,8 +28,10 @@ const state = {
     headImage: null,      // 头像
     sex: 0,           // 性别
     accessToken: null, // 身份令牌
-    account: "123456789012345", // 支付宝账户
-    noticeContent: "该属性定义了在文本字符框之间插入多少空间。由于字符字形通常比其字符框要窄，指定长度值时，会调整字母之间通常的间隔。因此，normal 就相当于值为 0。该属性定义了在文本字符框之间插入多少空间。由于字符字形通常比其字符框要窄，指定长度值时，会调整字母之间通常的间隔。因此，normal 就相当于值为 0。该属性定义了在文本字符框之间插入多少空间。由于字符字形通常比其字符框要窄，指定长度值时，会调整字母之间通常的间隔。因此，normal 就相当于值为 0。", // 提现公告
+    balance: 0, // 用户余额
+    minCashOutAmount: 2, // 最小可提现金额
+    alipayAccount: "", // 支付宝账户
+    alipayPhone: "", // 支付宝电话号码
     isNewAccount: true, // 是否是新用户
     // 浏览器调试时用户ID
     debugUserId: "01234567890", // 调试userid
@@ -145,45 +147,60 @@ const state = {
         "recommend_list": [],
     },
     cashOutData: {
-        cash_out_list: [
+        "cash_out_list": [
+
             {
                 cash_out_id: 10001, // 提现配置ID
-                cash_out_amount: 1, // 提现金额，单位：元
+                cash_out_amount: 2, // 提现金额，单位：元
                 cash_out_desc: "仅可领取一次", // 提现配置说明
+                cash_out_number: 1, // 允许提现次数
+                user_cash_out_number: 0, // 用户提现次数
                 cash_out_status: true, // 提现配置状态，禁用/可用
             },
             {
-                cash_out_id: 10002,
-                cash_out_amount: 1,
-                cash_out_desc: "仅可领取一次",
-                cash_out_status: true,
+                cash_out_id: 10002, // 提现配置ID
+                cash_out_amount: 5, // 提现金额，单位：元
+                cash_out_desc: "仅可领取一次", // 提现配置说明
+                cash_out_number: 1, // 允许提现次数
+                user_cash_out_number: 0, // 用户提现次数
+                cash_out_status: true, // 提现配置状态，禁用/可用
             },
             {
-                cash_out_id: 10003,
-                cash_out_amount: 5,
-                cash_out_desc: "仅可领取一次",
-                cash_out_status: true,
+                cash_out_id: 10003, // 提现配置ID
+                cash_out_amount: 10, // 提现金额，单位：元
+                cash_out_desc: "仅可领取一次", // 提现配置说明
+                cash_out_number: 5, // 允许提现次数
+                user_cash_out_number: 0, // 用户提现次数
+                cash_out_status: true, // 提现配置状态，禁用/可用
             },
             {
-                cash_out_id: 10004,
-                cash_out_amount: 10,
-                cash_out_desc: null,
-                cash_out_status: false,
+                cash_out_id: 10004, // 提现配置ID
+                cash_out_amount: 20, // 提现金额，单位：元
+                cash_out_desc: "仅可领取一次", // 提现配置说明
+                cash_out_number: 1, // 允许提现次数
+                user_cash_out_number: 0, // 用户提现次数
+                cash_out_status: true, // 提现配置状态，禁用/可用
             },
             {
-                cash_out_id: 10005,
-                cash_out_amount: 20,
-                cash_out_desc: null,
-                cash_out_status: false,
+                cash_out_id: 10005, // 提现配置ID
+                cash_out_amount: 50, // 提现金额，单位：元
+                cash_out_desc: "仅可领取一次", // 提现配置说明
+                cash_out_number: 1, // 允许提现次数
+                user_cash_out_number: 0, // 用户提现次数
+                cash_out_status: true, // 提现配置状态，禁用/可用
             },
             {
-                cash_out_id: 10006,
-                cash_out_amount: 50,
-                cash_out_desc: null,
-                cash_out_status: false,
+                cash_out_id: 10006, // 提现配置ID
+                cash_out_amount: 100, // 提现金额，单位：元
+                cash_out_desc: "仅可领取一次", // 提现配置说明
+                cash_out_number: 1, // 允许提现次数
+                user_cash_out_number: 0, // 用户提现次数
+                cash_out_status: true, // 提现配置状态，禁用/可用
             },
 
-        ]
+        ],
+        "notice_list": [],
+        "noticeContent": "",
     },
 }
 export default new Vuex.Store({

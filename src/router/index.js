@@ -36,7 +36,7 @@ const routes = [
     {
         path: '/cash_out',
         name: "cash_out",
-        component: resolve => require(["../components/views/cash-out"], resolve),
+        component: resolve => require(["../components/views/cash_out"], resolve),
         meta: {
             keepAlive: false,
             showTabbar: false,

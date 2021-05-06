@@ -18,7 +18,6 @@
 </template>
 <script>
 import {mapGetters, mapMutations, mapState} from "vuex";
-import AudioPlayer from '@liripeng/vue-audio-player'
 import Vue from 'vue';
 import {Popup} from 'vant';
 // import {Request} from "@/utils/Utils";
@@ -31,9 +30,6 @@ export default {
 		return {
 			showSelf: true,
 		}
-	},
-	components: {
-		AudioPlayer,
 	},
 	computed: {
 		...mapState(["isShowRedPacketPopup", "channelId"]),

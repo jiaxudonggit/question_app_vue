@@ -38,6 +38,9 @@ const Utils = class Utils {
         });
     }
 
+    static checkPhone(phone){
+        return /^1[3-9]\d{9}$/.test(phone)
+    }
 
 }
 

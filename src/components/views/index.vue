@@ -55,14 +55,14 @@
 			<img src="../../assets/images/index/more.png" alt="">
 		</div>
 		<!-- 推荐弹窗 -->
-		<recommend_layer :show="showPopup" @listenerPopupClick="onPopupClick" @listenerPopupMoreClick="onPopupMoreClick" ></recommend_layer>
+		<recommend_popup :show="showPopup" @listenerPopupClick="onPopupClick" @listenerPopupMoreClick="onPopupMoreClick" ></recommend_popup>
 	</div>
 </template>
 <script>
 
 import Vue from 'vue';
 import recommend_list from "@/components/common/recommend_list";
-import recommend_layer from "@/components/common/recommend_layer";
+import recommend_popup from "@/components/common/recommend_popup";
 import {Request} from "@/utils/Utils";
 import {mapGetters, mapMutations, mapState} from "vuex";
 import {Popup} from 'vant';
@@ -73,7 +73,7 @@ export default {
 	inject: ["createAccessRecord", "openNewApp", "goToHome"],
 	components: {
 		recommend_list,
-		recommend_layer,
+		recommend_popup,
 	},
 	data() {
 		return {
