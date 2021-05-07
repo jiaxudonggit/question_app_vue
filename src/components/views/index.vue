@@ -51,11 +51,11 @@
 			<img v-if="indexData.button_image" class="index-btn" :src="indexData.button_image" alt="">
 		</div>
 		<!-- 更多按钮 -->
-		<div v-if="indexData.show_recommend_list && indexData.show_more_btn" class="index-more-btn animate__animated animate__bounceIn" @click="onClickMoreRecommend">
+		<div v-if="indexData.show_recommend_list && indexData.show_more_btn" class="index-more-btn animate__animated animate__bounceIn" @click="goToHome">
 			<img src="../../assets/images/index/more.png" alt="">
 		</div>
 		<!-- 推荐弹窗 -->
-		<recommend_popup :show="showPopup" @listenerPopupClick="onPopupClick" @listenerPopupMoreClick="onPopupMoreClick" ></recommend_popup>
+		<recommend_popup :show="showPopup" @listenerPopupClick="onPopupClick" @listenerPopupMoreClick="goToHome" ></recommend_popup>
 	</div>
 </template>
 <script>

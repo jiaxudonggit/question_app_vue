@@ -52,7 +52,6 @@
 				</div>
 			</div>
 		</div>
-		<cash_out_account_popup :show="showUserAccount"></cash_out_account_popup>
 	</div>
 </template>
 <script>
@@ -62,17 +61,13 @@ import Vue from 'vue';
 import {NoticeBar, NavBar, Dialog} from 'vant';
 import {Request} from "@/utils/Utils";
 import debounce from "lodash.debounce";
-import cash_out_account_popup from "@/components/common/cash_out/cash_out_account_popup";
 
 Vue.use(NavBar);
 Vue.use(NoticeBar);
 Vue.use(Dialog);
 
 export default {
-	inject: ["openNewApp", "goToHome"],
-	components: {
-		cash_out_account_popup,
-	},
+	inject: ["goToHome"],
 	computed: {
 		...mapState(["isAppending", "loadingTime", "channelId", "cashOutData", "availHeight", "alipayAccount", "noticeContent", "balance"]),
 		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl", "appTypeUrl"]),
@@ -87,7 +82,6 @@ export default {
 			timer: null,
 			selectedIndex: -1,
 			selectedItem: {},
-			showUserAccount: false,
 		}
 	},
 	created() {
@@ -102,6 +96,7 @@ export default {
 		...mapMutations({
 			changeAppending: "changeAppending",
 			setCashOutData: "setCashOutData",
+			setCashOutAccountPopup: "setCashOutAccountPopup",
 		}),
 
 		// 初始化
@@ -169,7 +164,6 @@ export default {
 			this.selectedIndex = index;
 			// 设置选中的对象
 			this.selectedItem = item;
-
 		}, 400, {
 			'leading': true,
 			'trailing': false
@@ -181,15 +175,9 @@ export default {
 			if (this.selectedIndex === -1) return Dialog.alert({message: "请先选择一个提现金额！"});
 			// 先检测是否设置支付宝账户
 			this.checkUserAccount((status) => {
-				if (status) {
-					// 已经设置过支付宝账户
-					this.submitCashOut();
-				} else {
-					// 没有设置过支付宝账户
-					this.showUserAccount = true;
-				}
+				// 已经设置过支付宝账户，则提交提现申请，否则打开设置账户弹窗
+				status ? this.submitCashOut() : this.setCashOutAccountPopup(true);
 			})
-
 		}, 800, {
 			'leading': true,
 			'trailing': false

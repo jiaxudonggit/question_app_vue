@@ -263,7 +263,7 @@ export default {
 			// 关闭结果弹窗
 			this.setShowResultPopup(false);
 			// 播放广告
-			AdUtils.openVideoAd(this.appId, this.channelId, () => {
+			AdUtils.openVideoAd(this.appId, this.channelId, (orderId) => {
 				// 添加广告统计次数
 				this.addAdCount();
 				// 隐藏倒计时关闭按钮
@@ -274,6 +274,7 @@ export default {
 					query: {
 						YzAppId: this.appId,
 						YzChannelId: this.channelId,
+						YzAdOrderId: orderId,
 						t: new Date().getTime()
 					}
 				});

@@ -12,7 +12,7 @@
 				<img v-if="resultData.button_image" :src="resultData.button_image" alt="" class="result-content-btn" @click="onClickBack">
 			</div>
 		</div>
-		<recommend_list v-if="resultData.show_recommend_list" :recommend-number="resultData.recommend_number" :model="model" v-on:listenerRecommendClick="onClickRecommend"></recommend_list>
+		<recommend_list v-if="resultData.show_recommend_list" :recommend-number="resultData.recommend_number" :model="model" v-on:listenerRecommendClick="goToHome"></recommend_list>
 	</div>
 </template>
 <script>
@@ -22,12 +22,13 @@ import AdUtils from "@/utils/AdUtils";
 import {mapGetters, mapMutations, mapState} from "vuex";
 
 export default {
-	inject: ["createAccessRecord", "openNewApp"],
+	inject: ["createAccessRecord", "openNewApp", "goToHome"],
 	components: {
 		recommend_list,
 	},
 	data() {
 		return {
+			timer: [],
 			model: "result",
 		}
 	},
@@ -42,15 +43,19 @@ export default {
 			if (this.appId) AdUtils.openScreenAd(this.appId);
 			// 创建查看结果记录
 			this.createResultRecord();
-			// 显示红包弹窗
-			this.setRedPacketPopup(true);
+			// 领取红包
+			this.timer.push(setTimeout(() => {
+				this.receiveRedPacket(this.$route.query.YzAdOrderId);
+			}, this.loadingTime))
 		})
 	},
 	beforeRouteLeave(to, from, next) {
+		// 关闭红包弹窗
+		this.setRedPacketPopup(false);
 		// 关闭插屏广告
 		AdUtils.closeScreenAd();
 		// 关闭定时器
-		if (this.timer) clearTimeout(this.timer);
+		this.cancelTimeOut();
 		// 打开推荐弹窗
 		if (to.name === "index" && this.indexData.show_recommend_layer) this.setGameBack(true);
 		next();
@@ -65,6 +70,7 @@ export default {
 			setGameBack: "setGameBack",
 			setResultId: "setResultId",
 			setRedPacketPopup: "setRedPacketPopup",
+			setRedPacketData: "setRedPacketData",
 		}),
 
 		// 获得首页数据
@@ -108,9 +114,9 @@ export default {
 					// 记录用户进入应用
 					this.createAccessRecord()
 					// 关闭加载提示框
-					this.timer = setTimeout(() => {
+					this.timer.push(setTimeout(() => {
 						this.changeAppending(false);
-					}, this.loadingTime);
+					}, this.loadingTime));
 					if (typeof callback === "function") callback();
 				});
 			}
@@ -129,6 +135,27 @@ export default {
 			})
 		},
 
+		// 领取红包
+		receiveRedPacket(order_id, callback) {
+			Request.request({
+				url: this.appApiUrl + "/red_packet/receive_red_packet",
+				data: {
+					order_id: "YueYou_999999_61220e7eaa9911ebb6eb00163e100870",
+				},
+				callback: (res, err) => {
+					if (!err && res.code === 0) {
+						// 设置红包数据
+						this.setRedPacketData(res.body);
+						// 打开红包弹窗
+						this.setRedPacketPopup(true);
+					} else {
+						this.$toast(err);
+					}
+					if (typeof callback === "function") callback();
+				},
+			})
+		},
+
 		// 返回按钮事件
 		onClickBack() {
 			AdUtils.closeScreenAd(() => {
@@ -139,6 +166,14 @@ export default {
 		// 点击更多推荐事件
 		onClickRecommend(item) {
 			this.openNewApp(item.app_id, false);
+		},
+
+		// 取消定时器
+		cancelTimeOut() {
+			this.timer.forEach((item) => {
+				if (item) clearTimeout(item);
+			});
+			this.timer = [];
 		},
 	},
 }

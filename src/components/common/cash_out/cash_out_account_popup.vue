@@ -29,7 +29,7 @@
 <script>
 
 import debounce from 'lodash.debounce';
-import {mapGetters, mapMutations} from "vuex";
+import {mapGetters, mapMutations, mapState} from "vuex";
 import Vue from 'vue';
 import {Popup, Field, Form, Button} from 'vant';
 import {Request} from "@/utils/Utils";
@@ -41,14 +41,9 @@ Vue.use(Button);
 
 export default {
 	name: "cash-out-account-popup",
-	props: {
-		show: {
-			type: Boolean,
-			default: false,
-		}
-	},
 	computed: {
-		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl", "appTypeUrl"]),
+		...mapState(["isShowCashOutAccountPopup", "channelId"]),
+		...mapGetters(["appApiUrl"]),
 	},
 	data() {
 		return {
@@ -58,16 +53,17 @@ export default {
 		}
 	},
 	watch: {
-		show(val) {
+		isShowCashOutAccountPopup(val) {
 			this.showSelf = val;
 		}
 	},
 	created() {
-		this.showSelf = this.show;
+		this.showSelf = this.isShowCashOutAccountPopup;
 	},
 	methods: {
 		...mapMutations({
 			setCashOutAccount: "setCashOutAccount",
+			setCashOutAccountPopup: "setCashOutAccountPopup",
 		}),
 
 		validator(val) {
@@ -89,8 +85,11 @@ export default {
 						// 设置账户信息
 						this.setCashOutAccount(res.body);
 					}
+					// 清空输入框
+					this.alipayAccount = "";
+					this.alipayPhone = "";
 					// 关闭窗口
-					this.show = false;
+					this.setCashOutAccountPopup(false);
 					this.$emit("listenerAccountSubmitClick");
 				},
 			})
@@ -99,9 +98,13 @@ export default {
 			'trailing': false
 		}),
 
-		// 点击继续事件
+		// 点击关闭事件
 		onCloseClick() {
-			this.show = false;
+			// 清空输入框
+			this.alipayAccount = "";
+			this.alipayPhone = "";
+			// 关闭窗口
+			this.setCashOutAccountPopup(false);
 			this.$emit("listenerAccountCloseClick");
 		},
 

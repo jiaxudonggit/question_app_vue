@@ -5,12 +5,17 @@ import getters from "./getters"
 
 Vue.use(Vuex)
 
+// noinspection JSUnresolvedVariable
 const state = {
     // 工程配置相关
     debug: true,  // 调试模式
     isRunBrowser: window.nativeObj === undefined, // 是否在普通浏览器运行
     appApiUrl: "http://interest.ezhigame.com", // 后端接口地址（正式服）
     testAppApiUrl: "http://interest.test.ezhigame.com", // 后端接口地址(测试服)
+    debugUserId: "01234567890", // 浏览器调试时用户ID
+    // 阅友单独使用的数据
+    signStr: "bi6tUL8Tf31I+DHx9KRJkVP1M7S0jqQ9vTnUjDARxI6APhslppch7qofwgz8ikdJ2xzY4t8dsH2mhto4s1bHk7+X196BWZ+Iut7dby1dqECTMK17xOAOOb8ABT1AmHuaSIMIrsWicJ43f4TNzC+WF4jTUksL9FiqLYstgS0auAY=", // 验签串
+    centerAppId: "700086", // 阅友游戏中心APP ID
     // 基础配置
     appId: null,
     commonAdAppId: "999999", // 公共广告应用ID
@@ -29,15 +34,10 @@ const state = {
     sex: 0,           // 性别
     accessToken: null, // 身份令牌
     balance: 0, // 用户余额
-    minCashOutAmount: 2, // 最小可提现金额
+    minCashOutAmount: 2, // 最小可提现金额，单位：元
     alipayAccount: "", // 支付宝账户
     alipayPhone: "", // 支付宝电话号码
     isNewAccount: true, // 是否是新用户
-    // 浏览器调试时用户ID
-    debugUserId: "01234567890", // 调试userid
-    // 阅友单独使用的数据
-    signStr: "bi6tUL8Tf31I+DHx9KRJkVP1M7S0jqQ9vTnUjDARxI6APhslppch7qofwgz8ikdJ2xzY4t8dsH2mhto4s1bHk7+X196BWZ+Iut7dby1dqECTMK17xOAOOb8ABT1AmHuaSIMIrsWicJ43f4TNzC+WF4jTUksL9FiqLYstgS0auAY=", // 验签串
-    centerAppId: "700086", // 阅友游戏中心APP ID
     // UI相关
     isAppending: false, // 是否显示加载动画
     isGameBack: false, // 是否显示推荐弹窗
@@ -55,7 +55,10 @@ const state = {
     // 红包相关
     isShowRedPacketPopup: false, // 是否显示红包弹窗
     isShowRedPacketTip: false, // 是否显示红包提示
+    isShowCashOutAccountPopup: false, // 是否显示提现账户弹窗
+    redPacketAmount: 0, // 领取的红包金额
     // 业务数据
+    // 商店页数据
     homeData: {
         show_search: true,
         show_banner: true,
@@ -68,6 +71,7 @@ const state = {
         module_list: [],
         like_list: [],
     },
+    // 主页数据
     indexData: {
         "app_id": null,
         "app_icon": null,
@@ -93,6 +97,7 @@ const state = {
         "recommend_number": 10,
         "show_more_btn": false,
     },
+    // 答题页数据
     playData: {
         "app_id": null,
         "app_icon": null,
@@ -108,6 +113,7 @@ const state = {
         "show_barrage": true,
         "question_list": [],
     },
+    // 结果页数据
     resultData: {
         "app_id": null,
         "app_icon": null,
@@ -126,11 +132,13 @@ const state = {
         "max_fraction": 10,
         "bg_images": [],
     },
+    // 推荐列表数据
     recommendData: {
         "total_page": 0,
         "page": 0,
         "recommend_list": [],
     },
+    // 弹幕数据
     barrageData: {
         "barrage_number": 200,  // 弹幕数量
         "barrage_loop": true,  // 是否循环显示弹幕
@@ -143,9 +151,11 @@ const state = {
         "msg_list": [],
         "barrageList": [],
     },
+    // 推荐弹窗数据
     popupData: {
         "recommend_list": [],
     },
+    // 提现页数据
     cashOutData: {
         "cash_out_list": [
 

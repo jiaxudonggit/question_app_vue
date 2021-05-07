@@ -1,14 +1,14 @@
 <!--红包弹窗-->
 <template>
-	<van-popup v-model="showSelf" class="red-packet-popup" :lock-scroll="true" :close-on-click-overlay="false" @opened="onOpenPopup">
+	<van-popup v-model="showSelf" class="red-packet-popup" :lock-scroll="true" :close-on-click-overlay="false">
 		<img class="red-packet-close" @click="onCloseClick" src="../../../assets/images/red_packet/red-packet-close.png" alt="">
 		<img class="red-packet-line" src="../../../assets/images/red_packet/red-packet-line.png" alt="">
 		<div class="red-packet-content">
 			<div class="red-packet-title">恭喜您获得现金奖励</div>
-			<div class="red-packet-amount"><span>3.3</span>元</div>
+			<div class="red-packet-amount"><span>{{ redPacketAmount }}</span>元</div>
+			<div class="red-packet-balance">您当前余额为<span> {{ balance }} </span>元</div>
 			<div class="red-packet-tips">
-				<p>现金已在您红包余额里</p>
-				<p>请随时提取有~</p>
+				<p>现金已在您红包余额里，请随时提取呦~</p>
 				<p>答题越多，奖励越多</p>
 				<p>每日最多可领取（1/4）次</p>
 			</div>
@@ -20,7 +20,6 @@
 import {mapGetters, mapMutations, mapState} from "vuex";
 import Vue from 'vue';
 import {Popup} from 'vant';
-// import {Request} from "@/utils/Utils";
 
 Vue.use(Popup);
 
@@ -32,8 +31,8 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["isShowRedPacketPopup", "channelId"]),
-		...mapGetters(["appApiUrl", "appAudioUrl"]),
+		...mapState(["isShowRedPacketPopup", "channelId", "balance", "minCashOutAmount", "redPacketAmount"]),
+		...mapGetters(["appApiUrl"]),
 	},
 	watch: {
 		isShowRedPacketPopup(val) {
@@ -46,22 +45,27 @@ export default {
 	methods: {
 		...mapMutations({
 			setRedPacketPopup: "setRedPacketPopup",
+			setRedPacketTip: "setRedPacketTip",
 		}),
 
 		// 点击提现事件
 		onCashOutClick() {
-			this.setRedPacketPopup(false);
-			this.$router.replace({
-				path: "/cash_out",
-				query: {
-					YzChannelId: this.channelId,
-					sourceUrl: this.$route.path,
-					sourceQuery: this.$route.query,
-					t: new Date().getTime(),
-				}
-			}).then(() => {
+			// 先判断用户余额是否够提现, 不够提现则打开提示弹窗，否则直接跳转到提现页面
+			if (parseFloat(this.balance) < parseFloat(this.minCashOutAmount)) {
+				this.setRedPacketTip(true)
+			} else {
+				this.setRedPacketPopup(false);
 				this.$emit("listenerRedPacketPopupCashOutClick");
-			})
+				this.$router.replace({
+					path: "/cash_out",
+					query: {
+						YzChannelId: this.channelId,
+						sourceUrl: this.$route.path,
+						sourceQuery: this.$route.query,
+						t: new Date().getTime(),
+					}
+				});
+			}
 		},
 
 		// 点击弹窗关闭按钮
@@ -69,17 +73,7 @@ export default {
 			this.setRedPacketPopup(false);
 			this.$emit("listenerRedPacketPopupCloseClick");
 		},
-		//
-		onOpenPopup() {
-			console.log(this.$refs.redPacketAudioBtn)
-			if (this.$refs.redPacketAudioBtn) this.$refs.redPacketAudioBtn.click();
-		},
-		// 点击弹窗关闭按钮
-		onAudioClick() {
-			// 播放红包音频
-			console.log(this.$refs.redPacketAudio)
-			if (this.$refs.redPacketAudio) this.$refs.redPacketAudio.play();
-		},
+
 	}
 }
 </script>
@@ -133,7 +127,7 @@ export default {
 		.red-packet-amount {
 			width: 100%;
 			height: 50px;
-			margin: 30px auto;
+			margin: 20px auto 0;
 			line-height: 50px;
 			font-size: 20px;
 			color: #fff5bd;
@@ -143,19 +137,36 @@ export default {
 			}
 		}
 
+		.red-packet-balance{
+			width: 100%;
+			margin: 5px auto 30px;
+			line-height: 20px;
+			font-size: 14px;
+			color: #fff5bd;
+
+			span {
+				color: #ffd800;
+				font-size: 16px !important;
+			}
+		}
+
 		.red-packet-tips {
 			width: 100%;
 			line-height: 30px;
 			font-size: 20px;
 			color: #fff5bd;
 
-			p:nth-child(3) {
-				margin: 10px 0 0;
+			p:nth-child(1) {
+				font-size: 15px;
+			}
+
+			p:nth-child(2) {
+				margin: 5px 0 0;
 				color: #890e00;
 				font-weight: 600;
 			}
 
-			p:nth-child(4) {
+			p:nth-child(3) {
 				margin: 0 0 10px;
 				color: #890e00;
 				font-size: 12px;

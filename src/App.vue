@@ -1,17 +1,22 @@
 <template>
 	<div id="app">
+		<!-- 关闭按钮 -->
+		<close_btn/>
+		<!-- 页面内容 -->
 		<transition v-if="isLogin" name="custom-classes-transition" :enter-active-class="enterAnimate">
-			<keep-alive>
-				<router-view v-if="$route.meta.keepAlive && isRouterAlive" class=""></router-view>
+			<keep-alive v-if="isRouterAlive">
+				<router-view v-if="$route.meta.keepAlive"></router-view>
+				<router-view v-else></router-view>
 			</keep-alive>
 		</transition>
-		<transition v-if="isLogin" name="custom-classes-transition" :enter-active-class="enterAnimate">
-			<router-view v-if="!$route.meta.keepAlive && isRouterAlive"></router-view>
-		</transition>
-		<app_bottom></app_bottom>
-		<close_btn></close_btn>
-		<red_packet_popup></red_packet_popup>
-		<red_packet_tip></red_packet_tip>
+		<!-- 底部导航栏 -->
+		<app_bottom/>
+		<!-- 红包弹窗 -->
+		<red_packet_popup/>
+		<!-- 红包余额不足弹窗 -->
+		<red_packet_tip/>
+		<!-- 提现账户设置弹窗 -->
+		<cash_out_account_popup/>
 	</div>
 </template>
 
@@ -20,6 +25,7 @@ import app_bottom from "@/components/common/app_bottom";
 import close_btn from "@/components/common/close_btn";
 import red_packet_popup from "@/components/common/red_packet/red_packet_popup";
 import red_packet_tip from "@/components/common/red_packet/red_packet_tip";
+import cash_out_account_popup from "@/components/common/cash_out/cash_out_account_popup";
 import YueYouUtils from "@/utils/YueYouUtils";
 import {Request, Utils} from "@/utils/Utils";
 import ChannelUtils from "@/utils/ChannelUtils";
@@ -41,6 +47,7 @@ export default {
 		close_btn,
 		red_packet_popup,
 		red_packet_tip,
+		cash_out_account_popup,
 	},
 	data() {
 		return {

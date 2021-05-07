@@ -13,7 +13,7 @@ export default class AdUtils {
     // 打开激励视频广告
     static openVideoAd(appId, channelId, callback) {
         if (window.nativeObj === undefined) {
-            if (store.state.debug && typeof callback === "function") callback();
+            if (store.state.debug && typeof callback === "function") callback(null);
             return false;
         }
         try {
@@ -38,13 +38,13 @@ export default class AdUtils {
                     console.log("激励视频广告回调开始===========>" + outOrderId);
                     if (String(channelId) === "YueYou") {
                         this.loopRequestAdResult(outOrderId, appId, () => {
-                            if (typeof callback === "function") callback();
+                            if (typeof callback === "function") callback(outOrderId);
                         });
                     } else {
                         // 先更新订单状态再查询订单
                         this.requestUpdateAdOrder(outOrderId, appId, () => {
                             this.loopRequestAdResult(outOrderId, appId, () => {
-                                if (typeof callback === "function") callback();
+                                if (typeof callback === "function") callback(outOrderId);
                             });
                         })
                     }
@@ -59,6 +59,7 @@ export default class AdUtils {
 
         } catch (e) {
             console.error(e);
+            if (store.state.debug && typeof callback === "function") callback(null);
         }
     }
 

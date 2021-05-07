@@ -10,20 +10,20 @@ const mutations = {
         if (appId) state.appId = String(appId);
     },
 
-    // 改变登录记录状态
-    setRecordAccess(state, status) {
-        state.isRecordAccess = status;
+    // 设置屏幕最小高度
+    setAvailHeight(state, availHeight) {
+        state.availHeight = availHeight;
     },
 
-    // 设置应用ID
+    // 设置应用状态
     setAppStatus(state, payload) {
         state.appId = payload.appId;
         state.channelVersion = payload.channelVersion;
     },
 
-    // 设置屏幕最小高度
-    setAvailHeight(state, availHeight) {
-        state.availHeight = availHeight;
+    // 改变进入应用记录状态
+    setRecordAccess(state, status) {
+        state.isRecordAccess = status;
     },
 
     // 设置答题结果ID
@@ -46,9 +46,14 @@ const mutations = {
         state.isShowRedPacketPopup = status;
     },
 
-    // 设置提现弹窗显示状态
+    // 设置红包余额不足弹窗显示状态
     setRedPacketTip(state, status) {
         state.isShowRedPacketTip = status;
+    },
+
+    // 设置红包账户弹窗显示状态
+    setCashOutAccountPopup(state, status) {
+        state.isShowCashOutAccountPopup = status;
     },
 
     // 设置webview关闭按钮状态
@@ -75,11 +80,6 @@ const mutations = {
         state.isShowResultPopup = status;
     },
 
-    // 阅友设置签名串
-    setSignStr(state, sign) {
-        state.signStr = sign;
-    },
-
     // 切换loading状态
     changeAppending(state, status) {
         if (status) {
@@ -93,6 +93,11 @@ const mutations = {
             state.isAppending = false;
         }
 
+    },
+
+    // 设置阅友签名串
+    setSignStr(state, sign) {
+        state.signStr = sign;
     },
 
     // 增加广告统计次数
@@ -109,6 +114,13 @@ const mutations = {
         state.isNewAccount = userInfo.is_new_account;
         state.accessToken = userInfo.access_token;
         window.sessionStorage.setItem("accessToken", userInfo.access_token);
+    },
+
+    // 设置红包数据
+    setRedPacketData(state, amountData) {
+        state.balance = amountData.balance;
+        state.redPacketAmount = amountData.amount;
+        state.minCashOutAmount = amountData.min_cash_out_amount;
     },
 
     // 设置主页数据
@@ -164,7 +176,7 @@ const mutations = {
         state.popupData = payload.data;
     },
 
-    // 设置主页数据
+    // 设置商店页数据
     setHomeData(state, payload) {
         // 处理banner图片
         for (let i = 0; i < payload.data.banner_list.length; i++) payload.data.banner_list[i].image_name = payload.appBannerUrl(payload.data.banner_list[i].image_name);
@@ -180,6 +192,7 @@ const mutations = {
         state.homeData = payload.data;
     },
 
+    // 设置提现页数据
     setCashOutData(state, cashOutData) {
         // 提现配置
         state.cashOutData.cash_out_list = cashOutData.cash_out_list;
@@ -188,6 +201,8 @@ const mutations = {
         // 支付宝账户
         state.alipayAccount = cashOutData.alipay_account;
         state.alipayPhone = cashOutData.alipay_phone;
+        // 设置余额
+        state.balance = cashOutData.balance;
         // 处理公告
         let content = "";
         for (let i = 0; i < cashOutData.notice_list.length; i++) content += `${cashOutData.notice_list[i].nickname}已累计
@@ -197,16 +212,9 @@ const mutations = {
 
     // 设置用户支付宝账户
     setCashOutAccount(state, accountData) {
-        // 支付宝账户
         state.alipayAccount = accountData.alipay_account;
         state.alipayPhone = accountData.alipay_phone;
     },
-
-    // 设置用户余额
-    setBalance(state, amountData) {
-        state.balance = amountData.balance;
-        state.minCashOutAmount = amountData.min_cash_out_amount;
-    }
 
 }
 export default mutations
