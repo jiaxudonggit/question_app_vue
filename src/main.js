@@ -11,13 +11,11 @@ import animated from 'animate.css'; // 动画库
 import FastClick from 'fastclick' //使用 fastclick 解决移动端 300ms 点击延迟
 import '@vant/touch-emulator';
 import {Toast} from 'vant';
+import VConsole from 'vconsole';
 
 
 // 初始化调试控制台
-if (store.state.debug) {
-    const VConsole = require("vconsole");
-    new VConsole();
-}
+if (store.state.debug) new VConsole();
 
 //技巧 同时 use 多个插件 被依赖的插件应放在偏后方
 Vue.use(animated, Toast, vuex);
