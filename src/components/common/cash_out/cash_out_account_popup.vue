@@ -3,7 +3,7 @@
 	<van-popup v-model="showSelf" class="cash-out-account" :lock-scroll="true" :close-on-click-overlay="false">
 		<img class="cash-out-account-close" src="../../../assets/images/red_packet/red-packet-close.png" alt="" @click="onCloseClick">
 		<div class="cash-out-account-title">提现账户设置</div>
-		<van-form class="cash-out-account-form" @submit="onSubmit">
+		<van-form v-if="showForm" class="cash-out-account-form" @submit="onSubmit">
 			<van-field
 				class="cash-out-account-input"
 				v-model="alipayAccount"
@@ -48,6 +48,7 @@ export default {
 	data() {
 		return {
 			showSelf: true,
+			showForm: true,
 			alipayAccount: "", // 支付宝账户
 			alipayPhone: "", // 支付宝电话号码
 		}
@@ -70,6 +71,17 @@ export default {
 			return /^1[3-9]\d{9}$/.test(val);
 		},
 
+		// 重置表单
+		resetForm() {
+			// 清空输入框
+			this.alipayAccount = "";
+			this.alipayPhone = "";
+			this.showForm = false;
+			this.$nextTick(function () {
+				this.showForm = true;
+			})
+		},
+
 		onSubmit: debounce(function () {
 			Request.request({
 				url: this.appApiUrl + "/red_packet/submit_user_account",
@@ -85,11 +97,10 @@ export default {
 						// 设置账户信息
 						this.setCashOutAccount(res.body);
 					}
-					// 清空输入框
-					this.alipayAccount = "";
-					this.alipayPhone = "";
 					// 关闭窗口
 					this.setCashOutAccountPopup(false);
+					// 重置表单
+					this.resetForm();
 					this.$emit("listenerAccountSubmitClick");
 				},
 			})
@@ -100,11 +111,10 @@ export default {
 
 		// 点击关闭事件
 		onCloseClick() {
-			// 清空输入框
-			this.alipayAccount = "";
-			this.alipayPhone = "";
 			// 关闭窗口
 			this.setCashOutAccountPopup(false);
+			// 重置表单
+			this.resetForm();
 			this.$emit("listenerAccountCloseClick");
 		},
 
@@ -151,7 +161,7 @@ export default {
 			width: 100%;
 			margin: 15px auto;
 			border-radius: 8px;
-			border: 1px solid rgba(149, 149, 149, 0.6);
+			border: 1px solid rgba(149, 149, 149, 0.7);
 		}
 
 	}

@@ -57,6 +57,9 @@ const state = {
     isShowRedPacketTip: false, // 是否显示红包提示
     isShowCashOutAccountPopup: false, // 是否显示提现账户弹窗
     redPacketAmount: 0, // 领取的红包金额
+    receiveNumber: 0, // 每日可领取的红包数量
+    todayReceiveNumber: 0, // 今日已领取的红包数量
+    isCanReceive: false, // 是否可以领取红包
     // 业务数据
     // 商店页数据
     homeData: {

@@ -33,7 +33,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["isAppending", "appId", "channelId", "resultId", "fraction", "resultData", "indexData", "loadingTime", "availHeight"]),
+		...mapState(["isAppending", "appId", "channelId", "resultId", "fraction", "resultData", "indexData", "loadingTime", "availHeight", "isCanReceive"]),
 		...mapGetters(["appApiUrl", "appResourcesUrl", "appIconUrl"]),
 	},
 	activated() {
@@ -44,9 +44,11 @@ export default {
 			// 创建查看结果记录
 			this.createResultRecord();
 			// 领取红包
-			this.timer.push(setTimeout(() => {
-				this.receiveRedPacket(this.$route.query.YzAdOrderId);
-			}, this.loadingTime))
+			if (this.isCanReceive) {
+				this.timer.push(setTimeout(() => {
+					this.receiveRedPacket(this.$route.query.YzAdOrderId);
+				}, this.loadingTime))
+			}
 		})
 	},
 	beforeRouteLeave(to, from, next) {
@@ -71,6 +73,7 @@ export default {
 			setResultId: "setResultId",
 			setRedPacketPopup: "setRedPacketPopup",
 			setRedPacketData: "setRedPacketData",
+			setCanReceive: "setCanReceive",
 		}),
 
 		// 获得首页数据
@@ -143,10 +146,12 @@ export default {
 					order_id: order_id,
 				},
 				callback: (res, err) => {
-					if(res && res.code === 10030) this.$toast(err);
+					if (res && res.code === 10030) this.$toast(err);
 					if (res && res.code === 0) {
 						// 设置红包数据
 						this.setRedPacketData(res.body);
+						// 设置领取红包状态
+						this.setCanReceive(false);
 						// 打开红包弹窗
 						this.setRedPacketPopup(true);
 					}

@@ -138,6 +138,7 @@ export default {
 			updateBarrageData: "updateBarrageData",
 			setCountDown: "setCountDown",
 			addAdCount: "addAdCount",
+			setCanReceive: "setCanReceive",
 		}),
 
 		// 初始化
@@ -268,6 +269,8 @@ export default {
 				this.addAdCount();
 				// 隐藏倒计时关闭按钮
 				this.setCountDown(false);
+				// 设置领取红包状态
+				this.setCanReceive(true);
 				// 跳转结果页
 				this.$router.replace({
 					path: "/result",

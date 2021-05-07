@@ -10,7 +10,7 @@
 			<div class="red-packet-tips">
 				<p>现金已在您红包余额里，请随时提取呦~</p>
 				<p>答题越多，奖励越多</p>
-				<p>每日最多可领取（1/4）次</p>
+				<p>每日最多可领取（{{ todayReceiveNumber }}/{{ receiveNumber }}）次</p>
 			</div>
 		</div>
 		<div class="red-packet-btn" @click="onCashOutClick">提现</div>
@@ -31,7 +31,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["isShowRedPacketPopup", "channelId", "balance", "minCashOutAmount", "redPacketAmount"]),
+		...mapState(["isShowRedPacketPopup", "channelId", "balance", "minCashOutAmount", "redPacketAmount", "todayReceiveNumber", "receiveNumber"]),
 		...mapGetters(["appApiUrl"]),
 	},
 	watch: {

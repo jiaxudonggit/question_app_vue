@@ -121,6 +121,13 @@ const mutations = {
         state.balance = amountData.balance;
         state.redPacketAmount = amountData.amount;
         state.minCashOutAmount = amountData.min_cash_out_amount;
+        state.receiveNumber = amountData.receive_number;
+        state.todayReceiveNumber = amountData.today_receive_number;
+    },
+
+    // 设置领取红包状态
+    setCanReceive(state, status) {
+        state.isCanReceive = status;
     },
 
     // 设置主页数据
