@@ -33,11 +33,10 @@
 					<div class="cash-out-message-title">提现说明</div>
 					<div class="cash-out-message-text">
 						<p>&bull; 红包提现将会把所选提现金额转账到您提供的支付宝账号中。</p>
-						<p>&bull; 用户每天只可提现一次。</p>
 						<p>&bull; 提现核对无误后，预计三个工作日内发放至支付宝账户。</p>
 						<p>&bull; 如果遇到以下情况，平台有权单方面取消您的提现资格：</p>
-						<span>① 账号不存在下。</span>
-						<span>② 账号封停。</span>
+						<span>① 提现账号不存在。</span>
+						<span>② 提现账号封停。</span>
 						<span>③ 提示绑定多个账户。</span>
 						<span>④ 使用非法、不正当手段参与本活动。</span>
 						<span>⑤ 其他违反国家相关法规行为。</span>

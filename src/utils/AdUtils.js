@@ -13,7 +13,7 @@ export default class AdUtils {
     // 打开激励视频广告
     static openVideoAd(appId, channelId, callback) {
         if (window.nativeObj === undefined) {
-            if (store.state.debug && typeof callback === "function") callback(null);
+            if (store.state.debug && typeof callback === "function") callback('YueYou_999999_61220e7eaa9911ebb6eb00163e100870');
             return false;
         }
         try {

@@ -1,7 +1,7 @@
 <!--红包弹窗-->
 <template>
 	<van-popup v-model="showSelf" class="red-packet-tip" :lock-scroll="true" :close-on-click-overlay="false">
-		<div class="red-packet-title">满2元即可提取</div>
+		<div class="red-packet-title">满{{ minCashOutAmount }}元即可提取</div>
 		<div class="red-packet-text">答题更多，赚的更多!</div>
 		<div class="red-packet-btn" @click="onContinueClick">继续答题</div>
 	</van-popup>
@@ -21,7 +21,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["isShowRedPacketTip"]),
+		...mapState(["isShowRedPacketTip", "minCashOutAmount"]),
 	},
 	watch: {
 		isShowRedPacketTip(val) {

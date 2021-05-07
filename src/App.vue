@@ -173,6 +173,7 @@ export default {
 
 		// 初始化页面
 		autoLogin(callback = null) {
+			this.changeAppending(true);
 			this.getAppStatus(() => {
 				console.log("========用户开始登录=========");
 				// 获得渠道用户信息
@@ -182,6 +183,7 @@ export default {
 						console.log("========用户登录成功=========");
 						// 打开倒计时关闭按钮
 						this.setCloseBtnStatus();
+						this.changeAppending(false);
 						if (typeof callback === "function") callback();
 					});
 				});

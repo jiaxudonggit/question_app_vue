@@ -25,11 +25,13 @@ export default {
 	data() {
 		return {
 			showSelf: true,
-			userAvatar: this.headImage ? this.headImage : require('../../../assets/images/red_packet/user-avatar.png'),
 		}
 	},
 	computed: {
 		...mapState(["headImage", "nickname", "channelId", "balance"]),
+		userAvatar() {
+			return this.headImage ? this.headImage : require('../../../assets/images/red_packet/user-avatar.png');
+		}
 	},
 
 	methods: {

@@ -33,8 +33,8 @@ const state = {
     headImage: null,      // 头像
     sex: 0,           // 性别
     accessToken: null, // 身份令牌
-    balance: 0, // 用户余额
-    minCashOutAmount: 2, // 最小可提现金额，单位：元
+    balance: '0.00', // 用户余额
+    minCashOutAmount: '2', // 最小可提现金额，单位：元
     alipayAccount: "", // 支付宝账户
     alipayPhone: "", // 支付宝电话号码
     isNewAccount: true, // 是否是新用户
