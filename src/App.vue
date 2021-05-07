@@ -122,7 +122,7 @@ export default {
 					channel_id: this.channelId,
 					channel_userid: userInfo.userid,
 					nickname: userInfo.nickname,
-					head_img_url: userInfo.head_img_url,
+					head_img_url: userInfo.headimg,
 					sex: userInfo.sex,
 				},
 				callback: (res, err) => {
