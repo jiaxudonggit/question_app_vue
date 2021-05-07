@@ -7,7 +7,7 @@ import store from './vuex/store';
 import filters from './filters'; //将全部过滤器放在 filters/index.js 中便于管理
 import animated from 'animate.css'; // 动画库
 import FastClick from 'fastclick' //使用 fastclick 解决移动端 300ms 点击延迟
-import VConsole from "vconsole";
+import VConsole from "vconsole"; // 移动端调试
 import '@vant/touch-emulator';
 import {Toast} from 'vant';
 

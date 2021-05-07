@@ -50,7 +50,7 @@ module.exports = {
                         compress: {
                             drop_console: true,
                             drop_debugger: false,
-                            pure_funcs: ['console.log']//移除console
+                            pure_funcs: []//移除console
                         }
                     }
                 })
