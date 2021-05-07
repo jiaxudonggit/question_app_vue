@@ -40,7 +40,7 @@ export default {
 		// 初始化
 		this.initData(() => {
 			// 打开插屏广告
-			if (this.appId) AdUtils.openScreenAd(this.appId);
+			// if (this.appId) AdUtils.openScreenAd(this.appId);
 			// 创建查看结果记录
 			this.createResultRecord();
 			// 领取红包
@@ -53,7 +53,7 @@ export default {
 		// 关闭红包弹窗
 		this.setRedPacketPopup(false);
 		// 关闭插屏广告
-		AdUtils.closeScreenAd();
+		// AdUtils.closeScreenAd();
 		// 关闭定时器
 		this.cancelTimeOut();
 		// 打开推荐弹窗
@@ -140,16 +140,15 @@ export default {
 			Request.request({
 				url: this.appApiUrl + "/red_packet/receive_red_packet",
 				data: {
-					order_id: "YueYou_999999_61220e7eaa9911ebb6eb00163e100870",
+					order_id: order_id,
 				},
 				callback: (res, err) => {
-					if (!err && res.code === 0) {
+					if(res && res.code === 10030) this.$toast(err);
+					if (res && res.code === 0) {
 						// 设置红包数据
 						this.setRedPacketData(res.body);
 						// 打开红包弹窗
 						this.setRedPacketPopup(true);
-					} else {
-						this.$toast(err);
 					}
 					if (typeof callback === "function") callback();
 				},

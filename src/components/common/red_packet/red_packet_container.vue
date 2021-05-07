@@ -57,7 +57,6 @@ export default {
 	border-radius: 25px;
 	background-color: rgba(255, 255, 255, .3);
 	display: flex;
-	flex-wrap: wrap;
 	justify-content: space-between;
 	align-items: center;
 
@@ -74,17 +73,6 @@ export default {
 			width: 100%;
 			height: 100%;
 		}
-	}
-
-	.user-name {
-		width: 30%;
-		line-height: 40px;
-		font-size: 16px;
-		color: #ffffff;
-		text-align: center;
-		overflow: hidden; //超出的文本隐藏
-		text-overflow: ellipsis; //溢出用省略号显示
-		white-space: nowrap; //溢出不换行
 	}
 
 	.user-red-packet {
@@ -131,6 +119,7 @@ export default {
 			overflow: hidden;
 			border-radius: 15px;
 			border: 1px solid #fb4f38;
+			//background-color: #ffffff;
 			font-size: 12px;
 			color: #ffffff;
 			text-align: center;

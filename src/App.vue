@@ -1,13 +1,15 @@
 <template>
 	<div id="app">
 		<!-- 关闭按钮 -->
-		<close_btn/>
+		<close_btn></close_btn>
 		<!-- 页面内容 -->
 		<transition v-if="isLogin" name="custom-classes-transition" :enter-active-class="enterAnimate">
-			<keep-alive v-if="isRouterAlive">
-				<router-view v-if="$route.meta.keepAlive"></router-view>
-				<router-view v-else></router-view>
+			<keep-alive>
+				<router-view v-if="$route.meta.keepAlive && isRouterAlive" class=""></router-view>
 			</keep-alive>
+		</transition>
+		<transition v-if="isLogin" name="custom-classes-transition" :enter-active-class="enterAnimate">
+			<router-view v-if="!$route.meta.keepAlive && isRouterAlive"></router-view>
 		</transition>
 		<!-- 底部导航栏 -->
 		<app_bottom/>

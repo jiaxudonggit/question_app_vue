@@ -151,7 +151,7 @@ export default {
 			width: 100%;
 			margin: 15px auto;
 			border-radius: 8px;
-			border: 1px solid rgba(149, 149, 149, 0.3);
+			border: 1px solid rgba(149, 149, 149, 0.6);
 		}
 
 	}

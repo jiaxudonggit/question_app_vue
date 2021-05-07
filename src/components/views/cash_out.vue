@@ -73,7 +73,7 @@ export default {
 		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl", "appTypeUrl"]),
 		cashOutStatus() {
 			return function (status) {
-				return !status ? 'cash_out-row-prohibit' : '';
+				return status ? '' : 'cash-out-row-prohibit';
 			}
 		}
 	},
@@ -148,9 +148,10 @@ export default {
 					if (res) Dialog.alert({
 						message: res.body.message,
 					}).then(() => {
+						// 获取提现配置
 						this.selectedIndex = -1;
 						this.selectedItem = {};
-						if (res.code === 0) this.initData();
+						if (res.code === 0) this.getCashOutData();
 						if (typeof callback === "function") callback();
 					});
 				},
