@@ -1,6 +1,15 @@
 module.exports = {
     presets: [
-        '@vue/cli-plugin-babel/preset',
+        ['@vue/app', {
+            'targets': {
+                'browsers': ['ie >= 9', 'safari >= 7']
+            },
+            useBuiltIns: 'entry',
+            polyfills: [
+                'es6.promise',
+                'es6.symbol'
+            ]
+        }]
     ],
     plugins: [
         ['import', {

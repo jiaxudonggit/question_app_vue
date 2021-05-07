@@ -9,21 +9,15 @@ module.exports = {
     productionSourceMap: false, // 关闭生产环境的 source map
     lintOnSave: false,
     publicPath: process.env.VUE_APP_PUBLIC_PATH,
+    // 默认情况下 babel-loader 会忽略所有 node_modules 中的文件。如果你想要通过 Babel 显式转译一个依赖，可以在这个选项中列出来。
+    transpileDependencies: ["vconsole"],
     chainWebpack: config => {
         // 移除 prefetch 插件
         config.plugins.delete('prefetch');
         // 移除 preload 插件，避免加载多余的资源
         config.plugins.delete('preload');
         // 配置 打包分析
-        // config.plugin('webpack-bundle-analyzer').use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin);
-        // 压缩图片
-        if (process.env.NODE_ENV === 'production') {
-            config.module
-                .rule('images')
-                .use('image-webpack-loader')
-                .loader('image-webpack-loader')
-                .end()
-        }
+        config.plugin('webpack-bundle-analyzer').use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin);
     },
     configureWebpack: config => {
         if (process.env.NODE_ENV === 'production') {  // 生产环境
@@ -50,7 +44,7 @@ module.exports = {
                         compress: {
                             drop_console: true,
                             drop_debugger: false,
-                            pure_funcs: []//移除console
+                            pure_funcs: ['console.log']//移除console
                         }
                     }
                 })

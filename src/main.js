@@ -1,3 +1,5 @@
+import 'core-js';
+import 'regenerator-runtime/runtime';
 import Vue from 'vue';
 import vuex from 'vue';
 import App from './App';
@@ -7,9 +9,15 @@ import store from './vuex/store';
 import filters from './filters'; //将全部过滤器放在 filters/index.js 中便于管理
 import animated from 'animate.css'; // 动画库
 import FastClick from 'fastclick' //使用 fastclick 解决移动端 300ms 点击延迟
-import VConsole from "vconsole"; // 移动端调试
 import '@vant/touch-emulator';
 import {Toast} from 'vant';
+
+
+// 初始化调试控制台
+if (store.state.debug) {
+    const VConsole = require("vconsole");
+    new VConsole();
+}
 
 //技巧 同时 use 多个插件 被依赖的插件应放在偏后方
 Vue.use(animated, Toast, vuex);
@@ -53,7 +61,7 @@ axios.defaults.headers.common['content-type'] = 'application/x-www-form-urlencod
 axios.interceptors.request.use(
     config => {
         // 有token就加上token
-        const accessToken =  window.sessionStorage.getItem("accessToken") || store.state.accessToken;
+        const accessToken = window.sessionStorage.getItem("accessToken") || store.state.accessToken;
         if (accessToken !== null) config.headers['Authorization'] = accessToken;
         return config;
     },
@@ -61,9 +69,6 @@ axios.interceptors.request.use(
         return Promise.reject(error);
     }
 );
-
-// 初始化调试控制台
-if (store.state.debug) new VConsole();
 
 new Vue({
     el: '#app',
