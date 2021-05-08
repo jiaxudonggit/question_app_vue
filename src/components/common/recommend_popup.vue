@@ -27,70 +27,89 @@
 import {mapGetters, mapMutations, mapState} from "vuex";
 import Vue from 'vue';
 import {Popup} from 'vant';
-import {Request} from "@/utils/utils";
+import debounce from "lodash.debounce";
 
 Vue.use(Popup);
 
 export default {
 	name: "recommend-popup",
-	props: {
-		show: {
-			type: Boolean,
-			default: false,
-		},
-	},
 	data() {
 		return {
 			showSelf: false,
+			timer: null,
 		}
 	},
 	computed: {
-		...mapState(["indexData", "popupData", "appId"]),
-		...mapGetters(["appApiUrl"]),
+		...mapState(["indexData", "popupData", "appId", "isGameBack"]),
+		...mapGetters(["appIconUrl", "appResourcesUrl"])
 	},
 	watch: {
-		show(val) {
-			this.showSelf = val;
-		}
+		isGameBack(val) {
+			val ? this.getPopupData(() => {
+				this.timer = setTimeout(() => {
+					this.showSelf = true;
+				}, this.loadingTime);
+			}) : this.showSelf = false;
+		},
 	},
 	activated() {
-		this.showSelf = this.show;
+		this.isGameBack ? this.getPopupData(() => {
+			this.timer = setTimeout(() => {
+				this.showSelf = true;
+			}, this.loadingTime);
+		}) : this.showSelf = false;
+	},
+	deactivated() {
+		// 取消定时器
+		if (this.timer) clearTimeout(this.timer);
 	},
 	methods: {
 		...mapMutations({
 			setGameBack: "setGameBack",
+			setPopupData: "setPopupData",
 		}),
 
-		// 记录用户点击推荐应用
-		createRecommendRecord(from_app_id, to_app_id, callback) {
-			Request.request({
-				url: this.appApiUrl + "/test_app/create_recommend_record",
-				data: {
-					from_app_id: from_app_id,
-					to_app_id: to_app_id,
-				},
-				callback: callback,
+		// 推荐弹窗数据 setPopupData
+		getPopupData(callback) {
+			this.$api.request.getPopupData({
+				app_id: this.appId,
+				page_name: "layer",
+			}).then(data => {
+				// 设置弹窗数据到store
+				this.setPopupData({
+					data: data.body,
+					appIconUrl: this.appIconUrl,
+					appResourcesUrl: this.appResourcesUrl,
+				});
+				// 调用回调方法
+				if (typeof callback === "function") callback();
 			})
 		},
 
 		// 点击弹窗推荐事件
-		onPopupClick(item, index) {
-			this.createRecommendRecord(this.appId, item.app_id);
+		onPopupClick: debounce(function (item, index) {
+			// 记录用户点击推荐应用
+			this.$api.request.createRecommendRecord({
+				from_app_id: this.appId,
+				to_app_id: item.app_id,
+			})
 			this.setGameBack(false);
 			this.$emit("listenerPopupClick", item, index);
-		},
+		}, 800, {'leading': true, 'trailing': false}),
+
 
 		// 点击弹窗更多按钮
-		onPopupMoreClick() {
+		onPopupMoreClick: debounce(function () {
 			this.setGameBack(false);
 			this.$emit("listenerPopupMoreClick");
-		},
+		}, 800, {'leading': true, 'trailing': false}),
 
 		// 点击弹窗关闭按钮
-		onPopupCloseClick() {
+		onPopupCloseClick: debounce(function () {
 			this.setGameBack(false);
 			this.$emit("listenerPopupCloseClick");
-		},
+		}, 800, {'leading': true, 'trailing': false}),
+
 	}
 }
 </script>

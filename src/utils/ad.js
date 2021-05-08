@@ -64,9 +64,9 @@ export default class Ad {
     }
 
     // 打开banner广告 "portrait", "bottom"
-    static openBannerAd(appId, orientation = "portrait", location = "bottom", callback = null) {
+    static openBannerAd(orientation = "portrait", location = "bottom", callback = null) {
         if ((typeof (orientation) == "string" && (orientation === "landscape" || orientation === "portrait")) &&
-            (typeof (location) == "string") && (typeof (appId) == "string")) {
+            (typeof (location) == "string" && (location === "top" || location === "bottom"))) {
             if (window.nativeObj === undefined) {
                 if (typeof callback === "function") callback();
                 return false;

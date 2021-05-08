@@ -7,9 +7,4 @@ export default class channel {
         if (window.nativeObj === undefined) return;
         if (typeof callback === "function") callback({});
     }
-
-    // 获得app版本号
-    static getAppVersion() {
-        return window.nativeObj === undefined ? 330 : window.nativeObj.getAppVersionId();
-    }
 }

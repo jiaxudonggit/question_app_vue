@@ -57,6 +57,7 @@ import {mapGetters, mapMutations, mapState} from "vuex";
 import Vue from 'vue';
 import {List, NavBar, Search, Tab, Tabs} from 'vant';
 import {Request} from "@/utils/utils";
+import debounce from "lodash.debounce";
 
 Vue.use(Tab);
 Vue.use(Tabs);
@@ -158,19 +159,19 @@ export default {
 		},
 
 		// 最热应用点击事件
-		onHotClick(item) {
+		onHotClick: debounce(function (item) {
 			this.openNewApp(item.app_id, false);
-		},
+		}, 500, {'leading': true, 'trailing': false}),
 
 		// 分类应用点击事件
-		onTypeClick(item) {
+		onTypeClick: debounce(function (item) {
 			this.openNewApp(item.app_id, false);
-		},
+		}, 500, {'leading': true, 'trailing': false}),
 
 		// 搜索结果点击事件
-		onResClick(item) {
+		onResClick: debounce(function (item) {
 			this.openNewApp(item.app_id, false);
-		},
+		}, 500, {'leading': true, 'trailing': false}),
 
 		// tab 切换事件
 		onTabsChange(name) {
@@ -192,7 +193,7 @@ export default {
 			})
 		},
 
-		// 获得[大家爱玩]应用列表
+		// 获得分类列表
 		getTypeList(callback = null) {
 			Request.request({
 				url: this.appApiUrl + "/test_app/get_type_list",

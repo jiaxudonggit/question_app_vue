@@ -9,41 +9,42 @@ export default {
     },
 
     // 返回后端接口地址
-    appApiUrl: () => {
-        return `/api`;
+    appApiUrl: (state) => {
+        return `${process.env.NODE_ENV === 'production' ? state.appApiUrl : state.testAppApiUrl}/api`;
     },
+
     // 返回后端静态文件地址
     appResourcesUrl: (state) => (model, file_name) => {
-        if (file_name === "default.png") return `${this.appApiUrl}/resources/default/${model}/${file_name}`;
-        return `${this.appApiUrl}/resources/apps/${state.appId}/${model}/${file_name}`;
+        if (file_name === "default.png") return `${process.env.NODE_ENV === 'production' ? state.appApiUrl : state.testAppApiUrl}/resources/default/${model}/${file_name}`;
+        return `${process.env.NODE_ENV === 'production' ? state.appApiUrl : state.testAppApiUrl}/resources/apps/${state.appId}/${model}/${file_name}`;
     },
     // 返回应用icon地址
-    appIconUrl: () => (file_name) => {
-        if (file_name === "default.png") return `${this.appApiUrl}/resources/default/icon/${file_name}`;
-        return `${this.appApiUrl}/resources/icon/${file_name}`;
+    appIconUrl: (state) => (file_name) => {
+        if (file_name === "default.png") return `${process.env.NODE_ENV === 'production' ? state.appApiUrl : state.testAppApiUrl}/resources/default/icon/${file_name}`;
+        return `${process.env.NODE_ENV === 'production' ? state.appApiUrl : state.testAppApiUrl}/resources/icon/${file_name}`;
     },
     // 返回应用banner地址
-    appBannerUrl: () => (file_name) => {
-        if (file_name === "default.png") return `${this.appApiUrl}/resources/default/banner/${file_name}`;
-        return `${this.appApiUrl}/resources/banner/${file_name}`;
+    appBannerUrl: (state) => (file_name) => {
+        if (file_name === "default.png") return `${process.env.NODE_ENV === 'production' ? state.appApiUrl : state.testAppApiUrl}/resources/default/banner/${file_name}`;
+        return `${process.env.NODE_ENV === 'production' ? state.appApiUrl : state.testAppApiUrl}/resources/banner/${file_name}`;
     },
     // 返回应用banner地址
-    appTypeUrl: () => (file_name) => {
-        if (file_name === "default.png") return `${this.appApiUrl}/resources/default/type/${file_name}`;
-        return `${this.appApiUrl}/resources/type/${file_name}`;
+    appTypeUrl: (state) => (file_name) => {
+        if (file_name === "default.png") return `${process.env.NODE_ENV === 'production' ? state.appApiUrl : state.testAppApiUrl}/resources/default/type/${file_name}`;
+        return `${process.env.NODE_ENV === 'production' ? state.appApiUrl : state.testAppApiUrl}/resources/type/${file_name}`;
     },
     // 返回应用like地址
-    appLikeUrl: () => (file_name) => {
-        if (file_name === "default.png") return `${this.appApiUrl}/resources/default/like/${file_name}`;
-        return `${this.appApiUrl}/resources/like/${file_name}`;
+    appLikeUrl: (state) => (file_name) => {
+        if (file_name === "default.png") return `${process.env.NODE_ENV === 'production' ? state.appApiUrl : state.testAppApiUrl}/resources/default/like/${file_name}`;
+        return `${process.env.NODE_ENV === 'production' ? state.appApiUrl : state.testAppApiUrl}/resources/like/${file_name}`;
     },
     // 返回弹幕头像地址
-    appBarrageAvatarUrl: () => (file_name) => {
-        return `${this.appApiUrl}/resources/barrage/${file_name}`;
+    appBarrageAvatarUrl: (state) => (file_name) => {
+        return `${process.env.NODE_ENV === 'production' ? state.appApiUrl : state.testAppApiUrl}/resources/barrage/${file_name}`;
     },
 
     // 返回音频地址
-    appAudioUrl: () => (file_name) => {
-        return `${this.appApiUrl}/resources/audio/${file_name}`;
+    appAudioUrl: (state) => (file_name) => {
+        return `${process.env.NODE_ENV === 'production' ? state.appApiUrl : state.testAppApiUrl}/resources/audio/${file_name}`;
     },
 }

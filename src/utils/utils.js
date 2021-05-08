@@ -11,7 +11,7 @@ export default class Utils {
     static renderParams(params) {
         // 获得token
         const accessToken = Utils.getAccessToken();
-        if (accessToken) params = Object.assign(params, {Authorization: accessToken})
+        if (accessToken) params = Object.assign(params || {}, {Authorization: accessToken})
         return params;
     }
 

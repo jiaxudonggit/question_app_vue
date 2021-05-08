@@ -23,7 +23,6 @@
 <script>
 
 import debounce from "lodash.debounce";
-import {Request} from "@/utils/utils";
 import {mapGetters, mapMutations, mapState} from "vuex";
 import question_list_horizontal from "@/components/common/question_list_horizontal";
 
@@ -63,56 +62,38 @@ export default {
 		this.getRecommendData();
 	},
 	methods: {
-		...mapMutations({
-			changeAppending: "changeAppending",
-		}),
 
-		onRecommendClick(item, index) {
+		// 推荐应用点击事件
+		onRecommendClick: debounce(function (item, index) {
 			// 记录用户点击推荐应用
-			this.createRecommendRecord(this.appId, item.app_id);
+			this.$api.request.createRecommendRecord({
+				from_app_id: this.appId,
+				to_app_id: item.app_id,
+			})
 			this.$emit("listenerRecommendClick", item, index);
-		},
+		}, 800, {'leading': true, 'trailing': false}),
 
 		// 换一换
 		onRefreshClick: debounce(function () {
 			if (!this.loading) this.getRecommendData();
 		}, 800, {'leading': true, 'trailing': false}),
 
-		// 记录用户点击推荐应用
-		createRecommendRecord(from_app_id, to_app_id, callback) {
-			Request.request({
-				url: this.appApiUrl + "/test_app/create_recommend_record",
-				data: {
-					from_app_id: from_app_id,
-					to_app_id: to_app_id,
-				},
-				callback: callback,
-			})
-		},
-
 		// 获得测一测推荐配置
 		getRecommendData(callback = null) {
 			// 开启加载提示框
 			this.loading = true;
-			Request.request({
-				url: this.appApiUrl + "/test_app/get_recommend_data",
-				data: {
-					app_id: this.appId,
-					page_name: this.model,
-				},
-				callback: (res, err) => {
-					if (err || res.code !== 0) {
-						this.loading = false;
-						return this.$toast("网络错误，请稍后，" + err);
-					}
-					// 更新推荐列表
-					for (let i = 0; i < res.body.recommend_list.length; i++) res.body.recommend_list[i].app_icon = this.appIconUrl(res.body.recommend_list[i].app_icon);
-					this.recommend_list = res.body.recommend_list;
-					this.$nextTick(() => {
-						this.loading = false;
-					});
-					if (typeof callback === "function") callback();
-				},
+			this.$api.request.getRecommendData({
+				app_id: this.appId,
+				page_name: this.model,
+			}).then(data=>{
+				// 更新推荐列表
+				for (let i = 0; i < data.body.recommend_list.length; i++) data.body.recommend_list[i].app_icon = this.appIconUrl(data.body.recommend_list[i].app_icon);
+				this.recommend_list = data.body.recommend_list;
+				if (typeof callback === "function") callback();
+			}).finally(()=>{
+				this.$nextTick(() => {
+					this.loading = false;
+				});
 			})
 		},
 	}

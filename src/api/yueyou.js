@@ -3,11 +3,11 @@
  */
 
 import axios from "@/utils/http";
-import baseUrl from "@/api/base";
+import baseUrl from "@/api/api";
 import qs from "qs";
 import Utils from "@/utils/utils";
 
-const YueYou = {
+export default {
 
     // 请求签名
     getSignStr(appId, openTs) {
@@ -36,5 +36,3 @@ const YueYou = {
         }));
     }
 }
-
-export default YueYou;

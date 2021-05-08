@@ -17,7 +17,6 @@
 </template>
 <script>
 import recommend_list from '@/components/common/recommend_list';
-import {Request} from "@/utils/utils";
 import Ad from "@/utils/ad";
 import {mapGetters, mapMutations, mapState} from "vuex";
 
@@ -39,23 +38,32 @@ export default {
 	activated() {
 		// 初始化
 		this.initData(() => {
-			// 打开插屏广告
-			// if (this.appId) Ad.openScreenAd(this.appId);
 			// 创建查看结果记录
-			this.createResultRecord();
+			this.$api.request.createResultRecord({
+				app_id: this.appId,
+				result_id: this.resultId,
+				fraction: this.fraction
+			});
 			// 领取红包
 			if (this.isCanReceive) {
 				this.timer.push(setTimeout(() => {
-					this.receiveRedPacket(this.$route.query.YzAdOrderId);
-				}, this.loadingTime))
+					this.$api.redPacket.receiveRedPacket({
+						order_id: this.$route.query.YzAdOrderId
+					}).then(data => {
+						// 设置红包数据
+						this.setRedPacketData(data.body);
+						// 设置领取红包状态
+						this.setCanReceive(false);
+						// 打开红包弹窗
+						this.setRedPacketPopup(true);
+					})
+				}, this.loadingTime));
 			}
 		})
 	},
 	beforeRouteLeave(to, from, next) {
 		// 关闭红包弹窗
 		this.setRedPacketPopup(false);
-		// 关闭插屏广告
-		// Ad.closeScreenAd();
 		// 关闭定时器
 		this.cancelTimeOut();
 		// 打开推荐弹窗
@@ -76,33 +84,6 @@ export default {
 			setCanReceive: "setCanReceive",
 		}),
 
-		// 获得首页数据
-		getResultData(callback) {
-			Request.request({
-				url: this.appApiUrl + "/test_app/get_result_data",
-				data: {
-					app_id: this.appId,
-					fraction: this.fraction,
-					result_id: this.resultId,
-				},
-				callback: (res, err) => {
-					if (err || res.code !== 0) {
-						this.$toast("网络错误，请稍后，" + err);
-					} else {
-						// 设置结果页数据到store
-						this.setResultData({
-							data: res.body,
-							appIconUrl: this.appIconUrl,
-							appResourcesUrl: this.appResourcesUrl,
-							model: this.model,
-						});
-						this.setResultId(res.body.result_id);
-					}
-					if (typeof callback === "function") callback();
-				},
-			})
-		},
-
 		// 初始化
 		initData(callback) {
 			if (this.resultData.app_id && this.resultData.result_id &&
@@ -112,52 +93,31 @@ export default {
 			} else {
 				// 开启加载提示框
 				!this.isAppending && this.changeAppending(true);
-				// 获取主页数据
-				this.getResultData(() => {
+				// 获取结果页数据
+				this.$api.request.getResultData({
+					app_id: this.appId,
+					fraction: this.fraction,
+					result_id: this.resultId,
+				}).then(data => {
+					// 设置结果页数据到store
+					this.setResultData({
+						data: data.body,
+						appIconUrl: this.appIconUrl,
+						appResourcesUrl: this.appResourcesUrl,
+						model: this.model,
+					});
+					// 设置结果ID据到store
+					this.setResultId(data.body.result_id);
 					// 记录用户进入应用
 					this.createAccessRecord()
 					// 关闭加载提示框
 					this.timer.push(setTimeout(() => {
 						this.changeAppending(false);
 					}, this.loadingTime));
+					// 调用回调方法
 					if (typeof callback === "function") callback();
 				});
 			}
-		},
-
-		// 创建用户查看结果记录
-		createResultRecord(callback) {
-			Request.request({
-				url: this.appApiUrl + "/test_app/create_result_record",
-				data: {
-					app_id: this.appId,
-					result_id: this.resultId,
-					fraction: this.fraction
-				},
-				callback: callback,
-			})
-		},
-
-		// 领取红包
-		receiveRedPacket(order_id, callback) {
-			Request.request({
-				url: this.appApiUrl + "/red_packet/receive_red_packet",
-				data: {
-					order_id: order_id,
-				},
-				callback: (res, err) => {
-					if (res && res.code === 10030) this.$toast(err);
-					if (res && res.code === 0) {
-						// 设置红包数据
-						this.setRedPacketData(res.body);
-						// 设置领取红包状态
-						this.setCanReceive(false);
-						// 打开红包弹窗
-						this.setRedPacketPopup(true);
-					}
-					if (typeof callback === "function") callback();
-				},
-			})
 		},
 
 		// 返回按钮事件

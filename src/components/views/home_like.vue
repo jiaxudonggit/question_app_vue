@@ -15,7 +15,7 @@ import question_list_horizontal from "@/components/common/question_list_horizont
 import {mapGetters, mapMutations, mapState} from "vuex";
 import Vue from 'vue';
 import {List, NavBar} from 'vant';
-import {Request} from "@/utils/utils";
+import debounce from "lodash.debounce";
 
 Vue.use(NavBar);
 Vue.use(List);
@@ -67,36 +67,35 @@ export default {
 			});
 		},
 
-		onLikeClick(item) {
+		// 点击事件
+		onLikeClick: debounce(function (item) {
 			this.openNewApp(item.app_id, false);
-		},
+		}, 500, {'leading': true, 'trailing': false}),
+
 
 		// 获得[大家爱玩]应用列表
 		getLikeData(callback = null) {
-			Request.request({
-				url: this.appApiUrl + "/test_app/get_app_with_like",
-				data: {
-					page: this.page + 1,
-				},
-				callback: (res, err) => {
-					if (err || res.code !== 0) return this.error = true;
-					// 更新推荐列表
-					this.total_page = res.body.total_page;
-					this.page = res.body.page;
-					for (let i = 0; i < res.body.app_list.length; i++) res.body.app_list[i].app_icon = this.appIconUrl(res.body.app_list[i].app_icon);
-					this.likeList = this.likeList.concat(res.body.app_list);
-					if (typeof callback === "function") callback();
-				},
+			this.$api.request.getLikeData({
+				page: this.page + 1,
+			}).then(data => {
+				// 更新推荐列表
+				this.total_page = data.body.total_page;
+				this.page = data.body.page;
+				for (let i = 0; i < data.body.app_list.length; i++) data.body.app_list[i].app_icon = this.appIconUrl(data.body.app_list[i].app_icon);
+				this.likeList = this.likeList.concat(data.body.app_list);
+				if (typeof callback === "function") callback();
+			}).catch(() => {
+				this.error = true;
+			}).finally(() => {
+				// 加载状态结束
+				this.loading = false;
 			})
 		},
 
 		onLoad() {
 			// 异步更新数据
 			setTimeout(() => {
-				this.getLikeData(() => {
-					// 加载状态结束
-					this.loading = false;
-				});
+				this.getLikeData();
 			}, 1000);
 		},
 

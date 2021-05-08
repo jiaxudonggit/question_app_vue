@@ -54,16 +54,12 @@
 		<div v-if="indexData.show_recommend_list && indexData.show_more_btn" class="index-more-btn animate__animated animate__bounceIn" @click="goToHome">
 			<img src="../../assets/images/index/more.png" alt="">
 		</div>
-		<!-- 推荐弹窗 -->
-		<recommend_popup :show="showPopup" @listenerPopupClick="onPopupClick" @listenerPopupMoreClick="goToHome" ></recommend_popup>
 	</div>
 </template>
 <script>
 
 import Vue from 'vue';
 import recommend_list from "@/components/common/recommend_list";
-import recommend_popup from "@/components/common/recommend_popup";
-import {Request} from "@/utils/utils";
 import {mapGetters, mapMutations, mapState} from "vuex";
 import {Popup} from 'vant';
 
@@ -73,7 +69,6 @@ export default {
 	inject: ["createAccessRecord", "openNewApp", "goToHome"],
 	components: {
 		recommend_list,
-		recommend_popup,
 	},
 	data() {
 		return {
@@ -85,15 +80,6 @@ export default {
 	computed: {
 		...mapState(["isAppending", "appId", "channelId", "indexData", "isGameBack", "loadingTime", "availHeight"]),
 		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl"]),
-	},
-	watch: {
-		isGameBack(val) {
-			val ? this.getPopupData(() => {
-				this.timer.push(setTimeout(() => {
-					this.showPopup = true;
-				}, this.loadingTime));
-			}) : this.showPopup = false;
-		},
 	},
 	activated() {
 		// 初始化
@@ -121,61 +107,24 @@ export default {
 				// 开启加载提示框
 				!this.isAppending && this.changeAppending(true);
 				// 获取主页数据
-				this.getIndexData(() => {
+				this.$api.request.getIndexData({app_id: this.appId,}).then(data => {
+					// 设置首页数据到store
+					this.setIndexData({
+						data: data.body,
+						appIconUrl: this.appIconUrl,
+						appResourcesUrl: this.appResourcesUrl,
+						model: this.model,
+					});
 					// 记录用户进入应用
 					this.createAccessRecord();
 					// 关闭加载提示框
 					this.timer.push(setTimeout(() => {
 						this.changeAppending(false);
 					}, this.loadingTime));
+					// 调用回调方法
 					if (typeof callback === "function") callback();
 				});
 			}
-		},
-
-		// 获得首页数据
-		getIndexData(callback) {
-			Request.request({
-				url: this.appApiUrl + "/test_app/get_index_data",
-				data: {
-					app_id: this.appId,
-				},
-				callback: (res, err) => {
-					if (err || res.code !== 0) {
-						this.$toast("网络错误，请稍后，" + err);
-					} else {
-						// 设置首页数据到store
-						this.setIndexData({
-							data: res.body,
-							appIconUrl: this.appIconUrl,
-							appResourcesUrl: this.appResourcesUrl,
-							model: this.model,
-						});
-					}
-					if (typeof callback === "function") callback();
-				},
-			})
-		},
-
-		// 推荐弹窗数据 setPopupData
-		getPopupData(callback) {
-			Request.request({
-				url: this.appApiUrl + "/test_app/get_popup_data",
-				data: {
-					app_id: this.appId,
-					page_name: "layer",
-				},
-				callback: (res, err) => {
-					if (err || res.code !== 0) return false;
-					this.setPopupData({
-						data: res.body,
-						appIconUrl: this.appIconUrl,
-						appResourcesUrl: this.appResourcesUrl,
-						model: this.model,
-					});
-					if (typeof callback === "function") callback();
-				},
-			})
 		},
 
 		// 点击更多推荐事件
@@ -190,16 +139,6 @@ export default {
 				block: "nearest",
 				inline: "nearest"
 			});
-		},
-
-		// 点击弹窗推荐事件
-		onPopupClick(item) {
-			this.openNewApp(item.app_id);
-		},
-
-		// 点击弹窗更多按钮
-		onPopupMoreClick() {
-			this.onClickMoreRecommend();
 		},
 
 		// 取消定时器

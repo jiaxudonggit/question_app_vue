@@ -22,6 +22,10 @@ module.exports = {
     configureWebpack: config => {
         if (process.env.NODE_ENV === 'production') {  // 生产环境
 
+            config.externals = {
+                "vconsole": "vconsole",
+            }
+
             // 对资源文件进行压缩
             config.plugins.push(
                 new CompressionWebpackPlugin({
@@ -105,7 +109,7 @@ module.exports = {
 
     },
     devServer: {
-        host: '127.0.0.1',
+        host: 'localhost',
         port: 8099,
         proxy: {
             '/api': {
@@ -113,7 +117,7 @@ module.exports = {
                 changeOrigin: true, // 是否设置同源
                 ws: true,
                 pathRewrite: {
-                    '^/api': '',
+                    '^/api': '/api',
                 }
             },
             '/mall': {

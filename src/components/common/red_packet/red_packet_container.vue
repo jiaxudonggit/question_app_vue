@@ -30,7 +30,7 @@ export default {
 	computed: {
 		...mapState(["headImage", "nickname", "channelId", "balance"]),
 		userAvatar() {
-			return this.headImage ? this.headImage : require('../../../assets/images/red_packet/user-avatar.png');
+			return this.headImage ? this.headImage : require('@/assets/images/red_packet/user-avatar.png');
 		}
 	},
 

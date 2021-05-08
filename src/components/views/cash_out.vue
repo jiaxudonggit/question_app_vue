@@ -1,6 +1,6 @@
 <!--主页商店分类页组件-->
 <template>
-	<div id="cash-out" class="cash-out app-model">
+	<div id="cash-out" class="cash-out app-model" :style="{minHeight: (availHeight - 46) + 'px'}">
 		<van-nav-bar class="van-nav-bar-customer fixed-fix" title="红包提现" left-text="返回" left-arrow @click-left="onBackClick"/>
 		<div class="cash-out-content app-content">
 			<div class="cash-out-content-top">
@@ -55,10 +55,9 @@
 </template>
 <script>
 
-import {mapGetters, mapMutations, mapState} from "vuex";
+import {mapMutations, mapState} from "vuex";
 import Vue from 'vue';
 import {NoticeBar, NavBar, Dialog} from 'vant';
-import {Request} from "@/utils/utils";
 import debounce from "lodash.debounce";
 
 Vue.use(NavBar);
@@ -68,8 +67,7 @@ Vue.use(Dialog);
 export default {
 	inject: ["goToHome"],
 	computed: {
-		...mapState(["isAppending", "loadingTime", "channelId", "cashOutData", "availHeight", "alipayAccount", "noticeContent", "balance"]),
-		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl", "appTypeUrl"]),
+		...mapState(["isAppending", "loadingTime", "cashOutData", "availHeight", "alipayAccount", "balance"]),
 		cashOutStatus() {
 			return function (status) {
 				return status ? '' : 'cash-out-row-prohibit';
@@ -109,51 +107,43 @@ export default {
 					this.changeAppending(false);
 				}, this.loadingTime)
 				if (typeof callback === "function") callback();
-			});
+			})
 		},
 
 		// 获取提现配置
-		getCashOutData(callback = null) {
-			Request.request({
-				url: this.appApiUrl + "/red_packet/get_cash_out_config",
-				callback: (res, err) => {
-					if (err || res.code !== 0) return this.$toast(err);
-					// 设置提现配置数据
-					this.setCashOutData(res.body);
-					if (typeof callback === "function") callback();
-				},
-			})
+		getCashOutData(callback) {
+			this.$api.redPacket.getCashOutData().then(data => {
+				// 设置提现配置数据
+				this.setCashOutData(data.body);
+				if (typeof callback === "function") callback();
+			});
 		},
 
 		// 检测用户提现账户
 		checkUserAccount(callback = null) {
-			Request.request({
-				url: this.appApiUrl + "/red_packet/check_user_account",
-				callback: (res, err) => {
-					if (err || res.code !== 0) return this.$toast(err);
-					if (typeof callback === "function") callback(res.body.status);
-				},
-			})
+			this.$api.redPacket.checkUserAccount().then(data => {
+				if (typeof callback === "function") callback(data.body.status);
+			});
 		},
 
 		// 提交提现申请
 		submitCashOut(callback = null) {
-			Request.request({
-				url: this.appApiUrl + "/red_packet/submit_cash_out",
-				data: {
-					cash_out_id: this.selectedItem.cash_out_id,
-				},
-				callback: (res) => {
-					if (res) Dialog.alert({
-						message: res.body.message,
-					}).then(() => {
-						// 获取提现配置
-						this.selectedIndex = -1;
-						this.selectedItem = {};
-						if (res.code === 0) this.getCashOutData();
-						if (typeof callback === "function") callback();
-					});
-				},
+			this.$api.redPacket.submitCashOut({
+				cash_out_id: this.selectedItem.cash_out_id,
+			}).then(data => {
+				Dialog.alert({
+					message: data.body.message,
+				}).then(() => {
+					this.getCashOutData();
+				});
+			}).catch(err => {
+				if (err.code) Dialog.alert({
+					message: err.body.message,
+				});
+			}).finally(() => {
+				this.selectedIndex = -1;
+				this.selectedItem = {};
+				if (typeof callback === "function") callback();
 			})
 		},
 

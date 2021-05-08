@@ -43,7 +43,6 @@ import home_swiper_interest from "@/components/common/home/home_swiper_interest"
 import home_swiper_like from "@/components/common/home/home_swiper_like";
 import {mapGetters, mapMutations, mapState} from "vuex";
 import {Grid, GridItem} from 'vant';
-import {Request} from "@/utils/utils";
 
 Vue.use(Grid);
 Vue.use(GridItem);
@@ -93,8 +92,16 @@ export default {
 			} else {
 				// 开启加载提示框
 				!this.isAppending && this.changeAppending(true);
-				// 获取主页数据
-				this.getHomeData(() => {
+				// 获得商店页数据
+				this.$api.request.getHomeData().then(data => {
+					// 设置商店页数据到store
+					this.setHomeData({
+						data: data.body,
+						appIconUrl: this.appIconUrl,
+						appBannerUrl: this.appBannerUrl,
+						appTypeUrl: this.appTypeUrl,
+						appLikeUrl: this.appLikeUrl,
+					});
 					// 关闭加载提示框
 					this.timer = setTimeout(() => {
 						this.changeAppending(false);
@@ -102,28 +109,6 @@ export default {
 					if (typeof callback === "function") callback();
 				});
 			}
-		},
-
-		// 获得首页数据
-		getHomeData(callback) {
-			Request.request({
-				url: this.appApiUrl + "/test_app/get_home_data",
-				callback: (res, err) => {
-					if (err || res.code !== 0) {
-						this.$toast("网络错误，请稍后，" + err);
-					} else {
-						// 设置首页数据到store
-						this.setHomeData({
-							data: res.body,
-							appIconUrl: this.appIconUrl,
-							appBannerUrl: this.appBannerUrl,
-							appTypeUrl: this.appTypeUrl,
-							appLikeUrl: this.appLikeUrl,
-						});
-					}
-					if (typeof callback === "function") callback();
-				},
-			})
 		},
 
 		// 点击搜索

@@ -25,8 +25,7 @@
 				<answer v-if="showAnswer && Object.keys(question).length > 0" :question="question" :model="model" v-on:listenerAnswerClick="onClickAnswer"></answer>
 			</div>
 			<div class="game-barrage-wrap">
-				<vue-danmaku v-if="showBarrage" class="game-barrage" ref="barrage" :danmus="barrageList" useSlot :channels="barrageData.lanes_count" :loop="barrageData.barrage_loop"
-					:autoplay="true" :randomChannel="true" :speed="barrageData.barrage_time" :top="15">
+				<vue-danmaku v-if="showBarrage" class="game-barrage" ref="barrage" :danmus="barrageList" useSlot :channels="barrageData.lanes_count" :loop="barrageData.barrage_loop" :autoplay="true" :randomChannel="true" :speed="barrageData.barrage_time" :top="15">
 					<template slot="dm" slot-scope="{ index, danmu }">
 						<div class="barrage-item">
 							<img :src="danmu.avatar" alt="">
@@ -51,7 +50,6 @@ import vueDanmaku from 'vue-danmaku'
 import answer from '@/components/common/answer';
 import Ad from "@/utils/ad";
 import {mapGetters, mapMutations, mapState} from "vuex";
-import {Request} from "@/utils/utils";
 import {Popup} from 'vant';
 
 Vue.use(Popup);
@@ -92,12 +90,9 @@ export default {
 	activated() {
 		this.initData(() => {
 			// 获得弹幕数据
-			this.getBarrageData(() => {
-				// 渲染弹幕数据
-				this.renderBarrageData()
-			});
+			this.getBarrageData();
 			// 打开banner广告
-			Ad.openBannerAd(this.appId);
+			Ad.openBannerAd();
 			// 初始化数据
 			this.setShowResultPopup(false); // 关闭结果提示框
 			this.setResultId(null); // 重置结果ID
@@ -124,7 +119,6 @@ export default {
 		next();
 	},
 	methods: {
-
 		...mapMutations({
 			setAppId: "setAppId",
 			setChannelId: "setChannelId",
@@ -148,57 +142,40 @@ export default {
 			} else {
 				// 开启加载提示框
 				!this.isAppending && this.changeAppending(true);
-				// 获取主页数据
-				this.getPlayData(() => {
+				// 获取答题页数据
+				this.$api.request.getPlayData({app_id: this.appId}).then(data => {
+					// 设置首页数据到store
+					this.setPlayData({
+						data: data.body,
+						appIconUrl: this.appIconUrl,
+						appResourcesUrl: this.appResourcesUrl,
+						model: this.model,
+					});
 					// 记录用户进入应用
 					this.createAccessRecord();
 					// 关闭加载提示框
 					this.timer = setTimeout(() => {
 						this.changeAppending(false);
 					}, this.loadingTime);
+					// 调用回调方法
 					if (typeof callback === "function") callback();
 				});
 			}
 		},
 
-		// 获得首页数据
-		getPlayData(callback) {
-			Request.request({
-				url: this.appApiUrl + "/test_app/get_play_data",
-				data: {
-					app_id: this.appId,
-				},
-				callback: (res, err) => {
-					if (err || res.code !== 0) {
-						this.$toast("网络错误，请稍后，" + err);
-					} else {
-						// 设置首页数据到store
-						this.setPlayData({
-							data: res.body,
-							appIconUrl: this.appIconUrl,
-							appResourcesUrl: this.appResourcesUrl,
-							model: this.model,
-						});
-					}
-					if (typeof callback === "function") callback();
-				},
-			})
-		},
-
 		// 获得弹幕数据
-		getBarrageData(callback) {
-			if (this.barrageData.msg_list.length > 0) {
-				if (typeof callback === "function") callback();
+		getBarrageData() {
+			if (this.barrageData.msg_list.length <= 0) {
+				// 获得弹幕数据
+				this.$api.request.getBarrageData().then(data => {
+					// 设置首页数据到store
+					this.setBarrageData(data.body);
+					// 渲染弹幕数据
+					this.renderBarrageData()
+				})
 			} else {
-				Request.request({
-					url: this.appApiUrl + "/test_app/get_barrage_data",
-					callback: (res, err) => {
-						if (err || res.code !== 0) return this.$toast("网络错误，请稍后");
-						// 设置首页数据到store
-						this.setBarrageData(res.body);
-						if (typeof callback === "function") callback();
-					},
-				});
+				// 渲染弹幕数据
+				this.renderBarrageData()
 			}
 		},
 

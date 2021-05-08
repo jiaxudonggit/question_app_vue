@@ -83,27 +83,20 @@ export default {
 		},
 
 		onSubmit: debounce(function () {
-			Request.request({
-				url: this.appApiUrl + "/red_packet/submit_user_account",
-				data: {
-					alipay_account: this.alipayAccount,
-					alipay_phone: this.alipayPhone,
-				},
-				callback: (res, err) => {
-					if (err || res.code !== 0) {
-						this.$toast("账户设置失败，" + err);
-					} else {
-						this.$toast("账户设置成功");
-						// 设置账户信息
-						this.setCashOutAccount(res.body);
-					}
-					// 关闭窗口
-					this.setCashOutAccountPopup(false);
-					// 重置表单
-					this.resetForm();
-					this.$emit("listenerAccountSubmitClick");
-				},
-			})
+			this.$api.redPacket.submitUserAccount({
+				alipay_account: this.alipayAccount,
+				alipay_phone: this.alipayPhone,
+			}).then(data=>{
+				this.$toast("账户设置成功");
+				// 设置账户信息
+				this.setCashOutAccount(data.body);
+			}).finally(()=>{
+				// 关闭窗口
+				this.setCashOutAccountPopup(false);
+				// 重置表单
+				this.resetForm();
+				this.$emit("listenerAccountSubmitClick");
+			});
 		}, 800, {
 			'leading': true,
 			'trailing': false

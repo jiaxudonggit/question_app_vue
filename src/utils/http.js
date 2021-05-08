@@ -4,7 +4,6 @@
  */
 import axios from 'axios';
 import {Toast} from 'vant';
-import store from "@/vuex/store";
 import Utils from "@/utils/utils";
 
 /**
@@ -15,7 +14,7 @@ import Utils from "@/utils/utils";
 const tip = (msg) => {
     Toast({
         message: msg,
-        duration: 1000,
+        duration: 2000,
         forbidClick: true
     });
 }
@@ -46,8 +45,6 @@ const errorHandle = (status) => {
 const instance = axios.create({timeout: 1000 * 12});
 // 设置post请求头
 instance.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-// 基础接口地址
-instance.defaults.baseURL = store.getters.appApiUrl;
 
 /**
  * 请求拦截器

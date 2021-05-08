@@ -3,12 +3,12 @@
 		<!-- 关闭按钮 -->
 		<close_btn></close_btn>
 		<!-- 页面内容 -->
-		<transition v-if="false" :enter-active-class="enterAnimate" name="custom-classes-transition">
+		<transition v-if="isLogin" :enter-active-class="enterAnimate" name="custom-classes-transition">
 			<keep-alive>
 				<router-view v-if="$route.meta.keepAlive && isRouterAlive" class=""></router-view>
 			</keep-alive>
 		</transition>
-		<transition v-if="false" :enter-active-class="enterAnimate" name="custom-classes-transition">
+		<transition v-if="isLogin" :enter-active-class="enterAnimate" name="custom-classes-transition">
 			<router-view v-if="!$route.meta.keepAlive && isRouterAlive"></router-view>
 		</transition>
 		<!-- 底部导航栏 -->
@@ -19,6 +19,8 @@
 		<red_packet_tip/>
 		<!-- 提现账户设置弹窗 -->
 		<cash_out_account_popup/>
+		<!-- 推荐弹窗 -->
+		<recommend_popup @listenerPopupClick="onPopupClick" @listenerPopupMoreClick="goToHome"></recommend_popup>
 	</div>
 </template>
 
@@ -28,6 +30,7 @@ import close_btn from "@/components/common/close_btn";
 import red_packet_popup from "@/components/common/red_packet/red_packet_popup";
 import red_packet_tip from "@/components/common/red_packet/red_packet_tip";
 import cash_out_account_popup from "@/components/common/cash_out/cash_out_account_popup";
+import recommend_popup from "@/components/common/recommend_popup";
 import YueYouLogin from "@/utils/yuyou";
 import Utils from "@/utils/utils";
 import ChannelUtils from "@/utils/channel";
@@ -50,6 +53,7 @@ export default {
 		red_packet_popup,
 		red_packet_tip,
 		cash_out_account_popup,
+		recommend_popup,
 	},
 	data() {
 		return {
@@ -150,12 +154,12 @@ export default {
 						this.setUserInfo(data.body);
 						// 打开倒计时关闭按钮
 						this.setCloseBtnStatus();
+						// 关闭loading动画
 						this.changeAppending(false);
 						if (typeof callback === "function") callback();
-					}).catch(err => {
+					}).catch(() => {
 						// 打开webview关闭按钮
 						this.setShowExitBtn(true);
-						console.error(err);
 					})
 				});
 			})
@@ -169,9 +173,9 @@ export default {
 			} else {
 				// 记录用户进入应用
 				this.$api.request.createAccessRecord({app_id: this.appId}).then(() => {
+					// 设置记录状态为true
 					this.setRecordAccess(true);
-					if (typeof callback == "function") callback();
-				}).catch(() => {
+				}).finally(() => {
 					if (typeof callback == "function") callback();
 				})
 			}
@@ -221,7 +225,12 @@ export default {
 		// 跳转到商店也
 		goToHome() {
 			this.$router.replace({path: "/home", query: {YzChannelId: this.channelId, t: new Date().getTime()}});
-		}
+		},
+
+		// 点击弹窗推荐事件
+		onPopupClick(item) {
+			this.openNewApp(item.app_id);
+		},
 	}
 }
 </script>

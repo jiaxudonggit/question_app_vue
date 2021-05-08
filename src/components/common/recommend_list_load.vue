@@ -22,6 +22,7 @@ import question_list_horizontal from "@/components/common/question_list_horizont
 import {mapGetters, mapState} from "vuex";
 import Vue from 'vue';
 import {List} from 'vant';
+import debounce from "lodash.debounce";
 
 Vue.use(List);
 
@@ -59,53 +60,43 @@ export default {
 		this.getRecommendData();
 	},
 	methods: {
-		onRecommendClick(item, index) {
-			// 记录用户点击推荐应用
-			this.createRecommendRecord(this.appId, item.app_id, () => {
-				this.$emit("listenerRecommendClick", item, index);
-			});
-		},
 
-		// 记录用户点击推荐应用
-		createRecommendRecord(from_app_id, to_app_id, callback) {
-			Request.request({
-				url: this.appApiUrl + "/test_app/create_recommend_record",
-				data: {
-					from_app_id: from_app_id,
-					to_app_id: to_app_id,
-				},
-				callback: callback,
+		// 推荐应用点击事件
+		onRecommendClick: debounce(function (item, index) {
+			// 记录用户点击推荐应用
+			this.$api.request.createRecommendRecord({
+				from_app_id: this.appId,
+				to_app_id: item.app_id,
 			})
-		},
+			this.$emit("listenerRecommendClick", item, index);
+		}, 800, {'leading': true, 'trailing': false}),
+
 
 		// 获得测一测推荐配置
 		getRecommendData(callback = null) {
-			Request.request({
-				url: this.appApiUrl + "/test_app/get_recommend_data_load",
-				data: {
-					app_id: this.appId,
-					page: this.page + 1,
-					page_name: this.model,
-				},
-				callback: (res, err) => {
-					if (err || res.code !== 0) return this.error = true;
-					// 更新推荐列表
-					this.total_page = res.body.total_page;
-					this.page = res.body.page;
-					for (let i = 0; i < res.body.recommend_list.length; i++) res.body.recommend_list[i].app_icon = this.appIconUrl(res.body.recommend_list[i].app_icon);
-					this.recommend_list = this.recommend_list.concat(res.body.recommend_list);
-					if (typeof callback === "function") callback();
-				},
-			})
+			this.$api.request.getRecommendDataLoad({
+				app_id: this.appId,
+				page: this.page + 1,
+				page_name: this.model,
+			}).then(data => {
+				// 更新推荐列表
+				this.total_page = data.body.total_page;
+				this.page = data.body.page;
+				for (let i = 0; i < data.body.recommend_list.length; i++) data.body.recommend_list[i].app_icon = this.appIconUrl(data.body.recommend_list[i].app_icon);
+				this.recommend_list = this.recommend_list.concat(data.body.recommend_list);
+				if (typeof callback === "function") callback();
+			}).catch(() => {
+				this.error = true;
+			}).finally(() => {
+				// 加载状态结束
+				this.loading = false;
+			});
 		},
 
 		onLoad() {
 			// 异步更新数据
 			setTimeout(() => {
-				this.getRecommendData(() => {
-					// 加载状态结束
-					this.loading = false;
-				});
+				this.getRecommendData();
 			}, 1000);
 		},
 

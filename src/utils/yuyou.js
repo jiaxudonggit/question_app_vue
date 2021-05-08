@@ -13,10 +13,15 @@ export default class YueYouLogin {
             // 2. 获取interface_url
             YueYou.getInterfaceUrl(String(gameId)).then(data => {
                 // 3. 获取token
-                YueYou.getAccessToken(String(gameId), authCode, data.info.interface_url).then(data => {
-                    if (typeof callback === "function") callback(data.info);
-                }).catch(err => {
-                    alert(err);
+                YueYou.getAccessToken(String(gameId), authCode, data.info.interface_url).then(data2 => {
+                    if (typeof callback === "function") callback({
+                        openid: data2.info.userid,
+                        nickname: data2.info.nickname,
+                        headimg: data2.info.headimg,
+                        sex: data2.info.sex,
+                    });
+                }).catch(err2 => {
+                    alert(err2);
                 });
             }).catch(err => {
                 alert(err);

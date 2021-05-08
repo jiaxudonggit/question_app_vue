@@ -40,7 +40,6 @@
 
 import debounce from "lodash.debounce";
 import {mapGetters, mapState} from "vuex";
-import {Request} from "@/utils/utils";
 import AudioPlayer from '@liripeng/vue-audio-player'
 import {videoPlayer} from 'vue-video-player'
 import '@liripeng/vue-audio-player/lib/vue-audio-player.css'
@@ -154,24 +153,17 @@ export default {
 	},
 	methods: {
 
+		// 答案点击事件
 		onAnswerClick: debounce(function (item, index) {
 			// 创建用户答题记录
-			this.createAnswerRecord(item);
+			this.$api.request.createAnswerRecord({
+				app_id: this.appId,
+				question_id: item.question_id,
+				answer_id: item.answer_id,
+			})
 			this.$emit("listenerAnswerClick", item, index);
 		}, 500, {'leading': true, 'trailing': false}),
 
-		// 创建用户答题记录
-		createAnswerRecord(item, callback) {
-			Request.request({
-				url: this.appApiUrl + "/test_app/create_question_record",
-				data: {
-					app_id: this.appId,
-					question_id: item.question_id,
-					answer_id: item.answer_id,
-				},
-				callback: callback,
-			})
-		},
 	}
 }
 </script>
