@@ -12,6 +12,7 @@ const state = {
     isRunBrowser: window.nativeObj === undefined, // 是否在普通浏览器运行
     appApiUrl: "http://interest.ezhigame.com", // 后端接口地址（正式服）
     testAppApiUrl: "http://interest.test.ezhigame.com", // 后端接口地址(测试服)
+    yueYouApiUrl: "http://gamecenter.ezhigame.com", // 阅友游戏中心后端接口地址
     debugUserId: "01234567890", // 浏览器调试时用户ID
     // 阅友单独使用的数据
     signStr: "bi6tUL8Tf31I+DHx9KRJkVP1M7S0jqQ9vTnUjDARxI6APhslppch7qofwgz8ikdJ2xzY4t8dsH2mhto4s1bHk7+X196BWZ+Iut7dby1dqECTMK17xOAOOb8ABT1AmHuaSIMIrsWicJ43f4TNzC+WF4jTUksL9FiqLYstgS0auAY=", // 验签串

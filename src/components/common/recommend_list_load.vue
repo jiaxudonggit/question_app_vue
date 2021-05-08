@@ -17,7 +17,7 @@
 	</div>
 </template>
 <script>
-import {Request} from "@/utils/Utils";
+import {Request} from "@/utils/utils";
 import question_list_horizontal from "@/components/common/question_list_horizontal";
 import {mapGetters, mapState} from "vuex";
 import Vue from 'vue';

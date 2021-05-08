@@ -58,7 +58,7 @@
 import {mapGetters, mapMutations, mapState} from "vuex";
 import Vue from 'vue';
 import {NoticeBar, NavBar, Dialog} from 'vant';
-import {Request} from "@/utils/Utils";
+import {Request} from "@/utils/utils";
 import debounce from "lodash.debounce";
 
 Vue.use(NavBar);

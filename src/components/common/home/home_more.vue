@@ -14,7 +14,7 @@
 <script>
 import question_list_horizontal from "@/components/common/question_list_horizontal";
 import {mapGetters} from "vuex";
-import {Request} from "@/utils/Utils";
+import {Request} from "@/utils/utils";
 import Vue from 'vue';
 import {List} from 'vant';
 

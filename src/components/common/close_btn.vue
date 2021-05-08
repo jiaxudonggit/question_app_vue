@@ -17,7 +17,7 @@
 <script>
 import {mapGetters, mapMutations, mapState} from "vuex";
 import Countdown from '@choujiaojiao/vue2-countdown'
-import AdUtils from "@/utils/AdUtils";
+import Ad from "@/utils/ad";
 import debounce from "lodash.debounce";
 
 export default {
@@ -77,7 +77,7 @@ export default {
 
 	created() {
 		// 设置安卓生命周期
-		if (AdUtils.getAppVersion() >= this.channelVersion && this.channelId === "YueYou") {
+		if (Ad.getAppVersion() >= this.channelVersion && this.channelId === "YueYou") {
 			// 系统状态监听
 			window.androidLifeCycleCallBack = (from, callback) => {
 				switch (callback) {
@@ -108,7 +108,7 @@ export default {
 		// 点击关闭按钮事件
 		onBtnClick: debounce(function () {
 			// 播放广告
-			AdUtils.openVideoAd(this.commonAdAppId, this.channelId, () => {
+			Ad.openVideoAd(this.commonAdAppId, this.channelId, () => {
 				// 添加广告统计次数
 				this.addAdCount();
 				// 隐藏按钮

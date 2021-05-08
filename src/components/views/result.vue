@@ -17,8 +17,8 @@
 </template>
 <script>
 import recommend_list from '@/components/common/recommend_list';
-import {Request} from "@/utils/Utils";
-import AdUtils from "@/utils/AdUtils";
+import {Request} from "@/utils/utils";
+import Ad from "@/utils/ad";
 import {mapGetters, mapMutations, mapState} from "vuex";
 
 export default {
@@ -40,7 +40,7 @@ export default {
 		// 初始化
 		this.initData(() => {
 			// 打开插屏广告
-			// if (this.appId) AdUtils.openScreenAd(this.appId);
+			// if (this.appId) Ad.openScreenAd(this.appId);
 			// 创建查看结果记录
 			this.createResultRecord();
 			// 领取红包
@@ -55,7 +55,7 @@ export default {
 		// 关闭红包弹窗
 		this.setRedPacketPopup(false);
 		// 关闭插屏广告
-		// AdUtils.closeScreenAd();
+		// Ad.closeScreenAd();
 		// 关闭定时器
 		this.cancelTimeOut();
 		// 打开推荐弹窗
@@ -162,7 +162,7 @@ export default {
 
 		// 返回按钮事件
 		onClickBack() {
-			AdUtils.closeScreenAd(() => {
+			Ad.closeScreenAd(() => {
 				this.$router.back();
 			});
 		},

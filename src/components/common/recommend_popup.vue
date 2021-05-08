@@ -27,7 +27,7 @@
 import {mapGetters, mapMutations, mapState} from "vuex";
 import Vue from 'vue';
 import {Popup} from 'vant';
-import {Request} from "@/utils/Utils";
+import {Request} from "@/utils/utils";
 
 Vue.use(Popup);
 

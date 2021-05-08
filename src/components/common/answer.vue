@@ -40,7 +40,7 @@
 
 import debounce from "lodash.debounce";
 import {mapGetters, mapState} from "vuex";
-import {Request} from "@/utils/Utils";
+import {Request} from "@/utils/utils";
 import AudioPlayer from '@liripeng/vue-audio-player'
 import {videoPlayer} from 'vue-video-player'
 import '@liripeng/vue-audio-player/lib/vue-audio-player.css'

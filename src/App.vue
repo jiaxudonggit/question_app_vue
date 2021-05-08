@@ -3,12 +3,12 @@
 		<!-- 关闭按钮 -->
 		<close_btn></close_btn>
 		<!-- 页面内容 -->
-		<transition v-if="isLogin" name="custom-classes-transition" :enter-active-class="enterAnimate">
+		<transition v-if="false" :enter-active-class="enterAnimate" name="custom-classes-transition">
 			<keep-alive>
 				<router-view v-if="$route.meta.keepAlive && isRouterAlive" class=""></router-view>
 			</keep-alive>
 		</transition>
-		<transition v-if="isLogin" name="custom-classes-transition" :enter-active-class="enterAnimate">
+		<transition v-if="false" :enter-active-class="enterAnimate" name="custom-classes-transition">
 			<router-view v-if="!$route.meta.keepAlive && isRouterAlive"></router-view>
 		</transition>
 		<!-- 底部导航栏 -->
@@ -28,10 +28,10 @@ import close_btn from "@/components/common/close_btn";
 import red_packet_popup from "@/components/common/red_packet/red_packet_popup";
 import red_packet_tip from "@/components/common/red_packet/red_packet_tip";
 import cash_out_account_popup from "@/components/common/cash_out/cash_out_account_popup";
-import YueYouUtils from "@/utils/YueYouUtils";
-import {Request, Utils} from "@/utils/Utils";
-import ChannelUtils from "@/utils/ChannelUtils";
-import {mapState, mapGetters, mapMutations} from "vuex";
+import YueYouLogin from "@/utils/yuyou";
+import Utils from "@/utils/utils";
+import ChannelUtils from "@/utils/channel";
+import {mapGetters, mapMutations, mapState} from "vuex";
 
 export default {
 	name: 'app',
@@ -114,30 +114,6 @@ export default {
 			setShowExitBtn: "setShowExitBtn",
 		}),
 
-		// 用户登录
-		userLogin(userInfo, callback) {
-			Request.request({
-				url: this.appApiUrl + "/login/user_login",
-				data: {
-					channel_id: this.channelId,
-					channel_userid: userInfo.userid,
-					nickname: userInfo.nickname,
-					head_img_url: userInfo.headimg,
-					sex: userInfo.sex,
-				},
-				callback: (res, err) => {
-					if (err || res.code !== 0) {
-						// 打开webview关闭按钮
-						this.setShowExitBtn(true);
-						return this.$toast("用户登录失败，" + err);
-					}
-					// 设置用户信息到store中
-					this.setUserInfo(res.body);
-					if (typeof callback === "function") callback();
-				},
-			})
-		},
-
 		// 获取渠道用户信息
 		getChannelUserInfo(callback) {
 			if ((this.debug && this.isRunBrowser) || this.isRunBrowser) {
@@ -145,49 +121,44 @@ export default {
 				if (typeof callback === "function") callback({userid: this.debugUserId});
 			} else {
 				// 否则使用渠道用户信息
-				this.channelId === "YueYou" ? YueYouUtils.autoLoginCenter(callback) : ChannelUtils.getUserInfo(callback);
-			}
-		},
-
-		// 获取应用ID
-		getAppStatus(callback) {
-			if (this.appId) {
-				if (typeof callback === "function") callback();
-			} else {
-				Request.request({
-					url: this.appApiUrl + "/test_app/get_app_status",
-					data: {
-						channel_id: this.channelId,
-					},
-					callback: (res, err) => {
-						if (err || res.code !== 0) return this.$toast("初始化失败，" + err);
-						this.setAppStatus({
-							appId: String(res.body.app_id),
-							channelVersion: res.body.channel_version,
-						});
-						if (typeof callback === "function") callback();
-					},
-				})
+				this.channelId === "YueYou" ? YueYouLogin.autoLoginCenter(callback) : ChannelUtils.getUserInfo(callback);
 			}
 		},
 
 		// 初始化页面
 		autoLogin(callback = null) {
 			this.changeAppending(true);
-			this.getAppStatus(() => {
+			// 获取应用ID
+			this.$api.request.getAppStatus({channel_id: this.channelId}).then(data => {
+				this.setAppStatus({
+					appId: String(data.body.app_id),
+					channelVersion: data.body.channel_version,
+				});
 				console.log("========用户开始登录=========");
 				// 获得渠道用户信息
-				this.getChannelUserInfo((userInfo) => {
-					// 请求登录
-					this.userLogin(userInfo, () => {
+				this.getChannelUserInfo(userInfo => {
+					// 用户登录
+					this.$api.request.userLogin({
+						channel_id: this.channelId,
+						channel_userid: userInfo.userid,
+						nickname: userInfo.nickname,
+						head_img_url: userInfo.headimg,
+						sex: userInfo.sex,
+					}).then(data => {
 						console.log("========用户登录成功=========");
+						// 设置用户信息到store中
+						this.setUserInfo(data.body);
 						// 打开倒计时关闭按钮
 						this.setCloseBtnStatus();
 						this.changeAppending(false);
 						if (typeof callback === "function") callback();
-					});
+					}).catch(err => {
+						// 打开webview关闭按钮
+						this.setShowExitBtn(true);
+						console.error(err);
+					})
 				});
-			});
+			})
 		},
 
 		// 记录用户进入应用
@@ -197,16 +168,12 @@ export default {
 				if (typeof callback == "function") callback();
 			} else {
 				// 记录用户进入应用
-				Request.request({
-					url: this.appApiUrl + "/test_app/create_access_record",
-					data: {
-						app_id: this.appId,
-					},
-					callback: (res) => {
-						if (res && res.code === 0) this.setRecordAccess(true);
-						if (typeof callback == "function") callback();
-					}
-				});
+				this.$api.request.createAccessRecord({app_id: this.appId}).then(() => {
+					this.setRecordAccess(true);
+					if (typeof callback == "function") callback();
+				}).catch(() => {
+					if (typeof callback == "function") callback();
+				})
 			}
 		},
 

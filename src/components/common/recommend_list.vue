@@ -23,7 +23,7 @@
 <script>
 
 import debounce from "lodash.debounce";
-import {Request} from "@/utils/Utils";
+import {Request} from "@/utils/utils";
 import {mapGetters, mapMutations, mapState} from "vuex";
 import question_list_horizontal from "@/components/common/question_list_horizontal";
 

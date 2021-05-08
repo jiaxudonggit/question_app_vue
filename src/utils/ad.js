@@ -1,14 +1,14 @@
 /*
 * @Time    : 2021/4/13 16:03
 * @Author  : JXD
-* @FileName: AdUtils.js
+* @FileName: Ad.js
 * @Software: WebStorm
 */
 import store from "@/vuex/store";
-import {Request, Utils} from "@/utils/Utils";
+import {Request, Utils} from "@/utils/utils";
 
 
-export default class AdUtils {
+export default class Ad {
 
     // 打开激励视频广告
     static openVideoAd(appId, channelId, callback) {

@@ -63,7 +63,7 @@
 import Vue from 'vue';
 import recommend_list from "@/components/common/recommend_list";
 import recommend_popup from "@/components/common/recommend_popup";
-import {Request} from "@/utils/Utils";
+import {Request} from "@/utils/utils";
 import {mapGetters, mapMutations, mapState} from "vuex";
 import {Popup} from 'vant';
 

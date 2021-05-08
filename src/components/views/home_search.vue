@@ -56,7 +56,7 @@ import question_list_horizontal from "@/components/common/question_list_horizont
 import {mapGetters, mapMutations, mapState} from "vuex";
 import Vue from 'vue';
 import {List, NavBar, Search, Tab, Tabs} from 'vant';
-import {Request} from "@/utils/Utils";
+import {Request} from "@/utils/utils";
 
 Vue.use(Tab);
 Vue.use(Tabs);

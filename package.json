@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "dev": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build-dev": "vue-cli-service build --mode development",
+    "build": "vue-cli-service build --mode production",
     "lint": "vue-cli-service lint",
     "report": "vue-cli-service build --report"
   },
@@ -16,7 +17,7 @@
     "@types/lodash.debounce": "^4.0.6",
     "@vant/touch-emulator": "^1.2.0",
     "animate.css": "^4.1.1",
-    "axios": "^0.20.0",
+    "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "fastclick": "^1.0.6",
     "qs": "^6.10.1",
@@ -28,7 +29,8 @@
     "vue-danmaku": "^1.1.1",
     "vue-router": "^3.4.3",
     "vue-video-player": "^5.0.2",
-    "vuex": "^3.5.1"
+    "vuex": "^3.5.1",
+    "webpack": "^5.36.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
@@ -48,8 +50,7 @@
     "vue-loader": "^15.9.6",
     "vue-template-compiler": "^2.6.11",
     "webpack-bundle-analyzer": "^4.4.1",
-    "webpack-cli": "^4.6.0",
-    "webpack-dev-server": "^3.11.2"
+    "webpack-cli": "^4.6.0"
   },
   "eslintConfig": {
     "root": true,

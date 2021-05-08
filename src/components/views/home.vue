@@ -43,7 +43,7 @@ import home_swiper_interest from "@/components/common/home/home_swiper_interest"
 import home_swiper_like from "@/components/common/home/home_swiper_like";
 import {mapGetters, mapMutations, mapState} from "vuex";
 import {Grid, GridItem} from 'vant';
-import {Request} from "@/utils/Utils";
+import {Request} from "@/utils/utils";
 
 Vue.use(Grid);
 Vue.use(GridItem);

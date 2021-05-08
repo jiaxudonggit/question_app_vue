@@ -49,9 +49,9 @@ import debounce from 'lodash.debounce';
 import Vue from 'vue';
 import vueDanmaku from 'vue-danmaku'
 import answer from '@/components/common/answer';
-import AdUtils from "@/utils/AdUtils";
+import Ad from "@/utils/ad";
 import {mapGetters, mapMutations, mapState} from "vuex";
-import {Request} from "@/utils/Utils";
+import {Request} from "@/utils/utils";
 import {Popup} from 'vant';
 
 Vue.use(Popup);
@@ -97,7 +97,7 @@ export default {
 				this.renderBarrageData()
 			});
 			// 打开banner广告
-			AdUtils.openBannerAd(this.appId);
+			Ad.openBannerAd(this.appId);
 			// 初始化数据
 			this.setShowResultPopup(false); // 关闭结果提示框
 			this.setResultId(null); // 重置结果ID
@@ -110,7 +110,7 @@ export default {
 	},
 	beforeRouteLeave(to, from, next) {
 		// 关闭banner广告
-		AdUtils.closeBannerAd();
+		Ad.closeBannerAd();
 		// 清除弹幕
 		if (this.$refs.barrage) this.$refs.barrage.stop();
 		this.showBarrage = false;
@@ -228,7 +228,7 @@ export default {
 		// 返回按钮
 		onClickBack() {
 			// 关闭banner广告
-			AdUtils.closeBannerAd(() => {
+			Ad.closeBannerAd(() => {
 				this.$router.back();
 			});
 		},
@@ -264,7 +264,7 @@ export default {
 			// 关闭结果弹窗
 			this.setShowResultPopup(false);
 			// 播放广告
-			AdUtils.openVideoAd(this.appId, this.channelId, (orderId) => {
+			Ad.openVideoAd(this.appId, this.channelId, (orderId) => {
 				// 添加广告统计次数
 				this.addAdCount();
 				// 隐藏倒计时关闭按钮

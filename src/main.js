@@ -4,7 +4,6 @@ import Vue from 'vue';
 import vuex from 'vue';
 import App from './App';
 import router from './router';
-import axios from 'axios';
 import store from './vuex/store';
 import filters from './filters'; //将全部过滤器放在 filters/index.js 中便于管理
 import animated from 'animate.css'; // 动画库
@@ -12,13 +11,16 @@ import FastClick from 'fastclick' //使用 fastclick 解决移动端 300ms 点�
 import '@vant/touch-emulator';
 import {Toast} from 'vant';
 import VConsole from 'vconsole';
-
+import api from '@/api/index' // 导入api接口
 
 // 初始化调试控制台
 if (store.state.debug) new VConsole();
 
 //技巧 同时 use 多个插件 被依赖的插件应放在偏后方
 Vue.use(animated, Toast, vuex);
+
+// 将api挂载到vue的原型上
+Vue.prototype.$api = api;
 
 // 注册全局过滤器
 filters(Vue)
@@ -43,30 +45,10 @@ router.beforeEach((to, from, next) => {
     }
 });
 
-
 // 设置数组随机属性
 Array.prototype.randomElement = function () {
     return this[Math.floor(Math.random() * this.length)]
 }
-
-// axios全局配置
-axios.defaults.crossDomain = true;
-axios.defaults.withCredentials = true;  //设置cross跨域 并设置访问权限 允许跨域携带cookie信息
-axios.defaults.headers.common['Authorization'] = ''; // token
-axios.defaults.headers.common['content-type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
-
-// 拦截请求
-axios.interceptors.request.use(
-    config => {
-        // 有token就加上token
-        const accessToken = window.sessionStorage.getItem("accessToken") || store.state.accessToken;
-        if (accessToken !== null) config.headers['Authorization'] = accessToken;
-        return config;
-    },
-    error => {
-        return Promise.reject(error);
-    }
-);
 
 new Vue({
     el: '#app',
