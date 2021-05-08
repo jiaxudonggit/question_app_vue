@@ -28,7 +28,7 @@
 </template>
 <script>
 
-import debounce from 'lodash.debounce';
+import debounce from "lodash.debounce";
 import {mapGetters, mapMutations, mapState} from "vuex";
 import Vue from 'vue';
 import {Popup, Field, Form, Button} from 'vant';

@@ -45,7 +45,7 @@
 </template>
 <script>
 
-import debounce from 'lodash.debounce';
+import debounce from "lodash.debounce";
 import Vue from 'vue';
 import vueDanmaku from 'vue-danmaku'
 import answer from '@/components/common/answer';

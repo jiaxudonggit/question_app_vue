@@ -13,79 +13,119 @@ export default class AdUtils {
     // 打开激励视频广告
     static openVideoAd(appId, channelId, callback) {
         if (window.nativeObj === undefined) {
+
             if (store.state.debug && typeof callback === "function") callback('YueYou_999999_61220e7eaa9911ebb6eb00163e100870');
-            return false;
-        }
-        try {
+
+        } else {
+
             console.log("打开激励视频广告：=========>")
-            let channelId = store.state.channelId; // 渠道
-            let channelVersion = store.state.channelVersion; // 渠道初始版本号
-            let signStr = store.state.signStr; // 签名串，阅友会用到
-            let openTs = Utils.currentTimeMillis(true); // 时间戳
 
             // 创建广告订单
             this.requestCreateAdOrder(appId, (res) => {
+                let channelId = store.state.channelId; // 渠道
+                let openTs = Utils.currentTimeMillis(true); // 时间戳
+                let channelVersion = store.state.channelVersion; // 渠道初始版本号
+                let signStr = store.state.signStr; // 签名串，阅友会用到
+
                 // 拼接广告订单号
-                let outOrderId = `${channelId}_${appId || store.state.commonAdAppId}_${Utils.currentTimeMillis(true)}`; // 广告订单号
+                let outOrderId = `${channelId}_${appId || store.state.commonAdAppId}_${openTs}`; // 广告订单号
+
                 // 如果接口返回了订单号就用接口返回的订单号
                 if (res && res.code === 0) outOrderId = res.body.orderId;
                 console.log("创建激励视频广告订单成功：=========> " + outOrderId)
+
                 // 创建观看激励视频广告记录
                 this.requestCreateAdRecord(outOrderId, 1);
                 console.log("创建激励视频广告记录成功：=========>" + outOrderId)
-                // 设置广告播放回调
-                window.playAdCallback = () => {
-                    console.log("激励视频广告回调开始===========>" + outOrderId);
-                    if (String(channelId) === "YueYou") {
-                        this.loopRequestAdResult(outOrderId, appId, () => {
-                            if (typeof callback === "function") callback(outOrderId);
-                        });
-                    } else {
-                        // 先更新订单状态再查询订单
-                        this.requestUpdateAdOrder(outOrderId, appId, () => {
-                            this.loopRequestAdResult(outOrderId, appId, () => {
-                                if (typeof callback === "function") callback(outOrderId);
-                            });
-                        })
+
+                try {
+
+                    switch (String(channelId)) {
+
+                        case "YueYou": // 阅友
+                            // 设置广告播放回调
+                            window.playAdCallback = () => {
+                                console.log("激励视频广告回调开始===========>" + outOrderId);
+                                // 查询订单状态
+                                this.loopRequestAdResult(outOrderId, appId, () => {
+                                    if (typeof callback === "function") callback(outOrderId);
+                                });
+                            }
+                            if (Utils.getAppVersion() >= channelVersion) window.nativeObj.openGameRewardVideo(store.state.centerAppId, openTs, signStr, outOrderId, "999999", "playAdCallback()");
+                            break;
+
+                        case "DeJian":
+                        case "QiRead": // 得间，七读
+                            // 设置广告播放回调
+                            window.playAdCallback = () => {
+                                console.log("激励视频广告回调开始===========>" + outOrderId);
+                                // 先更新订单状态再查询订单
+                                this.requestUpdateAdOrder(outOrderId, appId, () => {
+                                    this.loopRequestAdResult(outOrderId, appId, () => {
+                                        if (typeof callback === "function") callback(outOrderId);
+                                    });
+                                })
+                            }
+                            if (Utils.getAppVersion() >= channelVersion) window.nativeObj.openGameRewardVideo(store.state.centerAppId, openTs, signStr, outOrderId, "999999", "playAdCallback()");
+                            break
+                        default: // 其他渠道
+                            // 设置广告播放回调
+                            window.playAdCallback = (adOrderId) => {
+                                console.log("激励视频广告回调开始===========>" + adOrderId);
+                                // 先更新订单状态再查询订单
+                                this.requestUpdateAdOrder(adOrderId, appId, () => {
+                                    this.loopRequestAdResult(adOrderId, appId, () => {
+                                        if (typeof callback === "function") callback(adOrderId);
+                                    });
+                                })
+                            }
+                            window.nativeObj.openRewardVideo(outOrderId, "playAdCallback");
+                            break;
+
                     }
+
+                } catch (e) {
+                    console.error(e);
                 }
-                // 根据渠道打开广告
-                if (String(channelId) === "YueYou") {
-                    if (this.getAppVersion() >= channelVersion) window.nativeObj.openGameRewardVideo(store.state.centerAppId, openTs, signStr, outOrderId, "999999", "playAdCallback()");
-                } else {
-                    if (this.getAppVersion() >= channelVersion) window.nativeObj.openGameRewardVideo(appId, "playAdCallback");
-                }
+
             });
 
-        } catch (e) {
-            console.error(e);
-            if (store.state.debug && typeof callback === "function") callback(null);
         }
+
     }
 
     // 打开banner广告 "portrait", "bottom"
     static openBannerAd(appId, orientation = "portrait", location = "bottom", callback = null) {
         if ((typeof (orientation) == "string" && (orientation === "landscape" || orientation === "portrait")) &&
             (typeof (location) == "string") && (typeof (appId) == "string")) {
-            if (window.nativeObj === undefined) {
-                if (typeof callback === "function") callback();
-                return false;
-            }
-            let outOrderId = Utils.currentTimeMillis(true); // 广告订单号
-            let channelId = store.state.channelId; // 渠道ID
-            let channelVersion = store.state.channelVersion; // 渠道初始版本号
 
-            try {
-                if (String(channelId) === "YueYou") {
-                    if (this.getAppVersion() >= channelVersion) window.nativeObj.showGameBannerAd("", orientation, location);
-                } else {
-                    if (this.getAppVersion() >= channelVersion) window.nativeObj.showGameBannerAd(orientation, location);
+            if (window.nativeObj) {
+
+                let outOrderId = Utils.currentTimeMillis(true); // 广告订单号
+                let channelId = store.state.channelId; // 渠道ID
+
+                try {
+
+                    let channelVersion = store.state.channelVersion; // 渠道初始版本号
+
+                    switch (String(channelId)) {
+                        case "YueYou":
+                        case "DeJian":
+                        case "QiRead":
+                            if (Utils.getAppVersion() >= channelVersion) window.nativeObj.showGameBannerAd("", orientation, location);
+                            break;
+                        default:
+                            window.nativeObj.showBannerAd(orientation, location);
+                            break;
+                    }
+
+                    // 创建打开banner广告记录
+                    this.requestCreateAdRecord(outOrderId, 3);
+
+                } catch (e) {
+                    console.error(e);
                 }
 
-                // 创建打开banner广告记录
-                this.requestCreateAdRecord(outOrderId, 3);
-            } catch (e) {
-                console.error(e);
             }
 
             if (typeof callback === "function") callback();
@@ -97,49 +137,81 @@ export default class AdUtils {
 
     // 关闭banner广告
     static closeBannerAd(callback) {
-        if (window.nativeObj === undefined) {
-            if (typeof callback === "function") callback();
-            return false;
+
+        if (window.nativeObj) {
+
+            let channelId = store.state.channelId; // 渠道ID
+
+            try {
+                switch (String(channelId)) {
+                    case "YueYou":
+                    case "DeJian":
+                    case "QiRead":
+                        window.nativeObj.hideGameBannerAd();
+                        break;
+                    default:
+                        window.nativeObj.hideBannerAd();
+                        break;
+                }
+            } catch (e) {
+                console.error(e);
+            }
+
         }
-        let channelVersion = store.state.channelVersion; // 渠道初始版本号
-        if (this.getAppVersion() >= channelVersion) window.nativeObj.hideGameBannerAd();
+
         if (typeof callback == "function") callback();
+
     }
 
     // 打开插屏广告
     static openScreenAd(appId, orientation = "portrait", callback = null) {
         if ((typeof (orientation) == "string" && (orientation === "landscape" || orientation === "portrait")) && (typeof (appId) == "string")) {
-            if (window.nativeObj === undefined) {
+
+            if (!window.nativeObj) {
+
                 if (typeof callback === "function") callback();
-                return false;
-            }
-            let outOrderId = Utils.currentTimeMillis(true); // 广告订单号
-            let channelId = store.state.channelId; // 渠道ID
-            let channelVersion = store.state.channelVersion; // 渠道初始版本号
 
-            window.screenAdCallback = function () {
-                console.log("插屏广告回调执行：========>")
-                if (typeof callback == "function") callback();
-            }
+            } else {
 
-            try {
-                if (String(channelId) === "YueYou") {
-                    if (this.getAppVersion() >= channelVersion) {
-                        if (this.getAppVersion() >= 347) {
-                            window.nativeObj.showGameInsertScreenAd("", orientation, "screenAdCallback");
-                        } else {
-                            window.nativeObj.showGameInsertScreenAd("", orientation);
-                        }
+                let outOrderId = Utils.currentTimeMillis(true); // 广告订单号
+                let channelId = store.state.channelId; // 渠道ID
+                let channelVersion = store.state.channelVersion; // 渠道初始版本号
+
+                try {
+                    switch (String(channelId)) {
+                        case "YueYou":
+                            if (Utils.getAppVersion() >= channelVersion) {
+                                if (this.getAppVersion() >= 347) {
+                                    window.screenAdCallback = function () {
+                                        console.log("插屏广告回调执行：========>")
+                                        if (typeof callback == "function") callback();
+                                    }
+                                    window.nativeObj.showGameInsertScreenAd("", orientation, "screenAdCallback");
+                                } else {
+                                    window.nativeObj.showGameInsertScreenAd("", orientation);
+                                }
+                            }
+                            break;
+                        case "DeJian":
+                        case "QiRead":
+                            if (Utils.getAppVersion() >= channelVersion) window.nativeObj.showGameInsertScreenAd("", orientation);
+                            break;
+                        default:
+                            window.screenAdCallback = function (adOrderId) {
+                                console.log("插屏广告回调执行：========>")
+                                if (typeof callback == "function") callback(adOrderId);
+                            }
+                            window.nativeObj.showInsertScreenAd(outOrderId, orientation, "screenAdCallback");
+                            break;
                     }
-                } else {
-                    if (this.getAppVersion() >= channelVersion) window.nativeObj.showGameInsertScreenAd(orientation, "showGameInsertScreenAdCallback");
+
+                    // 创建打开插屏广告记录
+                    this.requestCreateAdRecord(outOrderId, 2);
+
+                } catch (e) {
+                    console.error(e);
                 }
 
-                // 创建打开插屏广告记录
-                this.requestCreateAdRecord(outOrderId, 2);
-
-            } catch (e) {
-                console.error(e);
             }
 
         } else {
@@ -149,12 +221,25 @@ export default class AdUtils {
 
     // 关闭插屏广告
     static closeScreenAd(callback) {
-        if (window.nativeObj === undefined) {
-            if (typeof callback === "function") callback();
-            return false;
+
+        if (window.nativeObj) {
+            let channelId = store.state.channelId; // 渠道ID
+            try {
+                switch (String(channelId)) {
+                    case "YueYou":
+                    case "DeJian":
+                    case "QiRead":
+                        window.nativeObj.hideGameInsertScreenAd();
+                        break;
+                    default:
+                        window.nativeObj.hideInsertScreenAd();
+                        break;
+                }
+            } catch (e) {
+                console.error(e);
+            }
         }
-        let channelVersion = store.state.channelVersion; // 渠道初始版本号
-        if (this.getAppVersion() >= channelVersion) window.nativeObj.hideGameInsertScreenAd();
+
         if (typeof callback == "function") callback();
     }
 
@@ -227,20 +312,6 @@ export default class AdUtils {
             },
             callback: callback,
         });
-    }
-
-    // 获取版本
-    static getAppVersion() {
-        let appVersion = 330;
-        if (window.nativeObj !== undefined) {
-            try {
-                appVersion = window.nativeObj.getAppVersionId();
-            } catch (err) {
-                console.error(err);
-            }
-        }
-        console.log(`=======app版本号：${appVersion}========`);
-        return appVersion;
     }
 
 }

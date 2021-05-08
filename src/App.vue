@@ -28,10 +28,10 @@ import close_btn from "@/components/common/close_btn";
 import red_packet_popup from "@/components/common/red_packet/red_packet_popup";
 import red_packet_tip from "@/components/common/red_packet/red_packet_tip";
 import cash_out_account_popup from "@/components/common/cash_out/cash_out_account_popup";
-import YueYouUtils from "@/utils/YueYouUtils";
+import CenterUtils from "@/utils/CenterUtils";
 import {Request, Utils} from "@/utils/Utils";
 import ChannelUtils from "@/utils/ChannelUtils";
-import {mapState, mapGetters, mapMutations} from "vuex";
+import {mapGetters, mapMutations, mapState} from "vuex";
 
 export default {
 	name: 'app',
@@ -120,7 +120,7 @@ export default {
 				url: this.appApiUrl + "/login/user_login",
 				data: {
 					channel_id: this.channelId,
-					channel_userid: userInfo.userid,
+					channel_userid: userInfo.openid,
 					nickname: userInfo.nickname,
 					head_img_url: userInfo.headimg,
 					sex: userInfo.sex,
@@ -139,13 +139,22 @@ export default {
 		},
 
 		// 获取渠道用户信息
-		getChannelUserInfo(callback) {
+		getChannelUserInfoFunc(callback) {
 			if ((this.debug && this.isRunBrowser) || this.isRunBrowser) {
 				// 浏览器调试时使用默认用户信息
-				if (typeof callback === "function") callback({userid: this.debugUserId});
+				if (typeof callback === "function") callback({openid: this.debugUserId});
 			} else {
-				// 否则使用渠道用户信息
-				this.channelId === "YueYou" ? YueYouUtils.autoLoginCenter(callback) : ChannelUtils.getUserInfo(callback);
+				switch (String(this.channelId)) {
+					case "YueYou":
+					case "DeJian":
+					case "QiRead":
+						CenterUtils.autoLoginCenter(callback);
+						break;
+					default:
+						ChannelUtils.getUserInfo(callback);
+						break;
+
+				}
 			}
 		},
 
@@ -177,7 +186,7 @@ export default {
 			this.getAppStatus(() => {
 				console.log("========用户开始登录=========");
 				// 获得渠道用户信息
-				this.getChannelUserInfo((userInfo) => {
+				this.getChannelUserInfoFunc((userInfo) => {
 					// 请求登录
 					this.userLogin(userInfo, () => {
 						console.log("========用户登录成功=========");

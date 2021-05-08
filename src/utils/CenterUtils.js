@@ -1,7 +1,7 @@
 import {Request, Utils} from '@/utils/Utils';
 import store from '../vuex/store';
 
-export default class YueYouUtils {
+export default class CenterUtils {
 
     // 游戏中心登录
     static autoLoginCenter(callback) {
@@ -43,13 +43,15 @@ export default class YueYouUtils {
 
     // 1. 获取认证码
     static getCenterAuthCode(appId, callback) {
-        if (window.nativeObj === undefined) return;
+        if (!window.nativeObj) return;
         this.getSignStr(appId, (sign, openTs) => {
-            let channelId = store.state.channelId;
-            let codeJson = window.nativeObj.getAuthCodeForOpenapi(appId, openTs, sign);
-            let res = JSON.parse(codeJson);
-            if (res.code === 0) {
-                if (typeof callback === "function") callback(channelId + "_" + res.data);
+            try {
+                let channelId = store.state.channelId;
+                let codeJson = window.nativeObj.getAuthCodeForOpenapi(appId, openTs, sign);
+                let res = JSON.parse(codeJson);
+                if (res.code === 0) if (typeof callback === "function") callback(channelId + "_" + res.data);
+            } catch (e) {
+                alert(e);
             }
         })
     }
@@ -89,6 +91,11 @@ export default class YueYouUtils {
 
     // 4. 调用init
     static initApp(appId, userInfo, callback) {
-        if (typeof callback === "function") callback(userInfo);
+        if (typeof callback === "function") callback({
+            openid: userInfo.userid,
+            nickname: userInfo.nickname,
+            headimg: userInfo.headimg,
+            sex: userInfo.sex,
+        });
     }
 }

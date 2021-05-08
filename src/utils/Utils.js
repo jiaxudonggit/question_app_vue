@@ -6,6 +6,20 @@ import store from "@/vuex/store";
 // 封装一个工具类
 const Utils = class Utils {
 
+    // 获取版本号
+    static getAppVersion() {
+        let appVersion = 330;
+        if (window.nativeObj) {
+            try {
+                appVersion = window.nativeObj.getAppVersionId();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        console.log(`=======app版本号：${appVersion}========`);
+        return appVersion;
+    }
+
     // 得到毫秒时间戳(传入ture就是秒级别的)
     static currentTimeMillis(isSecond = false) {
         let timeMills = (new Date()).getTime();

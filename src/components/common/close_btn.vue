@@ -19,6 +19,7 @@ import {mapGetters, mapMutations, mapState} from "vuex";
 import Countdown from '@choujiaojiao/vue2-countdown'
 import AdUtils from "@/utils/AdUtils";
 import debounce from "lodash.debounce";
+import {Utils} from "@/utils/Utils";
 
 export default {
 	name: "close-btn",
@@ -52,13 +53,17 @@ export default {
 		// 是否显示webview关闭按钮
 		isShowExitBtn(val) {
 			// 阅友渠道/app环境中
-			if (this.channelId === "YueYou" && window.nativeObj !== undefined) {
-				if (val) {
-					if (!this.isCountDown) {
-						window.nativeObj.showExitIcon();
+			if (window.nativeObj) {
+				try {
+					if (val) {
+						if (!this.isCountDown) {
+							window.nativeObj.showExitIcon();
+						}
+					} else {
+						window.nativeObj.closeExitIcon();
 					}
-				} else {
-					window.nativeObj.closeExitIcon();
+				} catch (e) {
+					console.error(e);
 				}
 			}
 		},
@@ -77,7 +82,7 @@ export default {
 
 	created() {
 		// 设置安卓生命周期
-		if (AdUtils.getAppVersion() >= this.channelVersion && this.channelId === "YueYou") {
+		if (Utils.getAppVersion() >= this.channelVersion && (this.channelId === "YueYou" || this.channelId === "DeJian" || this.channelId === "QiRead")) {
 			// 系统状态监听
 			window.androidLifeCycleCallBack = (from, callback) => {
 				switch (callback) {

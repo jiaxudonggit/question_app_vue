@@ -1,15 +1,20 @@
 /*
 * 渠道工具类
 * */
-export default class channelUtils {
-    // // 获得用户信息
+
+import store from "@/vuex/store";
+
+export default class ChannelUtils {
+    // 获得用户信息
     static getUserInfo(callback) {
-        if (window.nativeObj === undefined) return;
-        if (typeof callback === "function") callback({});
+        if (!window.nativeObj) return;
+        try {
+            let userInfoJson = window.nativeObj.getChannelUserInfo();
+            let userInfo = JSON.parse(userInfoJson);
+            if (typeof callback === "function") callback(userInfo);
+        } catch (e) {
+            if (typeof callback === "function") callback({openid: store.state.debugUserId});
+        }
     }
 
-    // 获得app版本号
-    static getAppVersion() {
-        return window.nativeObj === undefined ? 330 : window.nativeObj.getAppVersionId();
-    }
 }
