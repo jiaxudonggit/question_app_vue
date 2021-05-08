@@ -11,15 +11,14 @@
     "report": "vue-cli-service build --report"
   },
   "dependencies": {
-    "@babel/polyfill": "^7.12.1",
     "@choujiaojiao/vue2-countdown": "^1.0.2",
     "@liripeng/vue-audio-player": "^1.2.8",
-    "@types/lodash.debounce": "^4.0.6",
     "@vant/touch-emulator": "^1.2.0",
     "animate.css": "^4.1.1",
     "axios": "^0.20.0",
     "core-js": "^3.6.5",
     "fastclick": "^1.0.6",
+    "lodash.debounce": "^4.0.8",
     "qs": "^6.10.1",
     "swiper": "^6.5.8",
     "vant": "^2.12.14",

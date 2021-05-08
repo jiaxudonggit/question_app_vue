@@ -9,8 +9,8 @@ export default {
     },
 
     // 返回后端接口地址
-    appApiUrl: (state) => {
-        return `${process.env.NODE_ENV === 'production' ? state.appApiUrl : state.testAppApiUrl}/api`;
+    appApiUrl: () => {
+        return `/api`;
     },
     // 返回后端静态文件地址
     appResourcesUrl: (state) => (model, file_name) => {
