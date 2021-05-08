@@ -39,7 +39,6 @@ export default class AdUtils {
                 console.log("创建激励视频广告记录成功：=========>" + outOrderId)
 
                 try {
-
                     switch (String(channelId)) {
 
                         case "YueYou": // 阅友
