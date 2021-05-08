@@ -104,24 +104,24 @@ module.exports = {
         }
 
     },
-    // devServer: {
-    //     host: 'localhost',
-    //     port: 8081,
-    //     proxy: {
-    //         '/api': {
-    //             target: process.env.NODE_ENV === 'production' ? 'http://interest.ezhigame.com' : 'http://interest.test.ezhigame.com', // 代理的目标地址
-    //             changeOrigin: true, // 是否设置同源
-    //             pathRewrite: {
-    //                 '^/api': '',
-    //             }
-    //         },
-    //         '/mall': {
-    //             target: 'http://gamecenter.ezhigame.com', // 代理的目标地址
-    //             changeOrigin: true, // 是否设置同源
-    //             pathRewrite: {
-    //                 '^/mall': '',
-    //             }
-    //         }
-    //     }
-    // },
+    devServer: {
+        host: 'localhost',
+        port: 8081,
+        proxy: {
+            '/api': {
+                target: process.env.NODE_ENV === 'production' ? 'http://interest.ezhigame.com' : 'http://interest.test.ezhigame.com', // 代理的目标地址
+                changeOrigin: true, // 是否设置同源
+                pathRewrite: {
+                    '^/api': '',
+                }
+            },
+            '/mall': {
+                target: 'http://gamecenter.ezhigame.com', // 代理的目标地址
+                changeOrigin: true, // 是否设置同源
+                pathRewrite: {
+                    '^/mall': '',
+                }
+            }
+        }
+    },
 }

@@ -5,7 +5,7 @@
 import axios from "@/utils/http";
 import baseUrl from "@/api/base";
 import qs from "qs";
-import {Utils} from "@/utils/utils";
+import Utils from "@/utils/utils";
 
 const YueYou = {
 

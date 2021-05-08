@@ -1,7 +1,7 @@
 /**
  * 接口域名的管理
  */
-const store = require("@/vuex/store")
+import store from "@/vuex/store";
 
 const baseUrl = {
     server: store.getters.appApiUrl,
@@ -9,3 +9,17 @@ const baseUrl = {
 }
 
 export default baseUrl;
+
+window.androidLifeCycleCallBack = function (from, callback) {
+    switch (callback) {
+        case 'onPause':
+            // do something
+            break;
+        case 'onResume':
+            // do something
+            break;
+        case 'onStop':
+            // do something
+            break;
+    }
+};
