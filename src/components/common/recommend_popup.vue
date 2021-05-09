@@ -54,7 +54,9 @@ export default {
 	},
 	deactivated() {
 		// 取消定时器
-		this.timer.forEach((item) => {if (item) clearTimeout(item)});
+		this.timer.forEach((item) => {
+			if (item) clearTimeout(item)
+		});
 		this.timer = [];
 	},
 	methods: {
@@ -76,7 +78,9 @@ export default {
 				});
 				// 调用回调方法
 				if (typeof callback === "function") callback();
-			})
+			}).catch(() => {
+				this.setGameBack(false);
+			});
 		},
 
 		// 点击弹窗推荐事件
