@@ -21,10 +21,12 @@ export default class CenterLogin {
                         sex: data2.info.sex,
                     });
                 }).catch(err2 => {
-                    alert(err2);
+                    if (typeof err2 === "string") alert(err2);
+                    if (typeof err2 === "object") alert(JSON.stringify(err2));
                 });
             }).catch(err => {
-                alert(err);
+                if (typeof err === "string") alert(err);
+                if (typeof err === "object") alert(JSON.stringify(err));
             });
         });
     }
@@ -38,7 +40,8 @@ export default class CenterLogin {
             let channelId = store.state.channelId, codeJson = window.nativeObj.getAuthCodeForOpenapi(appId, openTs, data.info.signtrue), res = JSON.parse(codeJson);
             if (res.code === 0) if (typeof callback === "function") callback(channelId + "_" + res.data);
         }).catch(err => {
-            alert(err);
+            if (typeof err === "string") alert(err);
+            if (typeof err === "object") alert(JSON.stringify(err));
         });
     }
 }

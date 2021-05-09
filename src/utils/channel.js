@@ -9,8 +9,9 @@ export default class Channel {
             let userInfoJson = window.nativeObj.getChannelUserInfo();
             let userInfo = JSON.parse(userInfoJson);
             if (typeof callback === "function") callback(userInfo);
-        } catch (e) {
-            alert(e);
+        } catch (err) {
+            if (typeof err === "string") alert(err);
+            if (typeof err === "object") alert(JSON.stringify(err));
         }
     }
 }
