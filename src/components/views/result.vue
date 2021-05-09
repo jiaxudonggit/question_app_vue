@@ -12,7 +12,7 @@
 				<img v-if="resultData.button_image" :src="resultData.button_image" alt="" class="result-content-btn" @click="onClickBack">
 			</div>
 		</div>
-		<recommend_list v-if="resultData.show_recommend_list" :recommend-number="resultData.recommend_number" :model="model" v-on:listenerRecommendClick="goToHome"></recommend_list>
+		<recommend_list v-if="resultData.show_recommend_list" :recommend-number="resultData.recommend_number" :model="model" v-on:listenerRecommendClick="onClickRecommend"></recommend_list>
 	</div>
 </template>
 <script>
