@@ -54,12 +54,15 @@
 		<div v-if="indexData.show_recommend_list && indexData.show_more_btn" class="index-more-btn animate__animated animate__bounceIn" @click="goToHome">
 			<img src="../../assets/images/index/more.png" alt="">
 		</div>
+		<!-- 推荐弹窗 -->
+		<recommend_popup @listenerPopupClick="onClickRecommend" @listenerPopupMoreClick="goToHome"></recommend_popup>
 	</div>
 </template>
 <script>
 
 import Vue from 'vue';
 import recommend_list from "@/components/common/recommend_list";
+import recommend_popup from "@/components/common/recommend_popup";
 import {mapGetters, mapMutations, mapState} from "vuex";
 import {Popup} from 'vant';
 
@@ -69,6 +72,7 @@ export default {
 	inject: ["createAccessRecord", "openNewApp", "goToHome"],
 	components: {
 		recommend_list,
+		recommend_popup,
 	},
 	data() {
 		return {

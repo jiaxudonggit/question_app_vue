@@ -19,8 +19,6 @@
 		<red_packet_tip/>
 		<!-- 提现账户设置弹窗 -->
 		<cash_out_account_popup/>
-		<!-- 推荐弹窗 -->
-		<recommend_popup @listenerPopupClick="onPopupClick" @listenerPopupMoreClick="goToHome"></recommend_popup>
 	</div>
 </template>
 
@@ -30,7 +28,6 @@ import close_btn from "@/components/common/close_btn";
 import red_packet_popup from "@/components/common/red_packet/red_packet_popup";
 import red_packet_tip from "@/components/common/red_packet/red_packet_tip";
 import cash_out_account_popup from "@/components/common/cash_out/cash_out_account_popup";
-import recommend_popup from "@/components/common/recommend_popup";
 import CenterLogin from "@/utils/center";
 import Utils from "@/utils/utils";
 import ChannelUtils from "@/utils/channel";
@@ -53,7 +50,6 @@ export default {
 		red_packet_popup,
 		red_packet_tip,
 		cash_out_account_popup,
-		recommend_popup,
 	},
 	data() {
 		return {
@@ -225,11 +221,6 @@ export default {
 		// 跳转到商店也
 		goToHome() {
 			this.$router.replace({path: "/home", query: {YzChannelId: this.channelId, t: new Date().getTime()}});
-		},
-
-		// 点击弹窗推荐事件
-		onPopupClick(item) {
-			this.openNewApp(item.app_id);
 		},
 	}
 }
