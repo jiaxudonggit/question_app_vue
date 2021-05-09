@@ -118,14 +118,6 @@ module.exports = {
                     '^/api': '/api',
                 }
             },
-            '/mall': {
-                target: 'http://gamecenter.ezhigame.com', // 代理的目标地址
-                changeOrigin: true, // 是否设置同源
-                ws: true,
-                pathRewrite: {
-                    '^/mall': '/mall',
-                }
-            },
         }
     },
 }
