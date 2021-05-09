@@ -64,7 +64,7 @@ export default {
 	computed: {
 		...mapState(["isAppending", "isGameBack", "debugUserId", "debug", "isRunBrowser", "indexData",
 			"appId", "channelId", "isRecordAccess", "isNewAccount", "adCount"]),
-		...mapGetters(["appApiUrl", "isLogin"]),
+		...mapGetters(["isLogin"]),
 	},
 	watch: {
 		isAppending(val) {

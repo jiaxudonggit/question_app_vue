@@ -131,22 +131,20 @@ export default {
 			this.$api.redPacket.submitCashOut({
 				cash_out_id: this.selectedItem.cash_out_id,
 			}).then(data => {
-				Dialog.alert({
-					message: data.body.message,
-				}).then(() => {
-					this.getCashOutData();
-				});
+				this.$toast.clear();
+				Dialog.alert({message: data.body.message});
+				this.getCashOutData();
 			}).catch(err => {
-				if (err.code) Dialog.alert({
-					message: err.body.message,
-				});
+				if (err.code) {
+					this.$toast.clear();
+					Dialog.alert({message: err.body.message});
+				}
 			}).finally(() => {
 				this.selectedIndex = -1;
 				this.selectedItem = {};
 				if (typeof callback === "function") callback();
 			})
 		},
-
 
 		// 选择提现选项点击事件
 		onSelectRowClick: debounce(function (item, index) {

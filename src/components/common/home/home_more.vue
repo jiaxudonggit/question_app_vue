@@ -14,7 +14,6 @@
 <script>
 import question_list_horizontal from "@/components/common/question_list_horizontal";
 import {mapGetters} from "vuex";
-import {Request} from "@/utils/utils";
 import Vue from 'vue';
 import {List} from 'vant';
 
@@ -41,7 +40,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapGetters(["appApiUrl", "appResourcesUrl", "appIconUrl"]),
+		...mapGetters(["appIconUrl"]),
 	},
 
 	activated() {
@@ -60,31 +59,28 @@ export default {
 
 		// 获得测一测推荐配置
 		getMoreData(callback = null) {
-			Request.request({
-				url: this.appApiUrl + "/test_app/get_app_with_more",
-				data: {
-					page: this.page + 1,
-					page_name: this.model,
-				},
-				callback: (res, err) => {
-					if (err || res.code !== 0) return this.error = true;
-					// 更新推荐列表
-					this.total_page = res.body.total_page;
-					this.page = res.body.page;
-					for (let i = 0; i < res.body.app_list.length; i++) res.body.app_list[i].app_icon = this.appIconUrl(res.body.app_list[i].app_icon);
-					this.moreList = this.moreList.concat(res.body.app_list);
-					if (typeof callback === "function") callback();
-				},
+			this.$api.request.getMoreData({
+				page: this.page + 1,
+				page_name: this.model,
+			}).then(data=>{
+				// 更新推荐列表
+				this.total_page = data.body.total_page;
+				this.page = data.body.page;
+				for (let i = 0; i < data.body.app_list.length; i++) data.body.app_list[i].app_icon = this.appIconUrl(data.body.app_list[i].app_icon);
+				this.moreList = this.moreList.concat(data.body.app_list);
+				if (typeof callback === "function") callback();
+			}).catch(()=>{
+				this.error = true;
+			}).finally(()=>{
+				// 加载状态结束
+				this.loading = false;
 			})
 		},
 
 		onLoad() {
 			// 异步更新数据
 			setTimeout(() => {
-				this.getMoreData(() => {
-					// 加载状态结束
-					this.loading = false;
-				});
+				this.getMoreData();
 			}, 1000);
 		},
 	}

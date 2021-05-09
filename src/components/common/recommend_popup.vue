@@ -41,7 +41,7 @@ export default {
 	},
 	computed: {
 		...mapState(["indexData", "popupData", "appId", "isGameBack"]),
-		...mapGetters(["appIconUrl", "appResourcesUrl"])
+		...mapGetters(["appIconUrl"])
 	},
 	watch: {
 		isGameBack(val) {
@@ -79,7 +79,6 @@ export default {
 				this.setPopupData({
 					data: data.body,
 					appIconUrl: this.appIconUrl,
-					appResourcesUrl: this.appResourcesUrl,
 				});
 				// 调用回调方法
 				if (typeof callback === "function") callback();

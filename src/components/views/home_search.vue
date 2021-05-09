@@ -56,7 +56,6 @@ import question_list_horizontal from "@/components/common/question_list_horizont
 import {mapGetters, mapMutations, mapState} from "vuex";
 import Vue from 'vue';
 import {List, NavBar, Search, Tab, Tabs} from 'vant';
-import {Request} from "@/utils/utils";
 import debounce from "lodash.debounce";
 
 Vue.use(Tab);
@@ -73,7 +72,7 @@ export default {
 	},
 	computed: {
 		...mapState(["isAppending", "loadingTime", "channelId", "homeData", "availHeight"]),
-		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl"]),
+		...mapGetters(["appIconUrl"]),
 	},
 	data() {
 		return {
@@ -126,15 +125,23 @@ export default {
 			// 开启加载提示框
 			!this.isAppending && this.changeAppending(true);
 			// 获得最热应用列表
-			this.getHotAppList();
+			this.$api.request.getHotAppList().then(data => {
+				this.hotList = data.body.app_list;
+			})
 			// 获得分类列表
-			this.getTypeList();
-			// 获得分类下的应用列表
-			this.getTypeAppData(this.type_id, () => {
+			this.$api.request.getTypeList().then(data => {
+				data.body.type_list.unshift({
+					tye_id: 0,
+					type_name: "全部测试",
+				});
+				this.typeList = data.body.type_list;
 				// 关闭加载提示框
 				this.timer = setTimeout(() => {
 					this.changeAppending(false);
-				}, this.loadingTime)
+				}, this.loadingTime);
+			})
+			// 获得分类下的应用列表
+			this.getSearchTypeAppData(this.type_id, () => {
 				if (typeof callback === "function") callback();
 			});
 		},
@@ -176,41 +183,13 @@ export default {
 		// tab 切换事件
 		onTabsChange(name) {
 			// 获得新的分类数据
-			this.getTypeAppData(name, () => {
+			this.getSearchTypeAppData(name, () => {
 				this.type_id = name;
 			});
 		},
 
-		// 获得[大家爱玩]应用列表
-		getHotAppList(callback = null) {
-			Request.request({
-				url: this.appApiUrl + "/test_app/get_hot_app",
-				callback: (res, err) => {
-					if (err || res.code !== 0) return false;
-					this.hotList = res.body.app_list;
-					if (typeof callback === "function") callback();
-				},
-			})
-		},
-
-		// 获得分类列表
-		getTypeList(callback = null) {
-			Request.request({
-				url: this.appApiUrl + "/test_app/get_type_list",
-				callback: (res, err) => {
-					if (err || res.code !== 0) return false;
-					res.body.type_list.unshift({
-						tye_id: 0,
-						type_name: "全部测试",
-					});
-					this.typeList = res.body.type_list;
-					if (typeof callback === "function") callback();
-				},
-			})
-		},
-
 		// 获得分类下的应用列表
-		getTypeAppData(type_id, callback = null) {
+		getSearchTypeAppData(type_id, callback = null) {
 			// 不是同一个type_id时，初始化数据
 			if (type_id !== this.type_id) {
 				// 初始化数据
@@ -218,95 +197,65 @@ export default {
 				this.total_page = 0;
 				this.error = false;
 			}
-			// 开启加载提示框
-			if (!this.loading) !this.isAppending && this.changeAppending(true);
-			// type_id为0时获取全部
-			if (type_id === 0) {
-				Request.request({
-					url: this.appApiUrl + "/test_app/get_app_with_more",
-					data: {
-						page: this.page + 1,
-						page_name: this.model,
-					},
-					callback: (res, err) => {
-						if (err || res.code !== 0) return this.error = true;
-						// 更新推荐列表
-						this.total_page = res.body.total_page;
-						this.page = res.body.page;
-						for (let i = 0; i < res.body.app_list.length; i++) res.body.app_list[i].app_icon = this.appIconUrl(res.body.app_list[i].app_icon);
-						if (type_id !== this.type_id) this.appList = [];
-						this.appList = this.appList.concat(res.body.app_list);
-						if (!this.loading) this.changeAppending(false);
-						if (typeof callback === "function") callback();
-					},
-				})
-			} else {
-				Request.request({
-					url: this.appApiUrl + "/test_app/get_app_with_type",
-					data: {
-						type_id: type_id,
-						page: this.page + 1,
-						page_name: this.model,
-					},
-					callback: (res, err) => {
-						if (err || res.code !== 0) return this.error = true;
-						// 更新推荐列表
-						this.total_page = res.body.total_page;
-						this.page = res.body.page;
-						for (let i = 0; i < res.body.app_list.length; i++) res.body.app_list[i].app_icon = this.appIconUrl(res.body.app_list[i].app_icon);
-						if (type_id !== this.type_id) this.appList = [];
-						this.appList = this.appList.concat(res.body.app_list);
-						if (!this.loading) this.changeAppending(false);
-						if (typeof callback === "function") callback();
-					},
-				})
-			}
+			// 获得搜索页面分类下的应用列表
+			this.$api.request.getSearchTypeAppData({
+				type_id: type_id,
+				page: this.page + 1,
+				page_name: this.model,
+			}).then(data => {
+				this.total_page = data.body.total_page;
+				this.page = data.body.page;
+				for (let i = 0; i < data.body.app_list.length; i++) data.body.app_list[i].app_icon = this.appIconUrl(data.body.app_list[i].app_icon);
+				if (type_id !== this.type_id) this.appList = [];
+				this.appList = this.appList.concat(data.body.app_list);
+				if (!this.loading) this.changeAppending(false);
+				if (typeof callback === "function") callback();
+			}).catch(() => {
+				this.error = true;
+			}).finally(() => {
+				// 加载状态结束
+				this.loading = false;
+			});
 		},
 
 		// 搜索应用
-		searchAppByName(callback = null) {
+		searchAppByName: debounce(function (callback) {
 			if (!this.value) return this.$toast("请输入搜索内容")
 			// 开启加载提示框
 			if (!this.res_loading) !this.isAppending && this.changeAppending(true);
-			Request.request({
-				url: this.appApiUrl + "/test_app/search_app_with_name",
-				data: {
-					search_content: this.value,
-					page: this.res_page + 1,
-				},
-				callback: (res, err) => {
-					if (err || res.code !== 0) return this.res_error = true;
-					// 更新推荐列表
-					this.res_total_page = res.body.total_page;
-					this.res_page = res.body.page;
-					for (let i = 0; i < res.body.app_list.length; i++) res.body.app_list[i].app_icon = this.appIconUrl(res.body.app_list[i].app_icon);
-					if (this.valueChange) this.resultList = [];
-					this.resultList = this.resultList.concat(res.body.app_list);
-					if (!this.result) this.result = true;
-					if (this.valueChange) this.valueChange = false;
-					if (!this.res_loading) this.changeAppending(false);
-					if (typeof callback === "function") callback();
-				},
-			})
-		},
+			this.$api.request.searchAppByName({
+				search_content: this.value,
+				page: this.res_page + 1,
+			}).then(data => {
+				// 更新推荐列表
+				this.res_total_page = data.body.total_page;
+				this.res_page = data.body.page;
+				for (let i = 0; i < data.body.app_list.length; i++) data.body.app_list[i].app_icon = this.appIconUrl(data.body.app_list[i].app_icon);
+				if (this.valueChange) this.resultList = [];
+				this.resultList = this.resultList.concat(data.body.app_list);
+				if (!this.result) this.result = true;
+				if (this.valueChange) this.valueChange = false;
+				if (!this.res_loading) this.changeAppending(false);
+				if (typeof callback === "function") callback();
+			}).catch(() => {
+				this.res_error = true;
+			}).finally(()=>{
+				// 加载状态结束
+				this.res_loading = false;
+			});
+		}, 500, {'leading': true, 'trailing': false}),
 
 		onLoad() {
 			// 异步更新数据
 			setTimeout(() => {
-				this.getTypeAppData(this.type_id, () => {
-					// 加载状态结束
-					this.loading = false;
-				});
+				this.getSearchTypeAppData(this.type_id);
 			}, 1000);
 		},
 
 		onResLoad() {
 			// 异步更新数据
 			setTimeout(() => {
-				this.searchAppByName(() => {
-					// 加载状态结束
-					this.res_loading = false;
-				});
+				this.searchAppByName();
 			}, 1000);
 		},
 

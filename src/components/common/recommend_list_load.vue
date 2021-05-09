@@ -46,8 +46,8 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["appId",]),
-		...mapGetters(["appApiUrl", "appResourcesUrl", "appIconUrl"]),
+		...mapState(["appId"]),
+		...mapGetters(["appIconUrl"]),
 	},
 	created() {
 		this.getRecommendData();

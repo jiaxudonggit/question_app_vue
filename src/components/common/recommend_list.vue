@@ -23,7 +23,7 @@
 <script>
 
 import debounce from "lodash.debounce";
-import {mapGetters, mapMutations, mapState} from "vuex";
+import {mapGetters, mapState} from "vuex";
 import question_list_horizontal from "@/components/common/question_list_horizontal";
 
 export default {
@@ -52,7 +52,7 @@ export default {
 	},
 	computed: {
 		...mapState(["appId", "recommendData"]),
-		...mapGetters(["appApiUrl", "appResourcesUrl", "appIconUrl"]),
+		...mapGetters(["appIconUrl"]),
 	},
 	created() {
 		this.getRecommendData();

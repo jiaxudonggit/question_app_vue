@@ -6,6 +6,7 @@ import qs from "qs";
 import Utils from "@/utils/utils";
 import YueYou from "@/api/yueyou";
 import redPacket from "@/api/red_packet";
+import Ad from "@/api/ad";
 
 
 const request = {
@@ -108,6 +109,17 @@ const request = {
     searchAppByName(params) {
         return axios.post(`/api/test_app/search_app_with_name`,  qs.stringify(Utils.renderParams(params)));
     },
+
+    // 获得搜索页面分类下的应用列表
+    getSearchTypeAppData(params){
+        // type_id为0时获取全部
+        if (params.type_id === 0){
+            return axios.post(`/api/test_app/get_app_with_more`,  qs.stringify(Utils.renderParams(params)));
+        }else {
+            return axios.post(`/api/test_app/get_app_with_type`,  qs.stringify(Utils.renderParams(params)));
+        }
+    },
+
 }
 
 
@@ -115,4 +127,5 @@ export default {
     request,
     YueYou,
     redPacket,
+    Ad,
 };

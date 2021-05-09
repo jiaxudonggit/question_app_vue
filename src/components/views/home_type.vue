@@ -24,7 +24,6 @@ import question_list_horizontal from "@/components/common/question_list_horizont
 import {mapGetters, mapMutations, mapState} from "vuex";
 import Vue from 'vue';
 import {List, NavBar} from 'vant';
-import {Request} from "@/utils/utils";
 
 Vue.use(NavBar);
 Vue.use(List);
@@ -36,7 +35,7 @@ export default {
 	},
 	computed: {
 		...mapState(["isAppending", "loadingTime", "channelId", "homeData", "availHeight"]),
-		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl", "appTypeUrl"]),
+		...mapGetters(["appIconUrl", "appTypeUrl"]),
 		typeId() {
 			return this.$route.query.YzTypeId;
 		}
@@ -88,34 +87,31 @@ export default {
 
 		// 获得分类下的应用列表
 		getTypeData(callback = null) {
-			Request.request({
-				url: this.appApiUrl + "/test_app/get_app_with_type",
-				data: {
-					type_id: this.typeId,
-					page: this.page + 1,
-					page_name: this.model,
-				},
-				callback: (res, err) => {
-					if (err || res.code !== 0) return this.error = true;
-					// 更新推荐列表
-					this.total_page = res.body.total_page;
-					this.page = res.body.page;
-					this.type_name = res.body.type_name;
-					this.type_image = this.appTypeUrl(res.body.type_image);
-					for (let i = 0; i < res.body.app_list.length; i++) res.body.app_list[i].app_icon = this.appIconUrl(res.body.app_list[i].app_icon);
-					this.typeList = this.typeList.concat(res.body.app_list);
-					if (typeof callback === "function") callback();
-				},
+			this.$api.request.getTypeAppData({
+				type_id: this.typeId,
+				page: this.page + 1,
+				page_name: this.model,
+			}).then(data=>{
+				// 更新推荐列表
+				this.total_page = data.body.total_page;
+				this.page = data.body.page;
+				this.type_name = data.body.type_name;
+				this.type_image = this.appTypeUrl(data.body.type_image);
+				for (let i = 0; i < data.body.app_list.length; i++) data.body.app_list[i].app_icon = this.appIconUrl(data.body.app_list[i].app_icon);
+				this.typeList = this.typeList.concat(data.body.app_list);
+				if (typeof callback === "function") callback();
+			}).catch(()=>{
+				this.error = true;
+			}).finally(()=>{
+				// 加载状态结束
+				this.loading = false;
 			})
 		},
 
 		onLoad() {
 			// 异步更新数据
 			setTimeout(() => {
-				this.getTypeData(() => {
-					// 加载状态结束
-					this.loading = false;
-				});
+				this.getTypeData();
 			}, 1000);
 		},
 

@@ -79,7 +79,7 @@ export default {
 	},
 	computed: {
 		...mapState(["isAppending", "appId", "channelId", "indexData", "isGameBack", "loadingTime", "availHeight"]),
-		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl"]),
+		...mapGetters(["appIconUrl", "appResourcesUrl"]),
 	},
 	activated() {
 		// 初始化
@@ -91,12 +91,8 @@ export default {
 	},
 	methods: {
 		...mapMutations({
-			setAppId: "setAppId",
-			setChannelId: "setChannelId",
 			changeAppending: "changeAppending",
 			setIndexData: "setIndexData",
-			setGameBack: "setGameBack",
-			setPopupData: "setPopupData",
 		}),
 
 		// 初始化

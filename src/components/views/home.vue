@@ -58,7 +58,7 @@ export default {
 	},
 	computed: {
 		...mapState(["isAppending", "loadingTime", "channelId", "homeData", "availHeight", "indexData"]),
-		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl", "appBannerUrl", "appTypeUrl", "appLikeUrl"]),
+		...mapGetters(["appIconUrl", "appBannerUrl", "appTypeUrl", "appLikeUrl"]),
 	},
 	data() {
 		return {
@@ -79,7 +79,6 @@ export default {
 	},
 	methods: {
 		...mapMutations({
-			setChannelId: "setChannelId",
 			changeAppending: "changeAppending",
 			setHomeData: "setHomeData",
 			setGameBack: "setGameBack",

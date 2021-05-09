@@ -74,7 +74,7 @@ export default {
 	},
 	computed: {
 		...mapState(["isAppending", "appId", "channelId", "playData", "barrageData", "availHeight", "isShowResultPopup", "indexData", "loadingTime", "resultId"]),
-		...mapGetters(["appApiUrl", "appResourcesUrl", "appBarrageAvatarUrl", "appIconUrl", "isLogin"]),
+		...mapGetters(["appResourcesUrl", "appBarrageAvatarUrl", "appIconUrl"]),
 
 		fraction() {
 			let result = 0;
@@ -120,8 +120,6 @@ export default {
 	},
 	methods: {
 		...mapMutations({
-			setAppId: "setAppId",
-			setChannelId: "setChannelId",
 			setResultId: "setResultId",
 			setFraction: "setFraction",
 			changeAppending: "changeAppending",
@@ -129,7 +127,6 @@ export default {
 			setBarrageData: "setBarrageData",
 			setGameBack: "setGameBack",
 			setShowResultPopup: "setShowResultPopup",
-			updateBarrageData: "updateBarrageData",
 			setCountDown: "setCountDown",
 			addAdCount: "addAdCount",
 			setCanReceive: "setCanReceive",

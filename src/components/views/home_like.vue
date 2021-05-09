@@ -28,7 +28,7 @@ export default {
 	},
 	computed: {
 		...mapState(["isAppending", "loadingTime", "channelId", "homeData", "availHeight"]),
-		...mapGetters(["appApiUrl", "appIconUrl", "appResourcesUrl"]),
+		...mapGetters(["appIconUrl"]),
 	},
 	data() {
 		return {

@@ -61,7 +61,6 @@ export default {
 	},
 	computed: {
 		...mapState(["appId", "channelId"]),
-		...mapGetters(["appApiUrl", "appResourcesUrl"]),
 		imageAnswers: function () {
 			return this.question.question_answers.filter(function (answer) {
 				if (answer.answer_image && answer.answer_title) return answer.answer_image;
