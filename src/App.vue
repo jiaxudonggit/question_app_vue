@@ -3,12 +3,12 @@
 		<!-- 关闭按钮 -->
 		<close_btn></close_btn>
 		<!-- 页面内容 -->
-		<transition v-if="isLogin" :enter-active-class="enterAnimate" name="custom-classes-transition">
+		<transition v-if="isLogin">
 			<keep-alive>
 				<router-view v-if="$route.meta.keepAlive && isRouterAlive" class=""></router-view>
 			</keep-alive>
 		</transition>
-		<transition v-if="isLogin" :enter-active-class="enterAnimate" name="custom-classes-transition">
+		<transition v-if="isLogin">
 			<router-view v-if="!$route.meta.keepAlive && isRouterAlive"></router-view>
 		</transition>
 		<!-- 底部导航栏 -->
@@ -57,7 +57,7 @@ export default {
 	},
 	data() {
 		return {
-			enterAnimate: '',
+			transitionName: 'slide-left',
 			isRouterAlive: true,
 		}
 	},
