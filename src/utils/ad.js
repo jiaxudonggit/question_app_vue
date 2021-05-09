@@ -17,10 +17,10 @@ export default class AdUtils {
         } else {
             let channelId = store.state.channelId; // 渠道
             // 拼接广告订单号
-            let outOrderId = `${channelId}_${appId || store.state.commonAdAppId}_${openTs}`; // 广告订单号
             let openTs = Utils.currentTimeMillis(true); // 时间戳
             let channelVersion = store.state.channelVersion; // 渠道初始版本号
             let signStr = store.state.signStr; // 签名串，阅友会用到
+            let outOrderId = `${channelId}_${appId || store.state.commonAdAppId}_${openTs}`; // 本地广告订单号
             // 创建广告订单
             Ad.createAdOrder({
                 app_id: appId, // 	应用id
