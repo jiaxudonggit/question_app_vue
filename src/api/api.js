@@ -4,7 +4,7 @@
 import axios from "@/utils/http";
 import qs from "qs";
 import Utils from "@/utils/utils";
-import YueYou from "@/api/yueyou";
+import YueYou from "@/api/center";
 import redPacket from "@/api/red_packet";
 import Ad from "@/api/ad";
 

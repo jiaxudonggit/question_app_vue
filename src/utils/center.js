@@ -1,6 +1,6 @@
 import Utils from '@/utils/utils';
 import store from '../vuex/store';
-import YueYou from '@/api/yueyou';
+import YueYou from '@/api/center';
 
 export default class CenterLogin {
 
