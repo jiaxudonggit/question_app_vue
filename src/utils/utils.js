@@ -69,12 +69,4 @@ export default class Utils {
         document.getElementById('app').scrollTop = 0;
     }
 
-    /**
-     * 校验电话号码合法性
-     * @param {String} phone 电话号码
-     * */
-    static checkPhone(phone) {
-        return /^1[3-9]\d{9}$/.test(phone)
-    }
-
 }

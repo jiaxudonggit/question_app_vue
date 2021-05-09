@@ -13,13 +13,13 @@ export default {
     },
 
     // 创建激励视频广告订单
-    createAdOrder() {
-        return axios.post(`/api/ad/create_ad_order`,  qs.stringify(Utils.renderParams()));
+    createAdOrder(params) {
+        return axios.post(`/api/ad/create_ad_order`,  qs.stringify(Utils.renderParams(params)));
     },
 
     // 更新激励视频广告订单
-    updateAdOrder() {
-        return axios.post(`/api/ad/update_ad_order`,  qs.stringify(Utils.renderParams()));
+    updateAdOrder(params) {
+        return axios.post(`/api/ad/update_ad_order`,  qs.stringify(Utils.renderParams(params)));
     },
 
     // 记录用户观看广告

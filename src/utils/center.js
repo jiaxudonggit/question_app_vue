@@ -2,7 +2,7 @@ import Utils from '@/utils/utils';
 import store from '../vuex/store';
 import YueYou from '@/api/yueyou';
 
-export default class YueYouLogin {
+export default class CenterLogin {
 
     // 游戏中心登录
     static autoLoginCenter(callback) {

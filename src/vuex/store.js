@@ -8,7 +8,6 @@ Vue.use(Vuex)
 // noinspection JSUnresolvedVariable
 const state = {
     // 工程配置相关
-    debug: true,  // 调试模式
     isRunBrowser: window.nativeObj === undefined, // 是否在普通浏览器运行
     appApiUrl: "http://interest.ezhigame.com", // 后端接口地址（正式服）
     testAppApiUrl: "http://interest.test.ezhigame.com", // 后端接口地址(测试服)

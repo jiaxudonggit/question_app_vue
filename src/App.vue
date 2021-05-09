@@ -31,7 +31,7 @@ import red_packet_popup from "@/components/common/red_packet/red_packet_popup";
 import red_packet_tip from "@/components/common/red_packet/red_packet_tip";
 import cash_out_account_popup from "@/components/common/cash_out/cash_out_account_popup";
 import recommend_popup from "@/components/common/recommend_popup";
-import YueYouLogin from "@/utils/yuyou";
+import CenterLogin from "@/utils/center";
 import Utils from "@/utils/utils";
 import ChannelUtils from "@/utils/channel";
 import {mapGetters, mapMutations, mapState} from "vuex";
@@ -62,7 +62,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["isAppending", "isGameBack", "debugUserId", "debug", "isRunBrowser", "indexData",
+		...mapState(["isAppending", "isGameBack", "debugUserId", "isRunBrowser", "indexData",
 			"appId", "channelId", "isRecordAccess", "isNewAccount", "adCount"]),
 		...mapGetters(["isLogin"]),
 	},
@@ -119,13 +119,13 @@ export default {
 		}),
 
 		// 获取渠道用户信息
-		getChannelUserInfo(callback) {
-			if ((this.debug && this.isRunBrowser) || this.isRunBrowser) {
+		getChannelUserInfoFunc(callback) {
+			if ((process.env.NODE_ENV === "development" && this.isRunBrowser) || this.isRunBrowser) {
 				// 浏览器调试时使用默认用户信息
-				if (typeof callback === "function") callback({userid: this.debugUserId});
+				if (typeof callback === "function") callback({openid: this.debugUserId});
 			} else {
 				// 否则使用渠道用户信息
-				this.channelId === "YueYou" ? YueYouLogin.autoLoginCenter(callback) : ChannelUtils.getUserInfo(callback);
+				this.channelId === "YueYou" ? CenterLogin.autoLoginCenter(callback) : ChannelUtils.getUserInfo(callback);
 			}
 		},
 
@@ -140,11 +140,11 @@ export default {
 				});
 				console.log("========用户开始登录=========");
 				// 获得渠道用户信息
-				this.getChannelUserInfo(userInfo => {
+				this.getChannelUserInfoFunc(userInfo => {
 					// 用户登录
 					this.$api.request.userLogin({
 						channel_id: this.channelId,
-						channel_userid: userInfo.userid,
+						channel_userid: userInfo.openid,
 						nickname: userInfo.nickname,
 						head_img_url: userInfo.headimg,
 						sex: userInfo.sex,
