@@ -12,7 +12,7 @@ export default {
     // 请求签名
     getSignStr(appId, openTs) {
         return axios.post(
-            `${baseUrl.YueYou}/mall/generate_sign`,
+            `http://gamecenter.ezhigame.com/mall/generate_sign`,
             qs.stringify({
                 app_id: appId,
                 body: JSON.stringify({
@@ -24,7 +24,7 @@ export default {
 
     // 获得接口地址
     getInterfaceUrl(appId) {
-        return axios.post(`${baseUrl.YueYou}/mall/get_interface_url`, qs.stringify({app_id: appId}));
+        return axios.post(`http://gamecenter.ezhigame.com/mall/get_interface_url`, qs.stringify({app_id: appId}));
     },
 
     // 请求token

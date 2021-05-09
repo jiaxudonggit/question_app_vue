@@ -16,21 +16,21 @@ export default class AdUtils {
             if (process.env.NODE_ENV === "development" && typeof callback === "function") callback('YueYou_999999_61220e7eaa9911ebb6eb00163e100870');
         } else {
             let channelId = store.state.channelId; // 渠道
+            // 拼接广告订单号
+            let outOrderId = `${channelId}_${appId || store.state.commonAdAppId}_${openTs}`; // 广告订单号
+            let openTs = Utils.currentTimeMillis(true); // 时间戳
+            let channelVersion = store.state.channelVersion; // 渠道初始版本号
+            let signStr = store.state.signStr; // 签名串，阅友会用到
             // 创建广告订单
             Ad.createAdOrder({
                 app_id: appId, // 	应用id
             }).then(data => {
-                let openTs = Utils.currentTimeMillis(true); // 时间戳
-                let channelVersion = store.state.channelVersion; // 渠道初始版本号
-                let signStr = store.state.signStr; // 签名串，阅友会用到
-
-                // 拼接广告订单号
-                let outOrderId = `${channelId}_${appId || store.state.commonAdAppId}_${openTs}`; // 广告订单号
-
                 // 如果接口返回了订单号就用接口返回的订单号
                 if (data && data.code === 0) outOrderId = data.body.orderId;
                 console.log("创建激励视频广告订单成功=========> " + outOrderId)
-
+            }).catch(()=>{
+                console.log("创建激励视频广告订单失败=========> ");
+            }).finally(()=>{
                 // 创建观看激励视频广告记录
                 Ad.createAdRecord({app_id: appId, order_id: outOrderId, ad_type: 1}).then(()=>{
                     console.log("创建激励视频广告记录成功=========>" + outOrderId)
@@ -88,12 +88,9 @@ export default class AdUtils {
                             window.nativeObj.openRewardVideo(outOrderId, "playAdCallback");
                             break;
                     }
-
                 } catch (e) {
                     console.error(e);
                 }
-            }).catch(()=>{
-                console.log("创建激励视频广告订单失败=========> ");
             });
         }
     }
