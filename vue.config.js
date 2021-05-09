@@ -61,9 +61,37 @@ module.exports = {
         config.optimization = {
             splitChunks: { // 分割代码块
                 cacheGroups: {
-                    vendor: {//第三方库抽离
+                    vconsole: {//vconsole
                         chunks: 'all',
-                        test: /node_modules/,
+                        test: /[\\/]node_modules[\\/]vconsole[\\/]/,
+                        name: 'vconsole',
+                        minChunks: 1,//在分割之前，这个代码块最小应该被引用的次数
+                        priority: 110//权重
+                    },
+                    animate: {//动画库
+                        chunks: 'all',
+                        test: /[\\/]node_modules[\\/]animate.css[\\/]/,
+                        name: 'animate',
+                        minChunks: 1,//在分割之前，这个代码块最小应该被引用的次数
+                        priority: 110//权重
+                    },
+                    video: {//video.js
+                        chunks: 'all',
+                        test: /[\\/]node_modules[\\/]video.js[\\/]/,
+                        name: 'video',
+                        minChunks: 1,//在分割之前，这个代码块最小应该被引用的次数
+                        priority: 110//权重
+                    },
+                    countdown: {//倒计时
+                        chunks: 'all',
+                        test: /[\\/]node_modules[\\/]@choujiaojiao[\\/]/,
+                        name: 'countdown',
+                        minChunks: 1,//在分割之前，这个代码块最小应该被引用的次数
+                        priority: 110//权重
+                    },
+                    vendor: {//其他第三方库抽离
+                        chunks: 'all',
+                        test: /[\\/]node_modules[\\/]/,
                         name: 'vendor',
                         minChunks: 1,//在分割之前，这个代码块最小应该被引用的次数
                         maxInitialRequests: 5,
@@ -81,7 +109,7 @@ module.exports = {
                     },
                     styles: { //样式抽离
                         name: 'styles',
-                        test: /\.(sa|sc|c)ss$/,
+                        test: /\.(sa|sc|c|le)ss$/,
                         chunks: 'all',
                         enforce: true
                     },
@@ -96,9 +124,9 @@ module.exports = {
         config.performance = {
             hints: 'warning',
             //入口起点的最大体积
-            maxEntrypointSize: 1000 * 500,
+            maxEntrypointSize: 1024 * 500,
             //生成文件的最大体积
-            maxAssetSize: 1000 * 1000,
+            maxAssetSize: 1024 * 1024,
             //只给出 js 文件的性能提示
             assetFilter: function (assetFilename) {
                 return assetFilename.endsWith('.js');
