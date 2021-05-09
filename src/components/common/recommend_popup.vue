@@ -36,7 +36,7 @@ export default {
 	data() {
 		return {
 			showSelf: false,
-			timer: [],
+			timer: null,
 		}
 	},
 	computed: {
@@ -45,19 +45,21 @@ export default {
 	},
 	watch: {
 		isGameBack(val) {
-			val ? this.getPopupData(() => {
-				this.timer.push(setTimeout(() => {
-					this.showSelf = true;
-				}, 500));
-			}) : this.showSelf = false;
+			if (val) {
+				this.getPopupData(() => {
+					this.timer = setTimeout(() => {
+						this.showSelf = true;
+					}, 500);
+				});
+			} else {
+				if (this.timer) clearTimeout(this.timer);
+				this.showSelf = false;
+			}
 		},
 	},
 	deactivated() {
 		// 取消定时器
-		this.timer.forEach((item) => {
-			if (item) clearTimeout(item)
-		});
-		this.timer = [];
+		if (this.timer) clearTimeout(this.timer);
 	},
 	methods: {
 		...mapMutations({

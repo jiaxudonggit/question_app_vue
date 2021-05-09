@@ -92,11 +92,14 @@ export default {
 	deactivated() {
 		// 删除定时器
 		this.cancelTimeOut();
+		// 关闭推荐弹窗
+		this.setGameBack(false);
 	},
 	methods: {
 		...mapMutations({
 			changeAppending: "changeAppending",
 			setIndexData: "setIndexData",
+			setGameBack: "setGameBack",
 		}),
 
 		// 初始化
