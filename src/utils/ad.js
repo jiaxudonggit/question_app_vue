@@ -5,7 +5,7 @@
 * @Software: WebStorm
 */
 import store from "@/vuex/store";
-import {Request, Utils} from "@/utils/utils";
+import Utils from "@/utils/utils";
 
 
 export default class Ad {
