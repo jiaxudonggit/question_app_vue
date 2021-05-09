@@ -4,7 +4,7 @@
 * 调用广告
 */
 import store from "@/vuex/store";
-import Utils from "@/utils/Utils";
+import Utils from "@/utils/utils";
 import Ad from "@/api/ad";
 
 export default class AdUtils {
