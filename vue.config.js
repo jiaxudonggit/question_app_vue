@@ -68,6 +68,27 @@ module.exports = {
                         minChunks: 1,//在分割之前，这个代码块最小应该被引用的次数
                         priority: 110//权重
                     },
+                    core_js: {//core-js
+                        chunks: 'all',
+                        test: /[\\/]node_modules[\\/]core-js[\\/]/,
+                        name: 'core_js',
+                        minChunks: 1,//在分割之前，这个代码块最小应该被引用的次数
+                        priority: 110//权重
+                    },
+                    vant: {//vant
+                        chunks: 'all',
+                        test: /[\\/]node_modules[\\/]vant[\\/]/,
+                        name: 'vant',
+                        minChunks: 1,//在分割之前，这个代码块最小应该被引用的次数
+                        priority: 110//权重
+                    },
+                    swiper: {//swiper
+                        chunks: 'all',
+                        test: /[\\/]node_modules[\\/]swiper[\\/]/,
+                        name: 'swiper',
+                        minChunks: 1,//在分割之前，这个代码块最小应该被引用的次数
+                        priority: 110//权重
+                    },
                     animate: {//动画库
                         chunks: 'all',
                         test: /[\\/]node_modules[\\/]animate.css[\\/]/,
@@ -79,13 +100,6 @@ module.exports = {
                         chunks: 'all',
                         test: /[\\/]node_modules[\\/]video.js[\\/]/,
                         name: 'video',
-                        minChunks: 1,//在分割之前，这个代码块最小应该被引用的次数
-                        priority: 110//权重
-                    },
-                    countdown: {//倒计时
-                        chunks: 'all',
-                        test: /[\\/]node_modules[\\/]@choujiaojiao[\\/]/,
-                        name: 'countdown',
                         minChunks: 1,//在分割之前，这个代码块最小应该被引用的次数
                         priority: 110//权重
                     },

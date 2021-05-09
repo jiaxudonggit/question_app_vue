@@ -43,7 +43,7 @@ import {mapState} from "vuex";
 import AudioPlayer from '@liripeng/vue-audio-player'
 import {videoPlayer} from 'vue-video-player'
 import '@liripeng/vue-audio-player/lib/vue-audio-player.css'
-import 'video.js/dist/video-js.css'
+import 'video.js/dist/video-js.min.css'
 
 export default {
 	name: "answer",
