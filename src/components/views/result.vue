@@ -17,7 +17,6 @@
 </template>
 <script>
 import recommend_list from '@/components/common/recommend_list';
-import Ad from "@/utils/ad";
 import {mapGetters, mapMutations, mapState} from "vuex";
 
 export default {
@@ -120,9 +119,7 @@ export default {
 
 		// 返回按钮事件
 		onClickBack() {
-			Ad.closeScreenAd(() => {
-				this.$router.back();
-			});
+			this.$router.back();
 		},
 
 		// 点击更多推荐事件

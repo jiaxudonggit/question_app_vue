@@ -10,13 +10,12 @@ import Ad from "@/api/ad";
 export default class AdUtils {
 
     // 打开激励视频广告
-    static openVideoAd(callback) {
+    static openVideoAd(appId, callback) {
         console.log("打开激励视频广告=========>")
         if (!window.nativeObj) {
             if (process.env.NODE_ENV === "development" && typeof callback === "function") callback('YueYou_999999_61220e7eaa9911ebb6eb00163e100870');
         } else {
             let channelId = store.state.channelId; // 渠道
-            let appId = store.state.appId; // 渠道
             // 创建广告订单
             Ad.createAdOrder({
                 app_id: appId, // 	应用id
@@ -45,7 +44,7 @@ export default class AdUtils {
                             window.playAdCallback = () => {
                                 console.log("激励视频广告回调开始===========>" + outOrderId);
                                 // 查询订单状态
-                                this.loopRequestAdResult(outOrderId, () => {
+                                this.loopRequestAdResult(appId, outOrderId, () => {
                                     if (typeof callback === "function") callback(outOrderId);
                                 });
                             };
@@ -62,7 +61,7 @@ export default class AdUtils {
                                     order_id: outOrderId, // 广告订单号
                                     app_id: appId, // 应用id
                                 }).then(()=>{
-                                    this.loopRequestAdResult(outOrderId, () => {
+                                    this.loopRequestAdResult(appId, outOrderId, () => {
                                         if (typeof callback === "function") callback(outOrderId);
                                     });
                                 }).catch(()=>{
@@ -79,7 +78,7 @@ export default class AdUtils {
                                     order_id: adOrderId, // 广告订单号
                                     app_id: appId, // 应用id
                                 }).then(()=>{
-                                    this.loopRequestAdResult(outOrderId, () => {
+                                    this.loopRequestAdResult(appId, outOrderId, () => {
                                         if (typeof callback === "function") callback(outOrderId);
                                     });
                                 }).catch(()=>{
@@ -128,9 +127,7 @@ export default class AdUtils {
     static closeBannerAd(callback) {
 
         if (window.nativeObj) {
-
             let channelId = store.state.channelId; // 渠道ID
-
             try {
                 switch (String(channelId)) {
                     case "YueYou":
@@ -219,14 +216,14 @@ export default class AdUtils {
     }
 
     // 处理轮询
-    static loopRequestAdResult(orderId, callback) {
+    static loopRequestAdResult(appId, orderId, callback) {
         let count = 0;
-        let func = (orderId) => {
+        let func = (appId, orderId) => {
             if (count >= 5) return;
             console.log("广告结果轮询执行：========> 第" + (count + 1) + "次")
             Ad.getAdResult({
                 order_id: orderId, // 广告订单
-                app_id: store.state.appId, // 应用id
+                app_id: appId, // 应用id
             }).then(data=>{
                 // 轮询成功 播放完成
                 if (data.body.status === 1) {
@@ -240,6 +237,6 @@ export default class AdUtils {
                 func(orderId);
             })
         }
-        func(orderId);
+        func(appId, orderId);
     }
 }

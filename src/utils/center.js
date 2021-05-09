@@ -6,7 +6,7 @@ export default class CenterLogin {
 
     // 游戏中心登录
     static autoLoginCenter(callback) {
-        if (window.nativeObj === undefined) return;
+        if (!window.nativeObj) return;
         const gameId = store.state.centerAppId;
         // 1. 获取认证码
         this.getCenterAuthCode(String(gameId), (authCode) => {
@@ -31,6 +31,7 @@ export default class CenterLogin {
 
     // 获取认证码
     static getCenterAuthCode(appId, callback) {
+        if (!window.nativeObj) return;
         let openTs = String(Utils.currentTimeMillis(true));
         YueYou.getSignStr(appId).then(data => {
             store.commit("setSignStr", data.info.signtrue);

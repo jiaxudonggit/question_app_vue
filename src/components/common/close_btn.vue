@@ -17,8 +17,9 @@
 <script>
 import {mapGetters, mapMutations, mapState} from "vuex";
 import Countdown from '@choujiaojiao/vue2-countdown'
-import Ad from "@/utils/ad";
+import AdUtils from "@/utils/ad";
 import debounce from "lodash.debounce";
+import Utils from "@/utils/utils";
 
 export default {
 	name: "close-btn",
@@ -51,14 +52,18 @@ export default {
 		},
 		// 是否显示webview关闭按钮
 		isShowExitBtn(val) {
-			// 阅友渠道/app环境中
-			if (this.channelId === "YueYou" && window.nativeObj !== undefined) {
-				if (val) {
-					if (!this.isCountDown) {
-						window.nativeObj.showExitIcon();
+			// app环境中
+			if (window.nativeObj) {
+				try {
+					if (val) {
+						if (!this.isCountDown) {
+							window.nativeObj.showExitIcon();
+						}
+					} else {
+						window.nativeObj.closeExitIcon();
 					}
-				} else {
-					window.nativeObj.closeExitIcon();
+				} catch (e) {
+					console.error(e);
 				}
 			}
 		},
@@ -77,7 +82,7 @@ export default {
 
 	created() {
 		// 设置安卓生命周期
-		if (Ad.getAppVersion() >= this.channelVersion && this.channelId === "YueYou") {
+		if (Utils.getAppVersion() >= this.channelVersion && this.channelId === "YueYou") {
 			// 系统状态监听
 			window.androidLifeCycleCallBack = (from, callback) => {
 				switch (callback) {
@@ -108,7 +113,7 @@ export default {
 		// 点击关闭按钮事件
 		onBtnClick: debounce(function () {
 			// 播放广告
-			Ad.openVideoAd(this.commonAdAppId, this.channelId, () => {
+			AdUtils.openVideoAd(this.commonAdAppId, () => {
 				// 添加广告统计次数
 				this.addAdCount();
 				// 隐藏按钮
