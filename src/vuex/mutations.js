@@ -212,7 +212,7 @@ const mutations = {
         state.balance = cashOutData.balance;
         // 处理公告
         let content = "";
-        for (let i = 0; i < cashOutData.notice_list.length; i++) content += `${cashOutData.notice_list[i].nickname}已累计提现${cashOutData.notice_list[i].total_amount}元！${i > 0 ? ' ... ... ' : ''}`;
+        for (let i = 0; i < cashOutData.notice_list.length; i++) content += `${cashOutData.notice_list[i].nickname || '游客'}已累计提现${cashOutData.notice_list[i].total_amount}元！${i > 0 ? ' ... ... ' : ''}`;
         state.cashOutData.noticeContent = content;
     },
 
