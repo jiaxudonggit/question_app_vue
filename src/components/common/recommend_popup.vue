@@ -40,7 +40,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["indexData", "popupData", "appId", "isGameBack"]),
+		...mapState(["indexData", "popupData", "appId", "isGameBack", "loadingTime"]),
 		...mapGetters(["appIconUrl"])
 	},
 	watch: {
@@ -48,16 +48,9 @@ export default {
 			val ? this.getPopupData(() => {
 				this.timer.push(setTimeout(() => {
 					this.showSelf = true;
-				}, 1000));
+				}, 500));
 			}) : this.showSelf = false;
 		},
-	},
-	activated() {
-		this.isGameBack ? this.getPopupData(() => {
-			this.timer.push(setTimeout(() => {
-				this.showSelf = true;
-			}, 1000));
-		}) : this.showSelf = false;
 	},
 	deactivated() {
 		// 取消定时器
