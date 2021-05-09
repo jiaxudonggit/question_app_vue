@@ -31,8 +31,8 @@ export default class Utils {
         let appVersion = 330;
         try {
             appVersion = window.nativeObj.getAppVersionId();
-        } catch (err) {
-            console.log(err);
+            // eslint-disable-next-line no-empty
+        } catch (e) {
         }
         console.log(`=======app版本号：${appVersion}========`);
         return appVersion;
