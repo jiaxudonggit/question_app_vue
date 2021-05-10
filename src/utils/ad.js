@@ -15,6 +15,7 @@ export default class AdUtils {
         if (!window.nativeObj) {
             if (process.env.NODE_ENV === "development" && typeof callback === "function") callback('YueYou_999999_61220e7eaa9911ebb6eb00163e100870');
         } else {
+            let self = this; // 渠道
             let channelId = store.state.channelId; // 渠道
             // 拼接广告订单号
             let openTs = Utils.currentTimeMillis(true); // 时间戳
@@ -41,10 +42,10 @@ export default class AdUtils {
 
                         case "YueYou": // 阅友
                             // 设置广告播放回调
-                            window.playAdCallback = () => {
+                            window.playAdCallback = function () {
                                 console.log("激励视频广告回调开始===========>" + outOrderId);
                                 // 查询订单状态
-                                this.loopRequestAdResult(appId, outOrderId, () => {
+                                self.loopRequestAdResult(appId, outOrderId, () => {
                                     if (typeof callback === "function") callback(outOrderId);
                                 });
                             };
@@ -54,14 +55,14 @@ export default class AdUtils {
                         case "DeJian":
                         case "QiRead": // 得间，七读
                             // 设置广告播放回调
-                            window.playAdCallback = () => {
+                            window.playAdCallback = function () {
                                 console.log("激励视频广告回调开始===========>" + outOrderId);
                                 // 先更新订单状态再查询订单
                                 Ad.updateAdOrder({
                                     order_id: outOrderId, // 广告订单号
                                     app_id: appId, // 应用id
                                 }).then(()=>{
-                                    this.loopRequestAdResult(appId, outOrderId, () => {
+                                    self.loopRequestAdResult(appId, outOrderId, () => {
                                         if (typeof callback === "function") callback(outOrderId);
                                     });
                                 }).catch(()=>{
@@ -71,14 +72,14 @@ export default class AdUtils {
                             if (Utils.getAppVersion() >= channelVersion) window.nativeObj.openGameRewardVideo(store.state.centerAppId, openTs, signStr, outOrderId, "999999", "playAdCallback()");
                             break
                         default: // 其他渠道
-                            window.playAdCallback = (adOrderId) => {
+                            window.playAdCallback = function (adOrderId) {
                                 console.log("激励视频广告回调开始===========>" + adOrderId);
                                 // 先更新订单状态再查询订单
                                 Ad.updateAdOrder({
                                     order_id: adOrderId, // 广告订单号
                                     app_id: appId, // 应用id
                                 }).then(()=>{
-                                    this.loopRequestAdResult(appId, outOrderId, () => {
+                                    self.loopRequestAdResult(appId, outOrderId, () => {
                                         if (typeof callback === "function") callback(outOrderId);
                                     });
                                 }).catch(()=>{
@@ -227,13 +228,13 @@ export default class AdUtils {
                     if (typeof callback === "function") callback();
                 } else {
                     count++;
-                    func(orderId);
+                    func();
                 }
             }).catch(()=>{
                 count++;
-                func(orderId);
+                func();
             })
         }
-        func(appId, orderId);
+        func();
     }
 }
