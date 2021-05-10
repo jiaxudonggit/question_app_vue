@@ -6,8 +6,8 @@ const {HashedModuleIdsPlugin} = require('webpack');
 const productionGzipExtensions = ['js', 'css', 'html']
 
 // 设置应用模式
-// process.env.NODE_ENV = 'development'; // 开发模式
-process.env.NODE_ENV = 'test'; // 测试模式
+process.env.NODE_ENV = 'development'; // 开发模式
+// process.env.NODE_ENV = 'test'; // 测试模式
 // process.env.NODE_ENV = 'production'; // 生产模式
 
 module.exports = {

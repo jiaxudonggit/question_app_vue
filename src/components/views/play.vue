@@ -256,7 +256,7 @@ export default {
 					}
 				});
 			});
-		}, 800, {'leading': true, 'trailing': false}),
+		}, 1200, {'leading': true, 'trailing': false}),
 	}
 }
 </script>

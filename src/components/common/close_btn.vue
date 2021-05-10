@@ -112,6 +112,8 @@ export default {
 
 		// 点击关闭按钮事件
 		onBtnClick: debounce(function () {
+			// 未登录点击不生效
+			if (!this.isLogin) return;
 			// 播放广告
 			AdUtils.openVideoAd(this.commonAdAppId, () => {
 				// 添加广告统计次数
@@ -119,7 +121,7 @@ export default {
 				// 隐藏按钮
 				this.setCountDown(false);
 			});
-		}, 800, {
+		}, 1200, {
 			'leading': true,
 			'trailing': false
 		}),
