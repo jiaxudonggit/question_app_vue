@@ -27,7 +27,7 @@ export default class AdUtils {
                 app_id: appId, // 	应用id
             }).then(data => {
                 // 如果接口返回了订单号就用接口返回的订单号
-                if (data.body.code === 0) outOrderId = data.body.orderId;
+                if (data.code === 0) outOrderId = data.body.orderId;
                 console.log("创建激励视频广告订单成功=========> " + outOrderId)
             }).catch(()=>{
                 console.log("创建激励视频广告订单失败=========> ");
