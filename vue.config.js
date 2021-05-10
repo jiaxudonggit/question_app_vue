@@ -75,37 +75,10 @@ module.exports = {
                         minSize: 0,//大于0个字节
                         priority: 110//权重
                     },
-                    core_js: {//core-js
-                        chunks: 'all',
-                        test: /[\\/]node_modules[\\/]core-js[\\/]/,
-                        name: 'core_js',
-                        minChunks: 1,//在分割之前，这个代码块最小应该被引用的次数
-                        maxInitialRequests: 5,
-                        minSize: 0,//大于0个字节
-                        priority: 110//权重
-                    },
-                    vant: {//vant
-                        chunks: 'all',
-                        test: /[\\/]node_modules[\\/]vant[\\/]/,
-                        name: 'vant',
-                        minChunks: 1,//在分割之前，这个代码块最小应该被引用的次数
-                        maxInitialRequests: 5,
-                        minSize: 0,//大于0个字节
-                        priority: 110//权重
-                    },
                     swiper: {//swiper
                         chunks: 'all',
                         test: /[\\/]node_modules[\\/]swiper[\\/]/,
                         name: 'swiper',
-                        minChunks: 1,//在分割之前，这个代码块最小应该被引用的次数
-                        maxInitialRequests: 5,
-                        minSize: 0,//大于0个字节
-                        priority: 110//权重
-                    },
-                    animate: {//动画库
-                        chunks: 'all',
-                        test: /[\\/]node_modules[\\/]animate.css[\\/]/,
-                        name: 'animate',
                         minChunks: 1,//在分割之前，这个代码块最小应该被引用的次数
                         maxInitialRequests: 5,
                         minSize: 0,//大于0个字节
