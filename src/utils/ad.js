@@ -13,14 +13,14 @@ export default class AdUtils {
     static openVideoAd(appId, callback) {
         console.log("打开激励视频广告=========>")
         if (!window.nativeObj) {
-            if (process.env.NODE_ENV === "development" && typeof callback === "function") callback('YueYou_999999_61220e7eaa9911ebb6eb00163e100870');
+            if (process.env.NODE_ENV !== "production" && typeof callback === "function") callback('YueYou_999999_61220e7eaa9911ebb6eb00163e100870');
         } else {
             let self = this; // 渠道
             let channelId = store.state.channelId; // 渠道
-            // 拼接广告订单号
             let openTs = Utils.currentTimeMillis(true); // 时间戳
             let channelVersion = store.state.channelVersion; // 渠道初始版本号
             let signStr = store.state.signStr; // 签名串，阅友会用到
+            // 拼接广告订单号
             let outOrderId = `${channelId}_${appId || store.state.commonAdAppId}_${openTs}`; // 本地广告订单号
             // 创建广告订单
             Ad.createAdOrder({
@@ -49,7 +49,7 @@ export default class AdUtils {
                                     if (typeof callback === "function") callback(outOrderId);
                                 });
                             };
-                            if (Utils.getAppVersion() >= channelVersion) window.nativeObj.openGameRewardVideo(store.state.centerAppId, openTs, signStr, outOrderId, "999999", "playAdCallback()");
+                            if (Utils.getAppVersion() >= channelVersion) window.nativeObj.openGameRewardVideo(store.getters.centerAppId, openTs, signStr, outOrderId, "999999", "playAdCallback()");
                             break;
 
                         case "DeJian":
@@ -69,7 +69,7 @@ export default class AdUtils {
                                     console.log("更新激励视频广告订单失败=========> ");
                                 });
                             };
-                            if (Utils.getAppVersion() >= channelVersion) window.nativeObj.openGameRewardVideo(store.state.centerAppId, openTs, signStr, outOrderId, "999999", "playAdCallback()");
+                            if (Utils.getAppVersion() >= channelVersion) window.nativeObj.openGameRewardVideo(store.getters.centerAppId, openTs, signStr, outOrderId, "999999", "playAdCallback()");
                             break
                         default: // 其他渠道
                             window.playAdCallback = function (adOrderId) {
@@ -216,7 +216,7 @@ export default class AdUtils {
     // 处理轮询
     static loopRequestAdResult(appId, orderId, callback) {
         let count = 0;
-        let func = (appId, orderId) => {
+        let func = function () {
             if (count >= 5) return;
             console.log("广告结果轮询执行：========> 第" + (count + 1) + "次")
             Ad.getAdResult({
@@ -225,7 +225,7 @@ export default class AdUtils {
             }).then(data=>{
                 // 轮询成功 播放完成
                 if (data.body.status === 1) {
-                    if (typeof callback === "function") callback();
+                    if (typeof callback === "function") callback(data.body.status);
                 } else {
                     count++;
                     func();

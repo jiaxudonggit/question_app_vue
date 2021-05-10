@@ -8,6 +8,10 @@ export default {
         return (state.accessToken !== null || window.sessionStorage.getItem("accessToken") !== null) && state.appId !== null;
     },
 
+    centerAppId: (state) => {
+        return process.env.NODE_ENV === 'production' ? state.centerAppId : state.testCenterAppId;
+    },
+
     // 返回后端接口地址
     appApiUrl: (state) => {
         return `${process.env.NODE_ENV === 'production' ? state.appApiUrl : state.testAppApiUrl}/api`;

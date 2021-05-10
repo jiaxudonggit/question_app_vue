@@ -12,8 +12,10 @@ import '@vant/touch-emulator'; // vant触摸兼容
 import {Toast} from 'vant'; // 轻提示
 import api from '@/api/api' // 导入api接口
 
+console.log(`=======App模式：${process.env.NODE_ENV}========`);
+
 // 初始化调试控制台
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV !== 'production') {
     let VConsole = require('vconsole');
     new VConsole();
 }
