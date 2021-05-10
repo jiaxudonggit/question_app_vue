@@ -27,7 +27,7 @@ export default class AdUtils {
                 app_id: appId, // 	应用id
             }).then(data => {
                 // 如果接口返回了订单号就用接口返回的订单号
-                outOrderId = data.body.orderId;
+                if (data.body.code === 0) outOrderId = data.body.orderId;
                 console.log("创建激励视频广告订单成功=========> " + outOrderId)
             }).catch(()=>{
                 console.log("创建激励视频广告订单失败=========> ");
@@ -79,8 +79,8 @@ export default class AdUtils {
                                     order_id: adOrderId, // 广告订单号
                                     app_id: appId, // 应用id
                                 }).then(()=>{
-                                    self.loopRequestAdResult(appId, outOrderId, () => {
-                                        if (typeof callback === "function") callback(outOrderId);
+                                    self.loopRequestAdResult(appId, adOrderId, () => {
+                                        if (typeof callback === "function") callback(adOrderId);
                                     });
                                 }).catch(()=>{
                                     console.log("更新激励视频广告订单失败=========> ");
@@ -216,7 +216,7 @@ export default class AdUtils {
     // 处理轮询
     static loopRequestAdResult(appId, orderId, callback) {
         let count = 0;
-        let func = function () {
+        let func = function (appId, orderId) {
             if (count >= 5) return;
             console.log("广告结果轮询执行：========> 第" + (count + 1) + "次")
             Ad.getAdResult({
@@ -228,13 +228,13 @@ export default class AdUtils {
                     if (typeof callback === "function") callback(data.body.status);
                 } else {
                     count++;
-                    func();
+                    func(appId, orderId);
                 }
             }).catch(()=>{
                 count++;
-                func();
+                func(appId, orderId);
             })
         }
-        func();
+        func(appId, orderId);
     }
 }
