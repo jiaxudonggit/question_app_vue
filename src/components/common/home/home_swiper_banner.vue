@@ -8,10 +8,6 @@
 	</swiper>
 </template>
 <script>
-import {directive, Swiper, SwiperSlide} from 'vue-awesome-swiper';
-import 'swiper/swiper-bundle.css';
-import SwiperCore, {Navigation, Pagination, EffectFade, Autoplay} from 'swiper';
-SwiperCore.use([Navigation, Pagination, EffectFade, Autoplay]);
 
 export default {
 	name: "home-swiper-banner",
@@ -47,13 +43,6 @@ export default {
 			type: Boolean,
 			default: true,
 		},
-	},
-	components: {
-		Swiper,
-		SwiperSlide
-	},
-	directives: {
-		swiper: directive
 	},
 	data() {
 		return {

@@ -121,7 +121,7 @@ export default {
 				// 隐藏按钮
 				this.setCountDown(false);
 			});
-		}, 2000, {
+		}, 3000, {
 			'leading': true,
 			'trailing': false
 		}),

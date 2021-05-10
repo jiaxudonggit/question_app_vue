@@ -36,56 +36,46 @@ export default class AdUtils {
                 Ad.createAdRecord({app_id: appId, order_id: outOrderId, ad_type: 1}).then(()=>{
                     console.log("创建激励视频广告记录成功=========>" + outOrderId)
                 });
-
+                // 设置广告播放回调
+                window.playAdCallback = function (adOrderId) {
+                    const channelList = ["YueYou", "DeJian", "QiRead"];
+                    const orderId = channelList.indexOf(String(channelId)) !== -1 ? outOrderId : adOrderId;
+                    const adAppId = appId;
+                    console.log("激励视频广告回调开始===========>" + orderId);
+                    if (String(channelId) === "YueYou") {
+                        // 查询订单
+                        self.loopRequestAdResult(adAppId, orderId, (status) => {
+                            console.log("查询激励视频广告订单状态成功=========>" + status);
+                            if (typeof callback === "function") callback(orderId);
+                        });
+                    } else {
+                        // 先更新订单状态再查询订单
+                        Ad.updateAdOrder({
+                            order_id: orderId, // 广告订单号
+                            app_id: adAppId, // 应用id
+                        }).then(()=>{
+                            console.log("更新激励视频广告订单成功=========>" + orderId);
+                            // 查询订单
+                            self.loopRequestAdResult(adAppId, orderId, (status) => {
+                                console.log("查询激励视频广告订单状态成功=========>" + status);
+                                if (typeof callback === "function") callback(orderId);
+                            });
+                        }).catch(()=>{
+                            console.log("更新激励视频广告订单失败=========>" + orderId);
+                        });
+                    }
+                };
+                // 调用广告播放
                 try {
                     switch (String(channelId)) {
-
                         case "YueYou": // 阅友
-                            // 设置广告播放回调
-                            window.playAdCallback = function () {
-                                console.log("激励视频广告回调开始===========>" + outOrderId);
-                                // 查询订单状态
-                                self.loopRequestAdResult(appId, outOrderId, () => {
-                                    if (typeof callback === "function") callback(outOrderId);
-                                });
-                            };
-                            if (Utils.getAppVersion() >= channelVersion) window.nativeObj.openGameRewardVideo(store.getters.centerAppId, openTs, signStr, outOrderId, "999999", "playAdCallback()");
-                            break;
-
-                        case "DeJian":
-                        case "QiRead": // 得间，七读
-                            // 设置广告播放回调
-                            window.playAdCallback = function () {
-                                console.log("激励视频广告回调开始===========>" + outOrderId);
-                                // 先更新订单状态再查询订单
-                                Ad.updateAdOrder({
-                                    order_id: outOrderId, // 广告订单号
-                                    app_id: appId, // 应用id
-                                }).then(()=>{
-                                    self.loopRequestAdResult(appId, outOrderId, () => {
-                                        if (typeof callback === "function") callback(outOrderId);
-                                    });
-                                }).catch(()=>{
-                                    console.log("更新激励视频广告订单失败=========> ");
-                                });
-                            };
-                            if (Utils.getAppVersion() >= channelVersion) window.nativeObj.openGameRewardVideo(store.getters.centerAppId, openTs, signStr, outOrderId, "999999", "playAdCallback()");
+                        case "DeJian": // 得间
+                        case "QiRead": // 七读
+                            if (Utils.getAppVersion() >= channelVersion) {
+                                window.nativeObj.openGameRewardVideo(store.getters.centerAppId, openTs, signStr, outOrderId, "999999", "playAdCallback()");
+                            }
                             break
                         default: // 其他渠道
-                            window.playAdCallback = function (adOrderId) {
-                                console.log("激励视频广告回调开始===========>" + adOrderId);
-                                // 先更新订单状态再查询订单
-                                Ad.updateAdOrder({
-                                    order_id: adOrderId, // 广告订单号
-                                    app_id: appId, // 应用id
-                                }).then(()=>{
-                                    self.loopRequestAdResult(appId, adOrderId, () => {
-                                        if (typeof callback === "function") callback(adOrderId);
-                                    });
-                                }).catch(()=>{
-                                    console.log("更新激励视频广告订单失败=========> ");
-                                });
-                            };
                             window.nativeObj.openRewardVideo(outOrderId, "playAdCallback");
                             break;
                     }
@@ -216,25 +206,25 @@ export default class AdUtils {
     // 处理轮询
     static loopRequestAdResult(appId, orderId, callback) {
         let count = 0;
-        let func = function (appId, orderId) {
+        let func = function (adAppId, adOrderId) {
             if (count >= 5) return;
             console.log("广告结果轮询执行：========> 第" + (count + 1) + "次")
             Ad.getAdResult({
-                order_id: orderId, // 广告订单
-                app_id: appId, // 应用id
+                order_id: adOrderId, // 广告订单
+                app_id: adAppId, // 应用id
             }).then(data=>{
                 // 轮询成功 播放完成
                 if (data.body.status === 1) {
                     if (typeof callback === "function") callback(data.body.status);
                 } else {
                     count++;
-                    func(appId, orderId);
+                    func(adAppId, adOrderId);
                 }
             }).catch(()=>{
                 count++;
-                func(appId, orderId);
+                func(adAppId, adOrderId);
             })
-        }
+        };
         func(appId, orderId);
     }
 }

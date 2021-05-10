@@ -21,11 +21,6 @@
 	</div>
 </template>
 <script>
-import {directive, Swiper, SwiperSlide} from 'vue-awesome-swiper';
-import 'swiper/swiper-bundle.css';
-import SwiperCore, {Navigation, Pagination, EffectFade, Autoplay} from 'swiper';
-
-SwiperCore.use([Navigation, Pagination, EffectFade, Autoplay]);
 
 export default {
 	name: "home-swiper-interest",
@@ -62,13 +57,7 @@ export default {
 			default: false,
 		},
 	},
-	components: {
-		Swiper,
-		SwiperSlide
-	},
-	directives: {
-		swiper: directive
-	},
+
 	data() {
 		return {
 			swiperOption: {

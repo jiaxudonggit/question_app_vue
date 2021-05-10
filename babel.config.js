@@ -2,7 +2,12 @@ module.exports = {
     presets: [
         ['@vue/app', {
             'targets': {
-                'browsers': ['ie >= 9', 'safari >= 7']
+                'browsers': [
+                    'ie >= 9',
+                    'safari >= 7',
+                    "last 2 version",
+                    "> 5%",
+                    "not dead"]
             },
             useBuiltIns: 'entry',
             polyfills: [

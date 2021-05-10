@@ -6,16 +6,14 @@ const {HashedModuleIdsPlugin} = require('webpack');
 const productionGzipExtensions = ['js', 'css', 'html']
 
 // 设置应用模式
-process.env.NODE_ENV = 'development'; // 开发模式
-// process.env.NODE_ENV = 'test'; // 测试模式
-// process.env.NODE_ENV = 'production'; // 生产模式
+// process.env.NODE_ENV = 'development'; // 开发模式
+process.env.NODE_ENV = 'production'; // 生产模式
 
 module.exports = {
     productionSourceMap: false, // 关闭生产环境的 source map
     lintOnSave: false,
     publicPath: process.env.VUE_APP_PUBLIC_PATH,
     // 默认情况下 babel-loader 会忽略所有 node_modules 中的文件。如果你想要通过 Babel 显式转译一个依赖，可以在这个选项中列出来。
-    transpileDependencies: ["vconsole"],
     chainWebpack: config => {
         // 移除 prefetch 插件
         config.plugins.delete('prefetch');
@@ -26,7 +24,8 @@ module.exports = {
     },
     configureWebpack: config => {
 
-        if (process.env.NODE_ENV === 'production') {  // 生产环境
+        // 生产环境
+        if (process.env.NODE_ENV === 'production') {
             // 去除console.log打印以及注释
             config.plugins.push(
                 new UglifyJsPlugin({
@@ -56,7 +55,6 @@ module.exports = {
             })
         );
 
-
         // 只打包改变的文件
         config.plugins.push(
             new HashedModuleIdsPlugin()
@@ -66,56 +64,41 @@ module.exports = {
         config.optimization = {
             splitChunks: { // 分割代码块
                 cacheGroups: {
-                    vconsole: {//vconsole
-                        chunks: 'all',
-                        test: /[\\/]node_modules[\\/]vconsole[\\/]/,
-                        name: 'vconsole',
-                        minChunks: 1,//在分割之前，这个代码块最小应该被引用的次数
-                        maxInitialRequests: 5,
-                        minSize: 0,//大于0个字节
-                        priority: 110//权重
-                    },
-                    swiper: {//swiper
+                    swiper: { // swiper
                         chunks: 'all',
                         test: /[\\/]node_modules[\\/]swiper[\\/]/,
                         name: 'swiper',
                         minChunks: 1,//在分割之前，这个代码块最小应该被引用的次数
-                        maxInitialRequests: 5,
+                        maxInitialRequests: 10,
                         minSize: 0,//大于0个字节
                         priority: 110//权重
                     },
-                    video: {//video.js
+                    video: { // video.js
                         chunks: 'all',
                         test: /[\\/]node_modules[\\/]video.js[\\/]/,
                         name: 'video',
                         minChunks: 1,//在分割之前，这个代码块最小应该被引用的次数
-                        maxInitialRequests: 5,
+                        maxInitialRequests: 10,
                         minSize: 0,//大于0个字节
-                        priority: 110//权重
+                        priority: 100//权重
                     },
-                    vendor: {//其他第三方库抽离
+                    vendor: { // 其他第三方库抽离
                         chunks: 'all',
                         test: /[\\/]node_modules[\\/]/,
                         name: 'vendor',
                         minChunks: 1,//在分割之前，这个代码块最小应该被引用的次数
-                        maxInitialRequests: 5,
+                        maxInitialRequests: 10,
                         minSize: 0,//大于0个字节
-                        priority: 100//权重
+                        priority: 90//权重
                     },
-                    common: {  //公用模块抽离
+                    common: {  // 公用模块抽离
                         chunks: 'all',
-                        test: /[\\/]src[\\/]js[\\/]/,
+                        test: /[\\/]src[\\/](.*)[\\.]js/,
                         name: 'common',
-                        minChunks: 2, // 在分割之前，这个代码块最小应该被引用的次数
-                        maxInitialRequests: 5,
+                        minChunks: 1, // 在分割之前，这个代码块最小应该被引用的次数
+                        maxInitialRequests: 10,
                         minSize: 0,//大于0个字节
-                        priority: 60
-                    },
-                    styles: { //样式抽离
-                        name: 'styles',
-                        test: /\.(sa|sc|c|le)ss$/,
-                        chunks: 'all',
-                        enforce: true
+                        priority: 80
                     },
                     runtimeChunk: {
                         name: 'manifest'
@@ -128,7 +111,7 @@ module.exports = {
         config.performance = {
             hints: 'warning',
             //入口起点的最大体积
-            maxEntrypointSize: 1024 * 500,
+            maxEntrypointSize: 1024 * 1024,
             //生成文件的最大体积
             maxAssetSize: 1024 * 1024,
             //只给出 js 文件的性能提示

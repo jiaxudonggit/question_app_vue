@@ -9,7 +9,15 @@ import filters from './filters'; //将全部过滤器放在 filters/index.js 中
 import animated from 'animate.css'; // 动画库
 import '@vant/touch-emulator'; // vant触摸兼容
 import {Toast} from 'vant'; // 轻提示
+import VueAwesomeSwiper from 'vue-awesome-swiper'
+import 'swiper/swiper-bundle.css'
+import SwiperCore, {Autoplay, EffectFade, Navigation, Pagination} from 'swiper';
+import VueVideoPlayer from 'vue-video-player'
+import 'video.js/dist/video-js.min.css'
 import api from '@/api/api' // 导入api接口
+
+
+SwiperCore.use([Navigation, Pagination, EffectFade, Autoplay]);
 
 console.log(`=======App模式：${process.env.NODE_ENV}========`);
 
@@ -21,6 +29,8 @@ if (process.env.NODE_ENV !== 'production') {
 
 //技巧 同时 use 多个插件 被依赖的插件应放在偏后方
 Vue.use(animated, Toast, vuex);
+Vue.use(VueAwesomeSwiper);
+Vue.use(VueVideoPlayer);
 
 // 将api挂载到vue的原型上
 Vue.prototype.$api = api;
