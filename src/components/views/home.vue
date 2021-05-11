@@ -1,7 +1,7 @@
 <!--主页商店页面组件-->
 <template>
 	<div id="home" class="home app-model">
-		<div class="home-content app-content" :style="{minHeight: (availHeight - 50) + 'px'}">
+		<div class="home-content app-content" :style="{minHeight: (availHeight - 100) + 'px'}">
 			<img class="home-content-bg" src="../../assets/images/home/home-top-bg.png" alt="">
 			<div class="home-user-wrap">
 				<red_packet_container></red_packet_container>

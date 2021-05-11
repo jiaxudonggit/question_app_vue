@@ -127,7 +127,7 @@ module.exports = {
         port: 8099,
         proxy: {
             '/api': {
-                target: process.env.NODE_ENV === 'production' ? 'http://interest.ezhigame.com' : 'http://interest.test.ezhigame.com', // 代理的目标地址
+                target: process.env.NODE_ENV === 'production' ? 'http://interest.ezhigame.com' : 'https://interest.test.ezhigame.com', // 代理的目标地址
                 changeOrigin: true, // 是否设置同源
                 ws: true,
                 pathRewrite: {

@@ -1,6 +1,6 @@
 <!--主页商店喜欢页组件-->
 <template>
-	<div id="like" class="like app-model" :style="{minHeight: (availHeight - 46) + 'px'}">
+	<div id="like" class="like app-model">
 		<van-nav-bar class="van-nav-bar-customer fixed-fix" title="大家爱玩" left-text="返回" left-arrow @click-left="goToHome"/>
 		<div class="like-content app-content">
 			<van-list class="like-content-app-list" v-model="loading" :finished="page === total_page" finished-text="--我是有底线的--" :error.sync="error" error-text="请求失败，点击重新加载" @load="onLoad">

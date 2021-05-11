@@ -1,6 +1,6 @@
 <!--主页商店分类页组件-->
 <template>
-	<div id="cash-out" class="cash-out app-model" :style="{minHeight: (availHeight - 76) + 'px'}">
+	<div id="cash-out" class="cash-out app-model">
 		<van-nav-bar class="van-nav-bar-customer fixed-fix" title="红包提现" left-text="返回" left-arrow @click-left="onBackClick"/>
 		<div class="cash-out-content app-content">
 			<div class="cash-out-content-top">
@@ -67,7 +67,7 @@ Vue.use(Dialog);
 export default {
 	inject: ["goToHome"],
 	computed: {
-		...mapState(["isAppending", "loadingTime", "cashOutData", "availHeight", "alipayAccount", "balance"]),
+		...mapState(["isAppending", "loadingTime", "cashOutData", "alipayAccount", "balance"]),
 		cashOutStatus() {
 			return function (status) {
 				return status ? '' : 'cash-out-row-prohibit';

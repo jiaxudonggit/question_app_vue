@@ -71,7 +71,7 @@ export default {
 		question_list_horizontal,
 	},
 	computed: {
-		...mapState(["isAppending", "loadingTime", "channelId", "homeData", "availHeight"]),
+		...mapState(["isAppending", "loadingTime", "channelId", "homeData"]),
 		...mapGetters(["appIconUrl"]),
 	},
 	data() {
