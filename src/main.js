@@ -16,16 +16,15 @@ import VueVideoPlayer from 'vue-video-player'
 import 'video.js/dist/video-js.min.css'
 import api from '@/api/api' // 导入api接口
 
-
-SwiperCore.use([Navigation, Pagination, EffectFade, Autoplay]);
-
-console.log(`=======App模式：${process.env.NODE_ENV}========`);
-
 // 初始化调试控制台
 if (process.env.NODE_ENV !== 'production') {
     let VConsole = require('vconsole');
     new VConsole();
 }
+
+console.log(`=======App模式：${process.env.NODE_ENV}========`);
+
+SwiperCore.use([Navigation, Pagination, EffectFade, Autoplay]);
 
 //技巧 同时 use 多个插件 被依赖的插件应放在偏后方
 Vue.use(animated, Toast, vuex);
