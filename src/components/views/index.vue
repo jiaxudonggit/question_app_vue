@@ -2,7 +2,7 @@
 <template>
 	<div id="index" class="index app-model" :style="{backgroundColor: indexData.bg_color}">
 		<div class="index-header fixed-fix">
-			<div class="index-header-home" @click="goToHome"><img src="../../assets/images/index/home.png" alt=""></div>
+			<div class="app-header" @click="goToHome"><img src="../../assets/images/index/home.png" alt=""></div>
 		</div>
 		<div class="index-content app-content" :style="{minHeight: '20%'}">
 			<!-- 背景图片 -->

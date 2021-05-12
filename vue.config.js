@@ -13,6 +13,7 @@ module.exports = {
     productionSourceMap: false, // 关闭生产环境的 source map
     lintOnSave: false,
     publicPath: process.env.VUE_APP_PUBLIC_PATH,
+    transpileDependencies: ['luch-request'],
 
     chainWebpack: config => {
         // 移除 prefetch 插件

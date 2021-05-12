@@ -2,7 +2,7 @@
 <template>
 	<div id="game" class="game app-model" :style="{backgroundColor: playData.bg_color}">
 		<div class="game-header fixed-fix">
-			<div class="game-header-back" @click="onClickBack"><img src="../../assets/images/play/back.png" alt=""></div>
+			<div class="app-header" @click="onClickBack"><img src="../../assets/images/play/back.png" alt=""></div>
 			<div class="game-header-title">答题中</div>
 		</div>
 		<div class="game-content app-content" :style="{minHeight: availHeight + 'px'}">

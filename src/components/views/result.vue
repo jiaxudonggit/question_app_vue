@@ -2,7 +2,7 @@
 <template>
 	<div id="result" class="result app-model" :style="{backgroundColor: resultData.bg_color}">
 		<div class="result-header fixed-fix">
-			<div class="result-header-back" @click="onClickBack"><img src="../../assets/images/play/back.png" alt=""></div>
+			<div class="app-header" @click="onClickBack"><img src="../../assets/images/play/back.png" alt=""></div>
 		</div>
 		<div class="result-content app-content" :style="{minHeight: '20%'}">
 			<div class="result-content-img">
