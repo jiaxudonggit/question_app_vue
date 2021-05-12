@@ -1,7 +1,6 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import Vue from 'vue';
-import vuex from 'vue';
 import App from './App';
 import router from './router';
 import store from './vuex/store';
@@ -27,7 +26,7 @@ console.log(`=======App模式：${process.env.NODE_ENV}========`);
 SwiperCore.use([Navigation, Pagination, EffectFade, Autoplay]);
 
 //技巧 同时 use 多个插件 被依赖的插件应放在偏后方
-Vue.use(animated, Toast, vuex);
+Vue.use(animated, Toast);
 Vue.use(VueAwesomeSwiper);
 Vue.use(VueVideoPlayer);
 
