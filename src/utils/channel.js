@@ -10,8 +10,11 @@ export default class Channel {
             let userInfo = JSON.parse(userInfoJson);
             if (typeof callback === "function") callback(userInfo);
         } catch (err) {
-            if (typeof err === "string") alert(err);
-            if (typeof err === "object") alert(JSON.stringify(err));
+            if (typeof err === "object") {
+                alert(JSON.stringify(err));
+            } else {
+                alert(err);
+            }
         }
     }
 }

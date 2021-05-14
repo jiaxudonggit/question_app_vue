@@ -9,21 +9,21 @@ import Utils from "@/utils/utils";
 export default {
 
     // 请求签名
-    getSignStr(appId, openTs) {
+    getSignStr(channelId, appId, openTs) {
         return axios.post(
-            `http://gamecenter.ezhigame.com/mall/generate_sign`,
+            channelId === "YueYou" ? 'http://gamecenter.ezhigame.com/mall/generate_sign' : 'http://api.channel.ezhigame.com/mall/generate_sign',
             qs.stringify({
                 app_id: appId,
                 body: JSON.stringify({
                     openAppId: appId,
-                    openTs: openTs,
+                    openTs: openTs || String((new Date().getTime() / 1000).toFixed(0)),
                 }),
             }));
     },
 
     // 获得接口地址
     getInterfaceUrl(appId) {
-        return axios.post(`http://gamecenter.ezhigame.com/mall/get_interface_url`, qs.stringify({app_id: appId}));
+        return axios.post('http://gamecenter.ezhigame.com/mall/get_interface_url', qs.stringify({app_id: appId}));
     },
 
     // 请求token

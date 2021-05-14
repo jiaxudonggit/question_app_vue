@@ -22,12 +22,18 @@ export default class CenterLogin {
                         sex: data2.info.sex,
                     });
                 }).catch(err2 => {
-                    if (typeof err2 === "string") alert(err2);
-                    if (typeof err2 === "object") alert(JSON.stringify(err2));
+                    if (typeof err2 === "object") {
+                        alert(JSON.stringify(err2));
+                    } else {
+                        alert(err2);
+                    }
                 });
             }).catch(err => {
-                if (typeof err === "string") alert(err);
-                if (typeof err === "object") alert(JSON.stringify(err));
+                if (typeof err === "object") {
+                    alert(JSON.stringify(err));
+                } else {
+                    alert(err);
+                }
             });
         });
     }
@@ -36,19 +42,34 @@ export default class CenterLogin {
     static getCenterAuthCode(appId, callback) {
         if (!window.nativeObj) return;
         let openTs = String(Utils.currentTimeMillis(true));
-        YueYou.getSignStr(appId).then(data => {
+        let channelId = store.state.channelId, authCode="";
+        YueYou.getSignStr(channelId, appId, openTs).then(data => {
             store.commit("setSignStr", data.info.signtrue);
-            let channelId = store.state.channelId;
-            if (channelId === "YueYou"){
-                let codeJson = window.nativeObj.getAuthCodeForOpenapi(appId, openTs, data.info.signtrue), res = JSON.parse(codeJson);
-                if (res.code === 0) if (typeof callback === "function") callback(channelId + "_" + res.data);
-            } else {
-                let code = window.nativeObj.getAuthCodeForOpenapi(appId, openTs, data.info.signtrue)
-                if (code) if (typeof callback === "function") callback(channelId + "_" + code);
+            try{
+                if (channelId === "YueYou"){
+                    let codeJson = window.nativeObj.getAuthCodeForOpenapi(appId, openTs, data.info.signtrue), res = JSON.parse(codeJson);
+                    console.log("游戏中心返回的认证码：" + codeJson);
+                    if (res.code === 0) authCode = channelId + "_" + res.data;
+                } else {
+                    let code = window.nativeObj.getAuthCodeForOpenapi(appId, openTs, data.info.signtrue);
+                    console.log("游戏中心返回的认证码：" + code);
+                    if (code) authCode = channelId + "_" + code;
+                }
+            } catch (e) {
+                if (typeof e === "object") {
+                    alert(JSON.stringify(e));
+                } else {
+                    alert(e);
+                }
             }
+            console.log("拼接后的认证码：" + authCode);
+            if (typeof callback === "function") callback(authCode);
         }).catch(err => {
-            if (typeof err === "string") alert(err);
-            if (typeof err === "object") alert(JSON.stringify(err));
+            if (typeof err === "object") {
+                alert(JSON.stringify(err));
+            } else {
+                alert(err);
+            }
         });
     }
 }

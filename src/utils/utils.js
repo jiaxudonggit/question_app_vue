@@ -40,7 +40,7 @@ export default class Utils {
 
     /**
      * 得到毫秒时间戳(传入ture就是秒级别的)
-     * @param {Boolean} isSecond 是否为毫秒级
+     * @param {Boolean} isSecond 是否为秒级
      * */
     static currentTimeMillis(isSecond = false) {
         let timeMills = (new Date()).getTime();
