@@ -14,6 +14,7 @@ export default class CenterLogin {
             YueYou.getInterfaceUrl(String(gameId)).then(data => {
                 // 3. 获取token
                 YueYou.getAccessToken(String(gameId), authCode, data.info.interface_url).then(data2 => {
+                    console.log("游戏中心登录返回：" + JSON.stringify(data2));
                     if (typeof callback === "function") callback({
                         openid: data2.info.userid,
                         nickname: data2.info.nickname,
@@ -37,8 +38,14 @@ export default class CenterLogin {
         let openTs = String(Utils.currentTimeMillis(true));
         YueYou.getSignStr(appId).then(data => {
             store.commit("setSignStr", data.info.signtrue);
-            let channelId = store.state.channelId, codeJson = window.nativeObj.getAuthCodeForOpenapi(appId, openTs, data.info.signtrue), res = JSON.parse(codeJson);
-            if (res.code === 0) if (typeof callback === "function") callback(channelId + "_" + res.data);
+            let channelId = store.state.channelId;
+            if (channelId === "YueYou"){
+                let codeJson = window.nativeObj.getAuthCodeForOpenapi(appId, openTs, data.info.signtrue), res = JSON.parse(codeJson);
+                if (res.code === 0) if (typeof callback === "function") callback(channelId + "_" + res.data);
+            } else {
+                let code = window.nativeObj.getAuthCodeForOpenapi(appId, openTs, data.info.signtrue)
+                if (code) if (typeof callback === "function") callback(channelId + "_" + code);
+            }
         }).catch(err => {
             if (typeof err === "string") alert(err);
             if (typeof err === "object") alert(JSON.stringify(err));
