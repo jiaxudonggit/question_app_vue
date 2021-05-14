@@ -37,8 +37,8 @@ export default class AdUtils {
                     console.log("创建激励视频广告记录成功=========>" + outOrderId)
                 });
                 // 设置广告播放回调
-                window.playAdCallback = function (adOrderId) {
-                    const orderId = store.state.centerChannelList.indexOf(String(channelId)) !== -1 ? outOrderId : adOrderId;
+                window.playAdCallback = function () {
+                    const orderId = outOrderId;
                     const adAppId = appId;
                     console.log("激励视频广告回调开始===========>" + orderId);
                     if (String(channelId) === "YueYou") {
