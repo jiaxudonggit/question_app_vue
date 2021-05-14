@@ -25,7 +25,7 @@ export default {
 	name: "close-btn",
 	computed: {
 		...mapState(["commonAdAppId", "channelId", "channelVersion", "countdownTimer", "countdownSwitch", "isNewAccount",
-			"isShowCloseBtn", "isCountDown", "isShowExitBtn"]),
+			"isShowCloseBtn", "isCountDown", "isShowExitBtn", "centerChannelList"]),
 		...mapGetters(["isLogin"])
 	},
 	components: {
@@ -82,7 +82,7 @@ export default {
 
 	created() {
 		// 设置安卓生命周期
-		if (Utils.getAppVersion() >= this.channelVersion && this.channelId === "YueYou") {
+		if (Utils.getAppVersion() >= this.channelVersion && this.centerChannelList.indexOf(String(this.channelId)) !== -1) {
 			// 系统状态监听
 			window.androidLifeCycleCallBack = (from, callback) => {
 				switch (callback) {

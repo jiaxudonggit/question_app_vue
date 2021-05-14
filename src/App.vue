@@ -59,7 +59,7 @@ export default {
 	},
 	computed: {
 		...mapState(["isAppending", "isGameBack", "debugUserId", "isRunBrowser", "indexData",
-			"appId", "channelId", "isRecordAccess", "isNewAccount", "adCount"]),
+			"appId", "channelId", "isRecordAccess", "isNewAccount", "adCount", "centerChannelList"]),
 		...mapGetters(["isLogin"]),
 	},
 	watch: {
@@ -121,7 +121,7 @@ export default {
 				if (typeof callback === "function") callback({openid: this.debugUserId});
 			} else {
 				// 否则使用渠道用户信息
-				this.channelId === "YueYou" ? CenterLogin.autoLoginCenter(callback) : ChannelUtils.getUserInfo(callback);
+				this.centerChannelList.indexOf(String(this.channelId)) !== -1 ? CenterLogin.autoLoginCenter(callback) : ChannelUtils.getUserInfo(callback);
 			}
 		},
 

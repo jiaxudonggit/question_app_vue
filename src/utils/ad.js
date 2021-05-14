@@ -38,8 +38,7 @@ export default class AdUtils {
                 });
                 // 设置广告播放回调
                 window.playAdCallback = function (adOrderId) {
-                    const channelList = ["YueYou", "DeJian", "QiRead"];
-                    const orderId = channelList.indexOf(String(channelId)) !== -1 ? outOrderId : adOrderId;
+                    const orderId = store.state.centerChannelList.indexOf(String(channelId)) !== -1 ? outOrderId : adOrderId;
                     const adAppId = appId;
                     console.log("激励视频广告回调开始===========>" + orderId);
                     if (String(channelId) === "YueYou") {
