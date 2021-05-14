@@ -12,11 +12,11 @@ export default class AdUtils {
     // 打开激励视频广告
     static openVideoAd(appId, callback) {
         console.log("打开激励视频广告=========>")
+        let channelId = store.state.channelId; // 渠道
         if (!window.nativeObj) {
-            if (process.env.NODE_ENV !== "production" && typeof callback === "function") callback('YueYou_999999_61220e7eaa9911ebb6eb00163e100870');
+            if (process.env.NODE_ENV !== "production" && typeof callback === "function") callback(`${channelId}_999999_01234567890`);
         } else {
             let self = this; // 渠道
-            let channelId = store.state.channelId; // 渠道
             let openTs = Utils.currentTimeMillis(true); // 时间戳
             let channelVersion = store.state.channelVersion; // 渠道初始版本号
             let signStr = store.state.signStr; // 签名串，阅友会用到
